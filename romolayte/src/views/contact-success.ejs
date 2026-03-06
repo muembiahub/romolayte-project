@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+
+<main class="contact-success">
+  <h1>✅ Merci <%= name %> !</h1>
+  <p>Votre demande a bien été enregistrée.</p>
+  <p><strong>Service :</strong> <%= service_id %></p>
+  <p><strong>Catégorie :</strong> <%= category_id %></p>
+  <p><strong>Prix :</strong> <%= price %></p>
+  <p><strong>Email :</strong> <%= email %></p>
+  <p><strong>Téléphone :</strong> <%= phone %></p>
+  <p><strong>Localisation :</strong> <%= location %></p>
+  <p><strong>Sexe :</strong> <%= gender %></p>
+  <p><strong>Infos :</strong> <%= other_info %></p>
+  <a href="/services" class="btn-service-details">← Retour aux services</a>
+</main>
+
+<%- include('partials/footer') %>

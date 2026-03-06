@@ -1,0 +1,69 @@
+<%- include('partials/header') %>
+
+<main id="service-details-page" class="service-details-container">
+  <section id="service-details-section" class="service-details-block">
+    <!-- Image à gauche -->
+    <div id="service-image-wrapper" class="service-details-image">
+      <% if (service.logo) { %>
+        <img id="service-logo" src="<%= service.logo %>" alt="<%= service.name %>" />
+      <% } else { %>
+        <img id="service-logo-default" src="/images-services/default.webp" alt="Service" />
+      <% } %>
+    </div>
+
+    <!-- Infos à droite -->
+    <div id="service-info-wrapper" class="service-details-info">
+      <h1 id="service-title"><%= service.name %></h1>
+      <p id="service-description"><%= service.description %></p>
+      
+      <p id="service-price">
+        <% if (service.price) { %>
+          <strong>Prix :</strong> <%= service.price %> $
+        <% } else { %>
+          <strong>Prix :</strong> Sur devis
+        <% } %>
+      </p>
+
+      <p id="service-category">
+        <strong>Catégorie :</strong> <%= service.category_id %>
+      </p>
+
+      <% if (service.details) { %>
+        <div id="service-extra">
+          <h2>Informations supplémentaires</h2>
+          <p><%= service.details %></p>
+        </div>
+      <% } %>
+
+      <% if (service.requirements) { %>
+        <div id="service-requirements">
+          <h2>Pré-requis</h2>
+          <p><%= service.requirements %></p>
+        </div>
+      <% } %>
+
+      <% if (service.duration) { %>
+        <p id="service-duration">
+          <strong>Durée :</strong> <%= service.duration %>
+        </p>
+      <% } %>
+
+      <!-- Boutons en bas -->
+      <div class="service-details-actions">
+        <a id="back-to-services" href="/services" class="btn-service-details">← Retour aux services</a>
+        
+            <a id="contact-us" 
+    href="/contact?category_id=<%= service.category_id %>&service_id=<%= service.service_id %>&price=<%= service.price ? service.price : 'Sur devis' %>" 
+   class="btn-service-contact">
+   📩 Contacter-nous
+</a>
+
+
+      </div>
+    </div>
+  </section>
+
+ 
+</main>
+
+<%- include('partials/footer') %>

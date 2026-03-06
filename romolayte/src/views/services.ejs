@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<main class="container">
+  <section class="services">
+    <h1><%= title %></h1>
+
+    <% if (services && services.length > 0) { %>
+      <div class="services-grid">
+        <% services.forEach(service => { %>
+          <div class="service-card">
+            <div class="service-image">
+              <% if (service.logo) { %>
+                <!-- Utilisation directe de l'URL Supabase -->
+                <img src="<%= service.logo %>" alt="<%= service.name %>" />
+              <% } else { %>
+                <!-- Fallback si pas d'image -->
+                <img src="/images-services/default.webp" alt="Service" />
+              <% } %>
+            </div>
+
+            <div class="service-info">
+              <h2><%= service.name %></h2>
+              <p class="description"><%= service.description %></p>
+              <p class="price">
+                <% if (service.price) { %>
+                  <strong>Prix :</strong> <%= service.price %> $
+                <% } else { %>
+                  <strong>Prix :</strong> Sur devis
+                <% } %>
+              </p>
+              <p class="category">
+                <strong>Catégorie :</strong> <%= service.category_id %>
+              </p>
+              <a href="/services/details/<%= service.service_id %>" class="btn">Voir détails</a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="no-services">Aucun service disponible pour le moment.</p>
+    <% } %>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

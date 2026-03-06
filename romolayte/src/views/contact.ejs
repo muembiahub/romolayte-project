@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+
+<main class="contact-container">
+  <h1>📩 Demande de service</h1>
+
+  <form action="/contact" method="POST" class="contact-form">
+    
+    <!-- Catégorie -->
+    <label for="category_id">Catégorie</label>
+    <input type="number" id="category_id" name="category_id" value="<%= category_id %>" readonly>
+
+    <!-- Service -->
+    <label for="service_id">Service</label>
+    <input type="number" id="service_id" name="service_id" value="<%= service_id %>" readonly>
+
+    <!-- Prix -->
+    <label for="price">Prix</label>
+    <% if (price && price !== 'Sur devis') { %>
+      <input type="number" id="price" name="price" value="<%= price %>" readonly>
+    <% } else { %>
+      <input type="text" id="price" name="price" value="Sur devis" readonly>
+    <% } %>
+
+    <!-- Nom -->
+    <label for="name">Nom</label>
+    <input type="text" id="name" name="name" required>
+
+    <!-- Email -->
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required>
+
+    <!-- Coordonnées GPS -->
+    <label for="coordinates">Coordonnées GPS</label>
+    <input type="text" id="coordinates" name="coordinates" readonly>
+
+    <!-- Localisation -->
+    <label for="location">Ville / Quartier</label>
+    <div class="location-group">
+      <input type="text" id="location" name="location" readonly>
+      <button type="button" class="position">📍 Ma Position</button>
+    </div>
+
+    <!-- Téléphone -->
+    <label for="phone">Téléphone</label>
+    <input type="text" id="phone" name="phone">
+
+    <!-- Sexe -->
+    <label for="gender">Sexe</label>
+    <select id="gender" name="gender">
+      <option value="Homme">Homme</option>
+      <option value="Femme">Femme</option>
+      <option value="Autre">Autre</option>
+    </select>
+
+    <!-- Infos supplémentaires -->
+    <label for="other_info">Informations importantes</label>
+    <textarea id="other_info" name="other_info" rows="4"></textarea>
+
+    <!-- Bouton envoyer -->
+    <button type="submit" class="btn-contact">Envoyer</button>
+  </form>
+</main>
+
+<%- include('partials/footer') %>

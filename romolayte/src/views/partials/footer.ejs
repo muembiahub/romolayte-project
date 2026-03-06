@@ -1,0 +1,64 @@
+<footer>
+    <div class="footer-top">
+  <!-- Logo animé -->
+  <div class="footer-section footer-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="gradient">
+          <stop offset="0%" stop-color="#ffcc00">
+            <animate attributeName="stop-color" values="#ffcc00;#ffffff;#ffcc00" dur="4s" repeatCount="indefinite"/>
+          </stop>
+          <stop offset="100%" stop-color="#ffffff">
+            <animate attributeName="stop-color" values="#ffffff;#ffcc00;#ffffff" dur="4s" repeatCount="indefinite"/>
+          </stop>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="45" stroke="#fff" stroke-width="4" fill="#004080"/>
+      <text x="50%" y="55%" text-anchor="middle" font-size="28" fill="url(#gradient)" font-family="Arial, sans-serif">R</text>
+    </svg>
+    <p><strong>Romolayte</strong>
+    est une plateforme innovante de services et e-commerce, propulsée par des solutions modernes et sécurisées.</p>
+  </div>
+
+  <!-- Navigation -->
+  <div class="footer-section">
+    <h4><i class="fas fa-link"></i> Navigation</h4>
+    <p><a href="/services"><i class="fas fa-cogs"></i> Services</a></p>
+    <p><a href="/about"><i class="fas fa-info-circle"></i> À propos</a></p>
+    <p><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></p>
+  </div>
+
+  <!-- Réseaux sociaux -->
+  <div class="footer-section social-links">
+    <h4><i class="fas fa-share-alt"></i> Suivez-nous</h4>
+    <a href="https://facebook.com/romolayte" target="_blank"><i class="fab fa-facebook"></i></a>
+    <a href="https://twitter.com/romolayte" target="_blank"><i class="fab fa-twitter"></i></a>
+    <a href="https://linkedin.com/company/romolayte" target="_blank"><i class="fab fa-linkedin"></i></a>
+  </div>
+
+  <!-- Newsletter -->
+  <div class="footer-section newsletter">
+    <h4><i class="fas fa-paper-plane"></i> Newsletter</h4>
+    <form>
+      <input type="email" placeholder="Votre email" />
+      <button type="submit" class="newsletter"><i class="fas fa-arrow-right"></i> S'inscrire</button>
+    </form>
+  </div>
+ </div>
+
+  <div class="rules">
+  <p>&copy; <%= new Date().getFullYear() %> Romolayte. Tous droits réservés.</p>
+  <p><a href="/privacy">Politique de confidentialité</a> | <a href="/terms">Conditions d’utilisation</a></p>
+  <p>Dernière mise à jour : 
+    <%= new Date().toLocaleString('fr-FR', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    }) %>
+  </p>
+</div>
+
+</footer>
