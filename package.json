@@ -11,13 +11,9 @@
   "main": "src/server.js",
   
   "scripts": {
-  
-    
-  "dev": "nodemon src/server.js",
-  
-    
-  "start": "node src/server.js"
-  
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "build": "rm -rf public && mkdir -p public && cp -R src/public/. public"
   },
   
   "author": "Jonathan Muembia",
