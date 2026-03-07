@@ -11,9 +11,14 @@
   "main": "src/server.js",
   
   "scripts": {
+  
+    
   "dev": "nodemon src/server.js",
+  
+    
   "start": "node src/server.js"
-},
+  
+  },
   
   "author": "Jonathan Muembia",
   
@@ -41,6 +46,9 @@
   
     
   "pg": "^8.19.0",
+  
+    
+  "serverless-http": "^4.0.0",
   
     
   "sharp": "^0.34.5",
