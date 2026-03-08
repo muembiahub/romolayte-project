@@ -25,10 +25,10 @@ app.use(
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'"],
       styleSrc: ["'self'", "https:", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https://ofhmwjzxakhgbafywxwp.supabase.co"],
+      imgSrc: ["'self'", "data:", process.env.SUPABASE_URL], // ✅ utilise la variable
       connectSrc: [
         "'self'",
-        "https://ofhmwjzxakhgbafywxwp.supabase.co",
+        process.env.SUPABASE_URL, // ✅ utilise la variable
         "https://nominatim.openstreetmap.org"
       ],
       fontSrc: ["'self'", "https:", "data:"],
@@ -36,6 +36,7 @@ app.use(
   })
 );
 
+// Fichiers statiques
 app.use(express.static(path.join(__dirname, "../../public")));
 
 // Routes
