@@ -2,10 +2,9 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import helmet from "helmet";
-import slugify from "slugify";
 
 import categoriesRouter from "./routes/categories.js";
-import servicesRouter from "./routes/services.js";
+import productsRouter from "./routes/products.js";
 import contactRoutes from "./routes/contact.js";
 import supabase from "./db/supabaseClient.js";
 
@@ -13,13 +12,14 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Utilisation simplifiée de __dirname en ESM
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
-// Configurer EJS
+// ✅ Définir le dossier racine des vues
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
+app.set("views", path.join(process.cwd(), "src", "views"));
 
+// ✅ Fichiers statiques
+app.use(express.static(path.join(process.cwd(), "src", "public")));
+
+// ✅ Sécurité avec Helmet
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -33,16 +33,15 @@ app.use(
   })
 );
 
-// Fichiers statiques
-app.use(express.static(path.join(__dirname, "public")));
-
-// Routes
+// ✅ Routes
 app.use("/categories", categoriesRouter);
-app.use("/services", servicesRouter);
+app.use("/products", productsRouter);
 app.use("/", contactRoutes);
 
+// ✅ Page d’accueil
 app.get("/", (req, res) => {
-  res.render("home", { title: "Accueil" });
+  res.render("login", { title: "Accueil" });
 });
 
+// ⚡ Exporter pour Netlify et local
 export default app;
