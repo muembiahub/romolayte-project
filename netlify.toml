@@ -1,7 +1,7 @@
 [build]
   command = "npm install"
   functions = "netlify/functions"
-  publish = "public"
+  publish = "src/views"   # ou "." si tu veux juste exposer les templates
 
 [[redirects]]
   from = "/*"
