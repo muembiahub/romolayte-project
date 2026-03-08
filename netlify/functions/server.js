@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import categoriesRouter from "../../src/routes/categories.js";
 import servicesRouter from "../../src/routes/services.js";
 import contactRoutes from "../../src/routes/contact.js";
-import supabase from "../../src/db/supabaseClient.js";
 
 dotenv.config();
 
@@ -19,6 +18,7 @@ router.get("/", (req, res) => {
   res.send("Accueil Romolayte via Netlify Functions");
 });
 
+// ⚡️ Important : pas de app.listen()
 app.use("/.netlify/functions/server", router);
 
 export const handler = serverless(app);
