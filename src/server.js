@@ -7,7 +7,7 @@ import categoriesRouter from "./routes/categories.js";
 import servicesRouter from "./routes/services.js";
 import contactRoutes from "./routes/contact.js";
 import searchRoutes from "./routes/search.js";
-import supabase from "../db/supabaseClient.js";
+import supabase from "./db/supabaseClient.js";
 
 dotenv.config();
 
