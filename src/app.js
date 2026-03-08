@@ -1,6 +1,5 @@
 import express from "express";
 import path from "path";
-import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import slugify from "slugify";
@@ -13,8 +12,9 @@ import supabase from "./db/supabaseClient.js";
 dotenv.config();
 
 const app = express();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
+// ✅ Utilisation simplifiée de __dirname en ESM
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 // Configurer EJS
 app.set("view engine", "ejs");
@@ -33,6 +33,7 @@ app.use(
   })
 );
 
+// Fichiers statiques
 app.use(express.static(path.join(__dirname, "public")));
 
 // Routes
