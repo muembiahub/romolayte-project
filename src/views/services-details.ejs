@@ -50,7 +50,7 @@
 
       <!-- Boutons en bas -->
       <div class="service-details-actions">
-        <a id="back-to-services" href="/services" class="btn-service-details">← Retour aux services</a>
+        <a id="back-to-services" href="/categories?category_id=<%= service.category_id %>" class="btn-service-details">← Retour aux Categories</a>
         
             <a id="contact-us" 
     href="/contact?category_id=<%= service.category_id %>&service_id=<%= service.service_id %>&price=<%= service.price ? service.price : 'Sur devis' %>" 
@@ -62,8 +62,12 @@
       </div>
     </div>
   </section>
+  </main>
 
- 
-</main>
+ <%- include('partials/services-related', { services: relatedServices }) %>
+
+
+
+
 
 <%- include('partials/footer') %>

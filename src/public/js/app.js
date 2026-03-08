@@ -17,6 +17,65 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+
+  //  =================== bar de recherche ===================
+  const searchToggle = document.getElementById("search-toggle");
+  const searchInput = document.getElementById("search-input");
+  const searchResults = document.getElementById("search-results");
+
+  searchToggle.addEventListener("click", () => {
+    searchInput.classList.toggle("active");
+    if (searchInput.classList.contains("active")) {
+      searchInput.focus();
+    } else {
+      searchResults.classList.remove("show");
+    }
+  });
+
+  searchInput.addEventListener("input", async () => {
+    const query = searchInput.value.trim();
+    if (query.length > 2) {
+      const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
+      const data = await response.json();
+
+      searchResults.innerHTML = "";
+      if ((data.services && data.services.length) || (data.categories && data.categories.length)) {
+        if (data.services.length > 0) {
+          searchResults.innerHTML += "<h4>Services</h4>";
+          data.services.forEach(s => {
+            const p = document.createElement("p");
+            p.textContent = s.name;
+            p.addEventListener("click", () => {
+              window.location.href = `/services/details/${s.service_id}`;
+            });
+            searchResults.appendChild(p);
+          });
+        }
+
+        if (data.categories.length > 0) {
+          searchResults.innerHTML += "<h4>Catégories</h4>";
+          data.categories.forEach(c => {
+            const p = document.createElement("p");
+            p.textContent = c.name;
+            p.addEventListener("click", () => {
+              window.location.href = `/categories/${c.category_id}`;
+            });
+            searchResults.appendChild(p);
+          });
+        }
+
+        searchResults.classList.add("show");
+      } else {
+        searchResults.innerHTML = "<p>Aucun résultat</p>";
+        searchResults.classList.add("show");
+      }
+    } else {
+      searchResults.classList.remove("show");
+    }
+  });
+
+
+
 //    // Fermer le menu lors du clic sur un lien
   const positionBtn = document.querySelector(".position");
   const coordinatesInput = document.getElementById("coordinates");

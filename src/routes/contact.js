@@ -1,6 +1,5 @@
 import express from "express";
-import pkg from "@supabase/supabase-js";   // ✅ fallback CJS
-const { createClient } = pkg;
+import { createClient } from "@supabase/supabase-js"; // ✅ import correct
 
 const router = express.Router();
 

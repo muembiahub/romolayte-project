@@ -39,17 +39,35 @@ router.get('/details/:id', async (req, res) => {
   try {
     const serviceId = req.params.id;
 
-    const { data: service, error } = await supabase
+    // Récupérer le service demandé
+    const { data: service, error: serviceError } = await supabase
       .from('services')
       .select('service_id, name, description, price, category_id, logo')
       .eq('service_id', serviceId)
       .single();
 
-    if (error || !service) {
+    if (serviceError || !service) {
       return res.status(404).send('Service non trouvé');
     }
 
-    res.render('services-details', { title: service.name, service });
+    // Récupérer les services liés (même catégorie, max 10, exclure le service courant)
+    const { data: relatedServices, error: relatedError } = await supabase
+      .from('services')
+      .select('service_id, name, price, logo')
+      .eq('category_id', service.category_id)
+      .neq('service_id', serviceId)
+      .limit(10);
+
+    if (relatedError) {
+      console.error("❌ Erreur récupération services liés:", relatedError.message);
+    }
+
+    // Rendu de la vue avec le service + services liés
+    res.render('services-details', { 
+      title: service.name, 
+      service, 
+      relatedServices
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erreur serveur');

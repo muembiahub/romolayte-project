@@ -4,16 +4,19 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 
 import categoriesRouter from "./routes/categories.js";
-import productsRouter from "./routes/products.js";
+import servicesRouter from "./routes/services.js";
 import contactRoutes from "./routes/contact.js";
-import supabase from "./db/supabaseClient.js";
+import searchRoutes from './routes/search.js';
+
+
+
 
 dotenv.config();
 
 const app = express();
 
 // ✅ Définir le dossier racine des vues
-app.set("view engine", "ejs");
+app.set("view engine", "ejs","js");
 app.set("views", path.join(process.cwd(), "src", "views"));
 
 // ✅ Fichiers statiques
@@ -35,13 +38,18 @@ app.use(
 
 // ✅ Routes
 app.use("/categories", categoriesRouter);
-app.use("/products", productsRouter);
+app.use("/services", servicesRouter);
 app.use("/", contactRoutes);
 
 // ✅ Page d’accueil
 app.get("/", (req, res) => {
-  res.render("login", { title: "Accueil" });
+  res.render("home", { title: "Accueil" });
 });
+//  seach bar
+app.use('/search', searchRoutes);
 
-// ⚡ Exporter pour Netlify et local
-export default app;
+// ⚡ Lancer le serveur
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Romolayte backend lancé sur http://localhost:${PORT}`);
+});
