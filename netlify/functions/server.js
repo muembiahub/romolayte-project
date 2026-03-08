@@ -1,24 +1,51 @@
 import express from "express";
 import serverless from "serverless-http";
+import path from "path";
+import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import helmet from "helmet";
 import categoriesRouter from "../../src/routes/categories.js";
 import servicesRouter from "../../src/routes/services.js";
 import contactRoutes from "../../src/routes/contact.js";
+import supabase from "../../src/db/supabaseClient.js";
 
 dotenv.config();
 
 const app = express();
-const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-router.use("/categories", categoriesRouter);
-router.use("/services", servicesRouter);
-router.use("/", contactRoutes);
+// Configurer EJS
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "../../src/views"));
 
-router.get("/", (req, res) => {
-  res.send("Accueil Romolayte via Netlify Functions");
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "https:", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https://ofhmwjzxakhgbafywxwp.supabase.co"],
+      connectSrc: [
+        "'self'",
+        "https://ofhmwjzxakhgbafywxwp.supabase.co",
+        "https://nominatim.openstreetmap.org"
+      ],
+      fontSrc: ["'self'", "https:", "data:"],
+    },
+  })
+);
+
+app.use(express.static(path.join(__dirname, "../../public")));
+
+// Routes
+app.use("/categories", categoriesRouter);
+app.use("/services", servicesRouter);
+app.use("/", contactRoutes);
+
+app.get("/", (req, res) => {
+  res.render("home", { title: "Accueil" });
 });
 
-// ⚡️ Important : pas de app.listen()
-app.use("/.netlify/functions/server", router);
-
+// ⚡️ Exporter pour Netlify
 export const handler = serverless(app);
