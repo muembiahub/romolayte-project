@@ -6,17 +6,15 @@ import helmet from "helmet";
 import categoriesRouter from "./routes/categories.js";
 import servicesRouter from "./routes/services.js";
 import contactRoutes from "./routes/contact.js";
-import searchRoutes from './routes/search.js';
-
-
-
+import searchRoutes from "./routes/search.js";
+import supabase from "../db/supabaseClient.js";
 
 dotenv.config();
 
 const app = express();
 
-// ✅ Définir le dossier racine des vues
-app.set("view engine", "ejs","js");
+// ✅ Définir le moteur de vues
+app.set("view engine", "ejs");
 app.set("views", path.join(process.cwd(), "src", "views"));
 
 // ✅ Fichiers statiques
@@ -36,17 +34,16 @@ app.use(
   })
 );
 
-// ✅ Routes
-app.use("/categories", categoriesRouter);
-app.use("/services", servicesRouter);
-app.use("/", contactRoutes);
-
 // ✅ Page d’accueil
 app.get("/", (req, res) => {
   res.render("home", { title: "Accueil" });
 });
-//  seach bar
-app.use('/search', searchRoutes);
+
+// ✅ Routes
+app.use("/categories", categoriesRouter);
+app.use("/services", servicesRouter);
+app.use("/contact", contactRoutes);
+app.use("/search", searchRoutes);
 
 // ⚡ Lancer le serveur
 const PORT = process.env.PORT || 3000;
