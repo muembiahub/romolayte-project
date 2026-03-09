@@ -9,13 +9,10 @@
         <% services.forEach(service => { %>
           <div class="service-card">
             <div class="service-image">
-              <% if (service.logo) { %>
-                <!-- Utilisation directe de l'URL Supabase -->
-                <img src="<%= service.logo %>" alt="<%= service.name %>" />
-              <% } else { %>
-                <!-- Fallback si pas d'image -->
-                <img src="/images-services/default.webp" alt="Service" />
-              <% } %>
+              <img 
+                src="<%= service.logo || 'https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/services-images/default.webp' %>" 
+                alt="<%= service.name %>" 
+                onerror="this.onerror=null;this.src='https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/services-images/default.webp';" />
             </div>
 
             <div class="service-info">

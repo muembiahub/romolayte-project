@@ -1,7 +1,7 @@
 html, body { height: 100%; margin: 0; }
  body { display: flex; flex-direction: column; min-height: 100vh; font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; }
  main { flex: 1; /* pousse le footer vers le bas */ padding: 10px; }
-h1, h2 {  text-align: center;  color: #004080;
+h1, h2 {  text-align: center;  color: #004080; font-weight: bold;
 }
 
 /* Header */
@@ -11,21 +11,38 @@ header {  display: flex;
   background-color: #004080;
   padding: 10px 20px;
 }
-header h1 {
-  color: #fff;
+.site-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  background: linear-gradient(90deg, #ae0b0b, #0078d7);
+  
+ 
+  
+  /* Chrome / Safari */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* Firefox */
+  -moz-background-clip: text;
+  -moz-text-fill-color: transparent;
+
+   /* Standard */
+  background-clip: text;
 }
+
+
+
 .logo-container {
   display: flex;
   align-items: center;
 }
+
 .logo {
-  height: 60px;
-  margin-right: 10px;
+  width: 50px;
+  height: 50px;
+ border-radius: 40%;
 }
-.site-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
+
 
 /* Menu */
 .menu-container {
@@ -70,6 +87,7 @@ header h1 {
 .hamburger.open span:nth-child(3) {
   transform: rotate(-45deg) translate(5px, -5px);
 }
+
 /* =========== bar de recherche =============== */
 
 
@@ -570,6 +588,17 @@ footer .newsletter button:hover {
     display: flex;
     transform: translateX(0);
   }
+  #search-input.active {
+    width: 150px; /* plus petit sur tablette */
+  }
+
+  #search-results {
+    width: 200px;
+    top: 35px;
+  }
+  
+
+
   .categories-grid,
   .services-grid {
     grid-template-columns: 1fr;
@@ -593,3 +622,29 @@ footer .newsletter button:hover {
   }
 }
 
+
+
+
+/* Sur mobile (≤480px) */
+@media (max-width: 480px) {
+  header {
+    flex-direction: row; /* empile les éléments */
+    align-items: center;
+  }
+  .site-title{font-size: 1em;}
+
+  .search-container {
+    order: 2; /* passe après le logo */
+    width: 50%; /* occupe toute la largeur */
+    justify-content: center;
+    margin: 10px 0;
+  }
+
+  .logo-container {
+    order: 1;
+  }
+
+  .menu-container {
+    order: 3;
+  }
+}

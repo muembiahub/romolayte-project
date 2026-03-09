@@ -1,0 +1,53 @@
+<%- include('partials/header') %>
+<main class="about-page">
+  <h1><%= title %></h1>
+
+  <!-- Sections principales -->
+  <% aboutSections.forEach(section => { %>
+    <section>
+      <p><%= section.content %></p>
+    </section>
+  <% }) %>
+
+  <!-- Valeurs -->
+  <h2>Nos valeurs</h2>
+  <ul>
+    <% values.forEach(val => { %>
+      <li>
+        <img src="<%= withDefaultImage(val.icon_url, defaults.icon) %>" alt="<%= val.title %>">
+        <strong><%= val.title %></strong> : <%= val.description %>
+      </li>
+    <% }) %>
+  </ul>
+
+  <!-- Équipe -->
+  <h2>Notre équipe</h2>
+  <% team.forEach(member => { %>
+    <div>
+      <img src="<%= withDefaultImage(member.photo_url, defaults.avatar) %>" alt="<%= member.name %>" class="defauts-avatar">
+      <h3><%= member.name %></h3>
+      <p><%= member.role %></p>
+      <p><%= member.bio %></p>
+    </div>
+  <% }) %>
+
+  <!-- Milestones -->
+  <h2>Notre histoire</h2>
+  <% milestones.forEach(ms => { %>
+    <div>
+      <h3><%= ms.year %> - <%= ms.title %></h3>
+      <p><%= ms.description %></p>
+      <img src="<%= withDefaultImage(ms.image_url, defaults.milestone) %>" alt="<%= ms.title %>">
+    </div>
+  <% }) %>
+
+  <!-- Partenaires -->
+  <h2>Nos partenaires</h2>
+  <% partners.forEach(partner => { %>
+    <div>
+      <img src="<%= withDefaultImage(partner.logo_url, defaults.logo) %>" alt="<%= partner.name %> " class="defauts-logo">
+      <a href="<%= partner.website_url %>"><%= partner.name %></a>
+    </div>
+  <% }) %>
+</main>
+<%- include('partials/footer') %>

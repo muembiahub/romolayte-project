@@ -10,7 +10,7 @@ const supabase = createClient(
 );
 
 // GET : afficher formulaire
-router.get("/contact", (req, res) => {
+router.get("/", (req, res) => {
   let { category_id, service_id, price } = req.query;
   if (!price || price === "null") price = "Sur devis";
 
@@ -23,7 +23,7 @@ router.get("/contact", (req, res) => {
 });
 
 // POST : traiter formulaire
-router.post("/contact", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const {
       category_id,

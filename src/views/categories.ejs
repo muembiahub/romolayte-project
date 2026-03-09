@@ -6,8 +6,18 @@
     <% if (categories && categories.length > 0) { %>
       <% categories.forEach(category => { %>
         <div class="category-card">
-          <img src="<%= category.logo %>" alt="<%= category.name %>">
+
+           <div class="category-image">
+              <% if (category.logo) { %>
+                <!-- Utilisation directe de l'URL Supabase -->
+                <img src="<%= category.logo %>" alt="<%= category.name %>" />
+              <% } else { %>
+                <!-- Fallback si pas d'image -->
+                <img src="https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/services-images/default.webp" alt="category" />
+              <% } %>
+            </div>
           <h2><%= category.name %></h2>
+           <p > <strong>Categorie: </strong><%= category.category_id %> </p>
           <p><%= category.description %></p>
           <a href="/services?category=<%= category.category_id %>" class="btn">Voir Plus</a>
         </div>

@@ -6,6 +6,7 @@ import helmet from "helmet";
 import categoriesRouter from "./routes/categories.js";
 import servicesRouter from "./routes/services.js";
 import contactRoutes from "./routes/contact.js";
+import aboutRoutes from "./routes/about.js";
 import searchRoutes from "./routes/search.js";
 import supabase from "./db/supabaseClient.js";
 
@@ -43,6 +44,7 @@ app.get("/", (req, res) => {
 app.use("/categories", categoriesRouter);
 app.use("/services", servicesRouter);
 app.use("/contact", contactRoutes);
+app.use("/about", aboutRoutes);
 app.use("/search", searchRoutes);
 
 // ⚡ Lancer le serveur
