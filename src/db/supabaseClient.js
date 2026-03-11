@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
 
 
 const supabaseUrl = process.env.SUPABASE_URL;
