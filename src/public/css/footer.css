@@ -1,0 +1,117 @@
+/*==================================  footer style ============================================= */
+footer {
+  background-color: #004080;
+  color: #fff;
+  padding: 40px 20px;
+  margin-top: 30px;
+}
+.footer-top{  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;}
+
+footer .footer-section {
+  flex: 1 1 200px;
+  margin: 10px;
+}
+
+footer h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  border-bottom: 1px solid #fff;
+  padding-bottom: 5px;
+}
+footer p{
+  color: #fff;
+}
+
+footer a {
+  color: #ffcc00;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+footer .social-links a {
+  margin: 0 8px;
+  font-size: 22px;
+}
+
+footer .newsletter input {
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 5px;
+  width: 70%;
+}
+
+footer .newsletter button {
+  padding: 8px 12px;
+  background-color: #ffcc00;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #004080;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+footer .newsletter button:hover {
+  background-color: #fff;
+}
+
+/* Logo animation */
+.footer-logo svg {
+  transition: transform 0.3s ease;
+}
+
+.footer-logo svg:hover {
+  transform: scale(1.1) rotate(5deg);
+}
+/*  footer bottom  */
+
+.rules {
+  color: #ccc;
+  text-align: center;
+  font-size: 13px;
+  padding: 15px 10px;
+  border-top: 1px solid #444;
+}
+
+.rules a {
+  color: #ffcc00;
+  text-decoration: none;
+  margin: 0 5px;
+  transition: color 0.3s ease;
+}
+
+.rules a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.rules p {
+  margin: 5px 0;
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+  footer {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  footer .footer-section {
+    margin: 20px 0;
+  }
+  footer .newsletter input,
+  footer .newsletter button {
+    width: 50%;
+    margin-bottom: 10px;
+  }
+}

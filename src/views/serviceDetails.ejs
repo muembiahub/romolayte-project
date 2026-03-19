@@ -25,7 +25,7 @@
       </p>
 
       <p id="service-category">
-        <strong>Catégorie :</strong> <%= service.category_id %>
+        <strong>Catégorie :</strong> <%= service.categories.name %>
       </p>
 
       <% if (service.details) { %>
@@ -53,12 +53,10 @@
         <a id="back-to-services" href="/categories?category_id=<%= service.category_id %>" class="btn-service-details">← Retour aux Categories</a>
         
             <a id="contact-us" 
-    href="/contact?category_id=<%= service.category_id %>&service_id=<%= service.service_id %>&price=<%= service.price ? service.price : 'Sur devis' %>" 
+   href="/demande-service?category_name=<%= safeCategory %>&service_name=<%= safeService %>&price=<%= safePrice %>" 
    class="btn-service-contact">
-   📩 Contacter-nous
+   Demander ce service
 </a>
-
-
       </div>
     </div>
   </section>

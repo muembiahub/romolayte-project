@@ -1,0 +1,43 @@
+<%- include('partials/dashboard-header', { title: "Liste des Demandes" }) %>
+
+<div id="demande-dashboard" class="demande-dashboard-container">
+  <h2 class="demande-dashboard-title">📋 Liste des Demandes</h2>
+
+  <div class="demande-cards-container">
+    <% demandes.forEach(demande => { %>
+      <div class="demande-card">
+        <div class="demande-card-header">
+          <h3 class="demande-card-id">Demande #<%= demande.demande_id %></h3>
+          <span class="demande-card-date"><%= demande.created_at %></span>
+        </div>
+        <div class="demande-card-body">
+          <p><strong>Nom Demandeur :</strong> <%= demande.name %></p>
+          <p><strong>Email :</strong> <%= demande.email %></p>
+          <p><strong>Téléphone :</strong> <%= demande.phone %></p>
+          <p><strong>Genre :</strong> <%= demande.gender %></p>
+          <p><strong>Localisation :</strong> <%= demande.location %></p>
+          <p><strong>Coordonnées :</strong> <%= demande.coordinates %></p>
+        </div>
+        <div class="demande-card-service">
+          <h4 class="demande-card-service-title">🛠 Service demandé</h4>
+          <p><strong>Catégorie :</strong> <%= demande.services?.category?.name %></p>
+          <p><strong>Service :</strong> <%= demande.services?.name %></p>
+          <p><strong>Description :</strong> <%= demande.services?.description %></p>
+          <p><strong>Prix :</strong> <%= demande.services?.price ? demande.services.price + " $" : "—" %></p>
+        </div>
+        <div class="demande-card-prestataire">
+          <h4 class="demande-card-prestataire-title">👤 Prestataire</h4>
+          <% if (demande.services?.user_profile) { %>
+            <p><strong><%= demande.services.user_profile.firstname %> <%= demande.services.user_profile.lastname %></strong></p>
+            <p><small>Email : <%= demande.services.user_profile.email %></small></p>
+            <p><small>WhatsApp : <%= demande.services.user_profile.whatsapp %></small></p>
+            <p><small>Rôle ID : <%= demande.services.user_profile.role_id %></small></p>
+          <% } else { %>
+            <em class="demande-card-no-prestataire">Aucun prestataire trouvé</em>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+

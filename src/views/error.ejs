@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+
+<main class="error-container">
+  <h1>Erreur <%= status %></h1>
+  <p><%= message %></p>
+
+  <% if (status === 400) { %>
+    <p>⚠️ Requête invalide. Vérifiez vos informations.</p>
+  <% } else if (status === 404) { %>
+    <p>🔍 La page ou ressource demandée est introuvable.</p>
+  <% } else if (status === 500) { %>
+    <p>💥 Une erreur interne est survenue. Veuillez réessayer plus tard.</p>
+  <% } %>
+
+  <a href="/">← Retour à l'accueil</a>
+</main>
+
+<%- include('partials/footer') %>

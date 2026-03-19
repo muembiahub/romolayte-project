@@ -1,0 +1,126 @@
+<%- include('partials/auth-header', { title: "Authentification" }) %>
+
+<main>
+  <div class="auth-wrapper">
+    <div class="auth-panel">
+      <h2 id="form-title">Login</h2>
+
+      <!-- Formulaire Connexion -->
+<form id="login-form" class="form-block active">
+  <label for="login-identifier" class="form-label">Username or Email</label>
+  <div class="input-group">
+    <span class="input-icon"><i class="fas fa-user"></i></span>
+    <input 
+      type="text" 
+      id="login-identifier" 
+      name="usernameOrEmail" 
+      placeholder="Enter your username or email" 
+      required
+    >
+  </div>
+  <span id="usernameError" class="error"></span>
+
+  <label for="login-password" class="form-label">Password</label>
+  <div class="input-group password-group">
+    <span class="input-icon"><i class="fas fa-lock"></i></span>
+    <input 
+      type="password" 
+      id="login-password" 
+      name="password" 
+      placeholder="Enter your password" 
+      required 
+      minlength="8"
+    >
+    <span class="toggle-password"><i class="fas fa-eye"></i></span>
+  </div>
+  <span id="passwordError" class="error"></span>
+
+  <a href="/forgot-password" class="forgot-link">Forgot password?</a>
+  <button type="submit" class="btn-gradient">LOGIN</button>
+</form>
+
+
+      <!-- Formulaire Inscription -->
+      <form id="signup-form" class="form-block" action="/auth/signup" method="POST">
+        <label for="signup-firstname">First Name</label>
+        <div class="input-group">
+          <span class="input-icon"><i class="fas fa-user"></i></span>
+          <input type="text" id="signup-firstname" name="firstname" placeholder="Enter your first name" required>
+        </div>
+
+        <label for="signup-lastname">Last Name</label>
+        <div class="input-group">
+          <span class="input-icon"><i class="fas fa-user"></i></span>
+          <input type="text" id="signup-lastname" name="lastname" placeholder="Enter your last name" required>
+        </div>
+
+        <label for="signup-birthday">Birth Date</label>
+        <div class="birthday input-group">
+          <input type="date" id="signup-birthday" name="birthday" required>
+        </div>
+
+        <label for="signup-category">Select Category</label>
+        <select id="signup-category" name="category_id" required>
+          <option value="" selected disabled>-- Select a category --</option>
+          <% categories.forEach(function(cat) { %>
+            <option value="<%= cat.category_id %>"><%= cat.name %></option>
+          <% }) %>
+        </select>
+
+        <label for="signup-service">Select Service</label>
+        <select id="signup-service" name="service_id" required>
+          <option value="">-- Select a service --</option>
+        </select>
+
+        <label for="signup-username">Username</label>
+        <div class="input-group">
+          <span class="input-icon"><i class="fas fa-user"></i></span>
+          <input type="text" id="signup-username" name="username" placeholder="Choose a username" required>
+        </div>
+        <label for="signup-phone">WhatsApp Number</label>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fab fa-whatsapp" style="color:green;"></i>
+                  <input type="tel"  id="signup-phone" name="whatsapp"placeholder="+243 812 345 678" required>
+            </div>
+        <label for="signup-email">Email</label>
+        <div class="input-group">
+          <span class="input-icon"><i class="fas fa-envelope"></i></span>
+          <input type="email" id="signup-email" name="email" placeholder="Enter your email" required>
+        </div>
+
+        <label for="signup-password">Password</label>
+        <div class="input-group password-group">
+          <span class="input-icon"><i class="fas fa-lock"></i></span>
+          <input type="password" id="signup-password" name="password" placeholder="Enter your password" required minlength="8">
+          <span class="toggle-password"><i class="fas fa-eye"></i></span>
+        </div>
+
+        <label for="signup-confirm">Confirm Password</label>
+        <div class="input-group">
+          <span class="input-icon"><i class="fas fa-lock"></i></span>
+          <input type="password" id="signup-confirm" name="confirm_password" placeholder="Confirm your password" required minlength="8">
+        </div>
+
+        <button type="submit" class="btn-gradient">SIGN UP</button>
+      </form>
+
+      <!-- Connexion sociale -->
+      <div class="social-login">
+        <p>Or Sign Up Using</p>
+        <div class="social-icons">
+          <button class="social facebook"><i class="fab fa-facebook-f"></i></button>
+          <button class="social twitter"><i class="fab fa-twitter"></i></button>
+          <button class="social google"><i class="fab fa-google"></i></button>
+        </div>
+      </div>
+
+      <!-- Toggle -->
+      <div class="toggle">
+        <span id="toggle-text">Pas de compte ?</span>
+        <button type="button" id="toggle-btn">Créer un compte</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

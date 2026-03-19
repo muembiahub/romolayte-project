@@ -1,0 +1,148 @@
+<%- include('partials/dashboard-header', { title: "Mon Profil" }) %>
+
+<div class="profile-container">
+
+  <!-- =========================
+       TITRE
+  ========================== -->
+  <h2 class="page-title">👤 Mon profil</h2>
+
+  <!-- =========================
+       CARTE PROFIL PRINCIPALE
+  ========================== -->
+  <div class="card profile-card">
+
+    <div class="profile-header">
+      <img
+        src="<%= user.logo ? user.logo : '/images/avatars.webp' %>"
+        alt="Photo de profil"
+        class="profile-avatar-large"
+      />
+
+      <div class="profile-meta">
+        <h3 class="profile-name">
+          <%= user.firstname %> <%= user.lastname %>
+        </h3>
+
+        <p class="profile-role">
+          Rôle :
+          <span class="role-badge <%= user.role %>">
+            <%= user.role %>
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <ul class="profile-info">
+      <li>
+        <strong>Email :</strong>
+        <a href="mailto:<%= user.email %>">
+          <%= user.email %>
+        </a>
+      </li>
+
+      <li>
+        <strong>Nom d’utilisateur :</strong>
+        <%= user.username %>
+      </li>
+
+      <li>
+        <strong>Date de naissance :</strong>
+        <%= new Date(user.birthday).toLocaleDateString() %>
+      </li>
+
+      <li>
+        <strong>Membre depuis :</strong>
+        <%= new Date(user.created_at).toLocaleDateString() %>
+      </li>
+    </ul>
+
+  </div>
+
+  <!-- =========================
+       ACTIONS UTILISATEUR
+  ========================== -->
+  <div class="card profile-actions">
+    <h3>⚙️ Actions</h3>
+
+    <div class="actions-grid">
+      <a href="/dashboard/profile/edit" class="action-card">
+        ✏️ Modifier mes informations
+      </a>
+
+      <a href="/dashboard/profile/avatar" class="action-card">
+        🖼️ Modifier ma photo de profil
+      </a>
+
+      <a href="/role-request" class="action-card">
+        🔁 Demande de changement de rôle
+      </a>
+    </div>
+  </div>
+
+  <!-- =========================
+       SECTION SELON RÔLE
+  ========================== -->
+
+  <!-- ADMIN & SUPER-ADMIN -->
+  <% if (user.role_level >= 3) { %>
+    <div class="card admin-section">
+      <h3>🛡️ Administration</h3>
+      <p>Vous disposez de privilèges administrateur.</p>
+
+      <div class="actions-grid">
+        <a href="/admin/users" class="action-card">
+          👥 Gérer les utilisateurs
+        </a>
+
+        <a href="/admin/services" class="action-card">
+          🛠️ Gérer les services
+        </a>
+
+        <a href="/admin/categories" class="action-card">
+          🗂️ Gérer les catégories
+        </a>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- PRESTATAIRE -->
+  <% if (user.role_level === 2) { %>
+    <div class="card prestataire-section">
+      <h3>🧑‍🔧 Espace Prestataire</h3>
+      <p>Accédez à vos missions et disponibilités.</p>
+
+      <div class="actions-grid">
+        <a href="/prestataire/missions" class="action-card">
+          📋 Mes missions
+        </a>
+
+        <a href="/prestataire/disponibilites" class="action-card">
+          📅 Mes disponibilités
+        </a>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- USER -->
+  <% if (user.role_level === 1) { %>
+    <div class="card user-section">
+      <h3>📂 Mon service</h3>
+
+      <p>
+        Vous êtes inscrit au service
+        <strong>ID <%= user.service_id %></strong>
+        dans la catégorie
+        <strong>ID <%= user.category_id %></strong>.
+      </p>
+
+      <a
+        href="/services/<%= user.service_id %>"
+        class="btn-gradient"
+      >
+        Voir mon service
+      </a>
+    </div>
+  <% } %>
+
+</div>

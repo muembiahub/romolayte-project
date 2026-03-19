@@ -26,10 +26,10 @@
                 <% } %>
               </p>
               <p class="category">
-                <strong>Catégorie :</strong> <%= service.category_id %>
+                <strong>Catégorie :</strong> <%= service.categories.name %>
 
               </p>
-              <a href="/services/details/<%= service.service_id %>" class="btn">Voir détails</a>
+              <a href="/services-details/<%= service.service_id %>" class="btn">Voir détails</a>
             </div>
           </div>
         <% }) %>

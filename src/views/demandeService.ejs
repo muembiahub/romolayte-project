@@ -3,23 +3,23 @@
 <main class="contact-container">
   <h1>📩 Demande de service</h1>
 
-  <form action="/contact" method="POST" class="contact-form">
+  <form action="/demande-service" method="POST" class="contact-form">
     
     <!-- Catégorie -->
-    <label for="category_id">Catégorie</label>
-    <input type="number" id="category_id" name="category_id" value="<%= category_id %>" readonly>
+<label for="category_name">Catégorie</label>
+<input type="text" id="category_name" name="category_name" value="<%= category_name %>" readonly>
 
-    <!-- Service -->
-    <label for="service_id">Service</label>
-    <input type="number" id="service_id" name="service_id" value="<%= service_id %>" readonly>
+<!-- Service -->
+<label for="service_name">Service</label>
+<input type="text" id="service_name" name="service_name" value="<%= service_name %>" readonly>
 
-    <!-- Prix -->
-    <label for="price">Prix</label>
-    <% if (price && price !== 'Sur devis') { %>
-      <input type="number" id="price" name="price" value="<%= price %>" readonly>
-    <% } else { %>
-      <input type="text" id="price" name="price" value="Sur devis" readonly>
-    <% } %>
+<!-- Prix -->
+<label for="price">Prix</label>
+<% if (price && price !== 'Sur devis') { %>
+  <input type="text" id="price" name="price" value="<%= price %>" readonly>
+<% } else { %>
+  <input type="text" id="price" name="price" value="Sur devis" readonly>
+<% } %>
 
     <!-- Nom -->
     <label for="name">Nom</label>

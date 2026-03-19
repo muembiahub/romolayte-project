@@ -17,9 +17,9 @@
               <% } %>
             </div>
           <h2><%= category.name %></h2>
-           <p > <strong>Categorie: </strong><%= category.category_id %> </p>
+           <p > <strong>Categorie: </strong><%= category.name %> </p>
           <p><%= category.description %></p>
-          <a href="/services?category=<%= category.category_id %>" class="btn">Voir Plus</a>
+          <a href="/servicecategory/<%= category.category_id %>" class="btn">Voir Plus</a>
         </div>
       <% }) %>
     <% } else { %>
