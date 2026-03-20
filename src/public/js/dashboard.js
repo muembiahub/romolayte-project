@@ -1,7 +1,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     // Sélection des éléments
-const hamburgerBtn = document.getElementById("hamburgerBtn");
-const sidebar = document.getElementById("sidebar");
+const hamburgerBtn = document.getElementById("rom-hamburgerBtn");
+const sidebar = document.getElementById("rom-sidebar");
 
 // Toggle sidebar au clic sur le hamburger
 hamburgerBtn.addEventListener("click", () => {
@@ -16,9 +16,9 @@ document.addEventListener("click", (e) => {
 });
 
 
-    const userMenu = document.querySelector(".user-menu");
-    const userInfoBtn = document.querySelector(".user-info");
-    const themeSwitch = document.getElementById("theme-switch");
+    const userMenu = document.querySelector(".rom-user-menu");
+    const userInfoBtn = document.querySelector(".rom-user-info");
+    const themeSwitch = document.getElementById("rom-theme-switch");
 
     // --- Menu utilisateur ---
     userInfoBtn.addEventListener("click", () => {

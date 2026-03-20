@@ -11,67 +11,86 @@
   <script src="/js/dashboard.js"></script>
 </head>
 <body>
- <header class="dashboard-header">
-  <div class="header-left">
-    <!-- Bouton hamburger -->
-    <button class="hamburger" id="hamburgerBtn">
-      <i class="fas fa-bars"></i>
-    </button>
-
-    <a href="/dashboard" class="logo">
-      <i class="fas fa-chart-line"></i> <span><%= title %></span>
-    </a>
-  </div>
-
-  <div class="header-right">
-    <!-- User menu -->
-    <div class="user-menu" id="userMenu">
-      <button class="user-info" id="userInfoBtn">
-        <img
-          src="<%= user.logo ? user.logo : '/images/avatars.webp' %>"
-          alt="Photo de profil"
-          class="profile-avatar"/>
-        <span><%= user.firstname %> <%= user.lastname %></span>
-        <i class="fas fa-chevron-down"></i>
+  
+  <!-- Header -->
+  <header class="rom-header">
+    <div class="rom-header-left">
+      <!-- Bouton hamburger -->
+      <button class="rom-hamburger" id="rom-hamburgerBtn">
+        <i class="fas fa-bars"></i>
       </button>
-      <ul class="dropdown" id="userDropdown">
-        <li><a href="/dashboard/profile"><i class="fas fa-id-card"></i> Mon Profil</a></li>
-        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
-        <li class="dropdown-item theme-item">
-          <span>Changer Mode</span>
-          <label class="switch">
-            <input type="checkbox" id="theme-switch">
-            <span class="slider round"></span>
-          </label>
-        </li>
-      </ul>
+
+      <div class="rom-logo-container">
+        <a href="/" class="rom-logo-link">
+          <img src="https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/logos_category/romo-logo.webp" 
+               alt="Romolayte Logo" class="rom-logo">
+          <h1 class="rom-site-title">Romolayte</h1>
+        </a>
+      </div>
     </div>
-  </div>
-</header>
 
-<aside class="sidebar" id="sidebar">
-  <nav>
-    <ul>
-      <li><a href="/dashboard"><i class="fas fa-home"></i> Accueil</a></li>
-      <% if (user.role_level >= 1) { %>
-        <li><a href="/role-request"><i class="fas fa-user-cog"></i> Demande de rôle</a></li>
-      <% } %>
-      <% if (user.role_level >= 2) { %>
-        <li><a href="/prestataire/missions"><i class="fas fa-briefcase"></i> Mes Taches</a></li>
-      <% } %>
-      <% if (user.role_level >= 3) { %>
-        <li class="sidebar-title">Administration</li>
-        <li><a href="/admin/users"><i class="fas fa-users"></i> Utilisateurs</a></li>
-        <li><a href="/dashboard/demande_recus"><i class="fas fa-cogs"></i>Demandes</a></li>
-        <li><a href="/admin/statistique"><i class="fas fa-chart-line"></i> Statistique </a></li>
+    <div class="rom-header-right">
+      <!-- User menu -->
+      <div class="rom-user-menu" id="rom-userMenu">
+        <button class="rom-user-info" id="rom-userInfoBtn">
+          <img
+            src="<%= user.logo ? user.logo : '/images/avatars.webp' %>"
+            alt="Photo de profil"
+            class="rom-profile-avatar"/>
+          <span><%= user.firstname %> <%= user.lastname %></span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <ul class="rom-dropdown" id="rom-userDropdown">
+          <li><a href="/dashboard/profile"><i class="fas fa-id-card"></i> Mon Profil</a></li>
+          <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+          <li class="rom-dropdown-item rom-theme-item">
+            <span>Changer Mode</span>
+            <label class="rom-switch">
+              <input type="checkbox" id="rom-theme-switch">
+              <span class="rom-slider round"></span>
+            </label>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
 
-      <% } %>
-      <% if (user.role_level >= 4) { %>
-        <li class="sidebar-title">Super Administration</li>
-        <li><a href="/admin/roles"><i class="fas fa-user-tag"></i> Rôles & Permissions</a></li>
-        <li><a href="/admin/system"><i class="fas fa-server"></i> Paramètres Système</a></li>
-        <li><a href="/admin/statistique"><i class="fas fa-chart-line"></i> Statistique </a></li>
-      <% } %>
-    </ul>
-  </nav>
-</aside>
+  <!-- Sidebar -->
+  <aside class="rom-sidebar" id="rom-sidebar">
+    <div>
+      <a href="/dashboard" class="rom-logo-link">
+        <i class="fas fa-chart-line"></i> <span><%= title %></span>
+      </a>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="/dashboard"><i class="fas fa-home"></i> Accueil</a></li>
+        <% if (user.role_level >= 1) { %>
+          <li><a href="/role-request"><i class="fas fa-user-cog"></i> Demande de rôle</a></li>
+        <% } %>
+        <% if (user.role_level >= 2) { %>
+          <li><a href="/prestataire/missions"><i class="fas fa-briefcase"></i> Mes Tâches</a></li>
+        <% } %>
+        <% if (user.role_level >= 3) { %>
+          <li class="rom-sidebar-title">Administration</li>
+          <li><a href="/admin/users"><i class="fas fa-users"></i> Utilisateurs</a></li>
+          <li><a href="/dashboard/demande_recus"><i class="fas fa-cogs"></i> Demandes</a></li>
+          <li><a href="/admin/statistique"><i class="fas fa-chart-line"></i> Statistique</a></li>
+        <% } %>
+        <% if (user.role_level >= 4) { %>
+          <li class="rom-sidebar-title">Super Administration</li>
+          <li><a href="/admin/roles"><i class="fas fa-user-tag"></i> Rôles & Permissions</a></li>
+          <li><a href="/admin/system"><i class="fas fa-server"></i> Paramètres Système</a></li>
+          <li><a href="/admin/statistique"><i class="fas fa-chart-line"></i> Statistique</a></li>
+        <% } %>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Contenu principal -->
+  <main class="rom-dashboard-container">
+    <!-- Ici tu mets tes cartes, titres, etc. -->
+  </main>
+
+</body>
+</html>

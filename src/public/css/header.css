@@ -19,6 +19,8 @@ header {  display: flex;
 }
 .site-title {
   font-size: 1.5rem;
+  margin: 0;
+  line-height: 1.2;
   font-weight: bold;
   background: linear-gradient(90deg, #ae0b0b, hsl(210, 7%, 89%));
   
@@ -41,12 +43,14 @@ header {  display: flex;
 .logo-container {
   display: flex;
   align-items: center;
+  gap: 1rem;
 }
 
 .logo {
   width: 50px;
   height: 50px;
- border-radius: 40%;
+ border-radius: 50%;
+ object-fit: cover;
 }
 
 
@@ -54,7 +58,6 @@ header {  display: flex;
 .menu-container {
   display: flex;
   align-items: center;
-  gap: 20px;
 }
 .menu-item {
   color: #fff;
