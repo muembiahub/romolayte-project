@@ -125,16 +125,33 @@ input:checked + .rom-slider:before {
   display: none;
 }
 
-/* Sidebar */
 .rom-sidebar {
   position: fixed;
-  top: 60px; left: 0;
-  width: 220px; height: calc(100% - 60px);
+  top: 60px; 
+  left: 0;
+  width: 230px;
+  height: calc(100% - 60px); /* occupe tout l’espace sous le header */
   background: #2a2a3d;
   padding-top: 1rem;
   color: #fff;
   transition: transform 0.3s ease;
+
+  overflow-y: auto;   /* active le scroll vertical si nécessaire */
+  scrollbar-width: thin; /* style natif Firefox */
 }
+
+/* Optionnel : style de scrollbar pour Chrome/Edge */
+.rom-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.rom-sidebar::-webkit-scrollbar-track {
+  background: #2a2a3d;
+}
+.rom-sidebar::-webkit-scrollbar-thumb {
+  background-color: #4facfe;
+  border-radius: 3px;
+}
+
 
 .rom-sidebar nav ul {
   list-style: none;
@@ -363,13 +380,14 @@ body.rom-dark-mode .rom-btn-gradient {
 
 
 
-
-
 /* Container principal */
 .demande-dashboard-container {
   padding: 25px;
   background-color: #f4f6f9;
   border-radius: 12px;
+  flex: 1; /* occupe l’espace restant à côté de l’aside */
+  margin-left: 250px; /* largeur de l’aside */
+  margin-top: 60px;   /* hauteur du header */
 }
 
 /* Titre */
@@ -386,13 +404,13 @@ body.rom-dark-mode .rom-btn-gradient {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  justify-content: end; /* end les cartes */
+  justify-content: flex-start; /* alignement naturel */
 }
 
 /* Carte */
 .demande-card {
-  flex: 1 1 350px; /* largeur minimale 350px, s’adapte */
-  max-width: 400px;
+  flex: 1 1 280px; /* largeur minimale plus petite */
+  max-width: 320px; /* limite plus raisonnable */
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -410,28 +428,28 @@ body.rom-dark-mode .rom-btn-gradient {
   display: flex;
   justify-content: space-between;
   background-color: #34495e;
- 
   align-items: center;
   border-bottom: 2px solid #eee;
   margin-bottom: 12px;
-  padding-bottom: 6px;
+  padding: 8px 12px;
+  border-radius: 10px 10px 0 0;
 }
 
 .demande-card-id {
-  font-size: 1.2rem;
-   color: white ;
+  font-size: 1.1rem;
+  color: white;
 }
 
 .demande-card-date {
-  font-size: 0.9rem;
-   color: white ;
+  font-size: 0.85rem;
+  color: #ecf0f1;
 }
 
 /* Sections */
 .demande-card-body,
 .demande-card-service,
 .demande-card-prestataire {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .demande-card-service-title,
@@ -454,7 +472,7 @@ body.rom-dark-mode .rom-btn-gradient {
 /* Texte */
 .demande-card p {
   margin: 5px 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .demande-card small {
@@ -471,6 +489,8 @@ body.rom-dark-mode .rom-btn-gradient {
 
   .demande-card {
     cursor: pointer;
+    margin: 0 auto;
+    width: 95%;
   }
 
   .demande-card.collapsed .demande-card-body,
@@ -478,19 +498,25 @@ body.rom-dark-mode .rom-btn-gradient {
   .demande-card.collapsed .demande-card-prestataire {
     display: none;
   }
-
-  .demande-card-header {
-    background-color: #34495e;
-    color: #fff;
-    padding: 12px;
-    border-radius: 10px 10px 0 0;
+}
+/* Responsive desktop */
+@media (min-width: 769px) {
+  .demande-cards-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: stretch;
   }
 
-  .demande-card-id {
-    color: #fff;
+  .demande-card {
+    cursor: pointer;
+    margin: 0 10px 20px;
+    width: 45%;
   }
 
-  .demande-card-date {
-    color: #ecf0f1;
+  .demande-card.collapsed .demande-card-body,
+  .demande-card.collapsed .demande-card-service,
+  .demande-card.collapsed .demande-card-prestataire {
+    display: none;
   }
 }

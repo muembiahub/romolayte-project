@@ -35,17 +35,28 @@ app.use(express.json());
 /* =========================
    Sessions (OBLIGATOIRE)
 ========================= */
+
 app.use(session({
   name: "mvc_auth_session",
-  secret: process.env.SESSION_SECRET || "dev_secret_key",
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: false, // true en production HTTPS
-    maxAge: 1000 * 60 * 60 // 1 heure
+    secure: process.env.NODE_ENV === "production", // true seulement en prod HTTPS
+    maxAge: 1000 * 60 * 30 // 30 minutes
   }
 }));
+
+
+// Middleware pour renouveler la session si l’utilisateur est actif
+app.use((req, res, next) => {
+  if (req.session) {
+    req.session.cookie.maxAge = 1000 * 60 * 30; // reset à 30 min
+  }
+  next();
+});
+
 
 /* =========================
    Helmet CSP
