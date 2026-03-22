@@ -171,7 +171,7 @@ const login = async (req, res) => {
       category_id: profile.category_id
     };
 
-    return res.json({ success: true, redirect: "/dashboard" });
+    return res.redirect("/dashboard");
 
   } catch (error) {
     return res.status(500).json({
