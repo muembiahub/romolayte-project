@@ -60,9 +60,7 @@ const signup = async (req, res) => {
       created_at: new Date()
     });
 
-    // ✅ Redirection propre
-    return res.redirect("/auth?registered=true");
-
+     return res.json({ success: true, redirect: "/dashboard" });
   } catch (error) {
     const { data: categories } = await supabase
       .from("categories")
@@ -171,7 +169,7 @@ const login = async (req, res) => {
       category_id: profile.category_id
     };
 
-    return res.json({ success: true, redirect: "/dashboard" });
+    return res.redirect("/dashboard");
 
   } catch (error) {
     return res.status(500).json({

@@ -45,10 +45,15 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
+<<<<<<< HEAD
     httpOnly: true, // le cookie n’est pas accessible en JS côté client
     secure: process.env.NODE_ENV === "production", // true uniquement en prod HTTPS
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
     // "none" + secure:true = indispensable si tu utilises un domaine différent pour ton API
+=======
+    httpOnly: true,
+    secure: false,
+>>>>>>> c63773125b8da0d5ed32911b2e69bad564a43f17
     maxAge: 1000 * 60 * 30 // 30 minutes
   }
 }));
