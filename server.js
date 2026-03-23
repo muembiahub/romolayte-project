@@ -35,9 +35,8 @@ app.use(express.json());
 /* =========================
    Sessions (OBLIGATOIRE)
 ========================= */
-const session = require("express-session");
 
-app.set("trust proxy", 1); // ⚡ obligatoire si tu es derrière un proxy (Nginx, Vercel, Heroku...)
+app.set("trust proxy", 1);
 
 app.use(session({
   name: "mvc_auth_session",
@@ -45,11 +44,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    httpOnly: true, // le cookie n’est pas accessible en JS côté client
-    secure: process.env.NODE_ENV === "production", // true uniquement en prod HTTPS
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
-    // "none" + secure:true = indispensable si tu utilises un domaine différent pour ton API
-    maxAge: 1000 * 60 * 30 // 30 minutes
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 1000 * 60 * 30
   }
 }));
 
