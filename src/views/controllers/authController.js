@@ -165,14 +165,12 @@ const login = async (req, res, next) => {
       service_id: profile.service_id,
       category_id: profile.category_id
     };
+//  
+   req.session.save(err => {
+  if (err) return next(err);
+  res.json({ success: true, redirect: "/dashboard" });
+});
 
-    // 🔑 Sauvegarde avant redirection
-    req.session.save(err => {
-      if (err) {
-        return next(err);
-      }
-      res.redirect("/dashboard");
-    });
 
   } catch (error) {
     return res.status(500).json({
