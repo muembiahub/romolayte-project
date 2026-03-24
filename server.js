@@ -32,9 +32,7 @@ app.use(express.static(path.join(process.cwd(), "src/public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-/* =========================
-   Sessions (OBLIGATOIRE)
-========================= */
+//* =========================  Sessions (OBLIGATOIRE)========================= */
 
 app.set("trust proxy", 1);
 
@@ -45,17 +43,18 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production", // cookie sécurisé uniquement en prod
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    maxAge: 1000 * 60 * 30
+    maxAge: 1000 * 60 * 30 // 30 minutes
   }
 }));
 
-
-
-// Middleware pour renouveler la session si l’utilisateur est actif
+/* =========================
+   Middleware de renouvellement
+========================= */
 app.use((req, res, next) => {
-  if (req.session) {
+  // On ne renouvelle que si l’utilisateur est connecté
+  if (req.session && req.session.user) {
     req.session.cookie.maxAge = 1000 * 60 * 30; // reset à 30 min
   }
   next();

@@ -76,7 +76,7 @@ const signup = async (req, res) => {
 /* =========================
    LOGIN
 ========================= */
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   let { usernameOrEmail, password } = req.body;
 
   try {
@@ -91,7 +91,6 @@ const login = async (req, res) => {
     usernameOrEmail = usernameOrEmail.trim().toLowerCase();
     let emailToUse = usernameOrEmail;
 
-    // Vérifier si c'est un email ou un username
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(usernameOrEmail)) {
       const { data, error } = await supabase
@@ -160,16 +159,20 @@ const login = async (req, res) => {
       logo: profile.logo,
       birthday: profile.birthday,
       created_at: profile.created_at,
-
       role_id: roleId,
       role: roleName,
       role_level: roleId,
-
       service_id: profile.service_id,
       category_id: profile.category_id
     };
 
-    return res.redirect("/dashboard");
+    // 🔑 Sauvegarde avant redirection
+    req.session.save(err => {
+      if (err) {
+        return next(err);
+      }
+      res.redirect("/dashboard");
+    });
 
   } catch (error) {
     return res.status(500).json({
@@ -179,6 +182,7 @@ const login = async (req, res) => {
     });
   }
 };
+
 
 /* =========================
    LOGOUT
