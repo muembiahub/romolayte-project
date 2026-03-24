@@ -1,0 +1,335 @@
+/* RESET */
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: #f9fafb;
+  color: #111827;
+}
+/* HEADER */
+.rom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f2937;
+  color: #fff;
+  padding: 0.8rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  margin-left: 240px;
+  width: calc(100% - 240px);
+}
+
+.rom-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rom-hamburger {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+/* logo  */
+.logo-link img{width: 50px; height: 50px; border-radius: 50%;}
+.logo-link a {text-decoration: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;font-size:1rem;}
+
+
+/* USER MENU */
+
+.rom-user-menu {
+  position: relative;
+  z-index: 2000;
+}
+
+.rom-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.rom-profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.rom-dropdown {
+  position: absolute;
+  right: 0;
+  top: 110%;
+  background: #fff;
+  color: #111827;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  list-style: none;
+  padding: 0.5rem 0;
+  display: none;
+  z-index: 2001;
+}
+
+.rom-user-menu.active .rom-dropdown {
+  display: block;
+}
+
+.rom-dropdown li {
+  padding: 0.6rem 1rem;
+}
+
+.rom-dropdown li a {
+  text-decoration: none;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rom-dropdown li:hover {
+  background: #f3f4f6;
+}
+
+/* SWITCH MODE */
+.rom-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+.rom-switch input { display: none; }
+.rom-slider {
+  position: absolute;
+  cursor: pointer;
+  background-color: #ccc;
+  border-radius: 20px;
+  top: 0; left: 0; right: 0; bottom: 0;
+  transition: .4s;
+}
+.rom-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px; width: 14px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: .4s;
+}
+input:checked + .rom-slider {
+  background-color: #3b82f6;
+}
+input:checked + .rom-slider:before {
+  transform: translateX(20px);
+}
+
+/* SIDEBAR */
+.rom-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100%;
+  background: #111827;
+  color: #fff;
+  padding: 1rem;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  z-index: 999;
+
+/* Scroll vertical si contenu trop long */
+  overflow-y: auto;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #374151 #111827;
+}
+
+/* Scrollbar personnalisée (Chrome, Edge, Safari) */
+.rom-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.rom-sidebar::-webkit-scrollbar-track {
+  background: #111827;
+}
+.rom-sidebar::-webkit-scrollbar-thumb {
+  background-color: #374151;
+  border-radius: 4px;
+}
+.rom-sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: #06b6d4; /* accent turquoise au hover */
+}
+
+.rom-sidebar-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1rem 0;
+  color: #9ca3af;
+}
+
+.rom-sidebar nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.rom-sidebar nav ul li {
+  margin-bottom: 0.8rem;
+}
+
+.rom-sidebar nav ul li a {
+  text-decoration: none;
+  color: #f9fafb;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.rom-sidebar nav ul li a:hover {
+  background: #1f2937;
+}
+
+/* MAIN CONTENT */
+.rom-dashboard-container {
+  margin-left: 240px;
+  padding: 2rem;
+  transition: margin-left 0.3s ease;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* =================================== */
+/* --- DARK MODE GLOBAL ÉLÉGANT & PRO --- */
+body.dark-mode {
+  background: #0d1117; /* bleu nuit profond, style GitHub dark */
+  color: #e6edf3; /* texte clair et doux */
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Header */
+body.dark-mode .rom-header {
+  background: #161b22;
+  color: #e6edf3;
+  border-bottom: 1px solid #30363d;
+}
+
+/* Sidebar */
+body.dark-mode .rom-sidebar {
+  background: #161b22;
+  color: #e6edf3;
+  border-right: 1px solid #30363d;
+}
+body.dark-mode .rom-sidebar nav ul li a {
+  color: #e6edf3;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+body.dark-mode .rom-sidebar nav ul li a:hover {
+  background: #238636; /* vert élégant pour hover */
+  color: #fff;
+  border-radius: 6px;
+}
+
+/* Menu utilisateur */
+body.dark-mode .rom-dropdown {
+  background: #161b22;
+  color: #e6edf3;
+  border: 1px solid #30363d;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+body.dark-mode .rom-dropdown li a {
+  color: #e6edf3;
+}
+body.dark-mode .rom-dropdown li:hover {
+  background: #238636;
+  color: #fff;
+}
+
+/* Contenu principal */
+body.dark-mode .rom-dashboard-container,
+body.dark-mode .demande-dashboard-container {
+  background: #0d1117;
+  color: #e6edf3;
+}
+
+/* Cartes */
+body.dark-mode .demande-card {
+  background: #161b22;
+  color: #e6edf3;
+  border: 1px solid #30363d;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+body.dark-mode .demande-card:hover {
+  border-color: #58a6ff; /* bleu accent moderne */
+  box-shadow: 0 4px 12px rgba(88,166,255,0.4);
+}
+body.dark-mode .demande-card-id {
+  color: #58a6ff;
+}
+body.dark-mode .demande-card-date {
+  color: #8b949e;
+}
+body.dark-mode .demande-card-service-title {
+  color: #3fb950; /* vert pro */
+}
+body.dark-mode .demande-card-prestataire-title {
+  color: #bc8cff; /* violet élégant */
+}
+body.dark-mode .demande-card-no-prestataire {
+  color: #8b949e;
+}
+
+/* Boutons */
+body.dark-mode .rom-btn-gradient {
+  background: linear-gradient(90deg, #58a6ff, #3fb950);
+  color: #fff;
+  border: none;
+  transition: background 0.3s ease;
+}
+body.dark-mode .rom-btn-gradient:hover {
+  background: linear-gradient(90deg, #3fb950, #58a6ff);
+}
+
+
+/* MEDIA QUERIES */
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .rom-sidebar { width: 240px; }
+  .rom-header { margin-left: 240px; width: calc(100% - 240px); }
+  .rom-dashboard-container { margin-left: 240px; }
+  .rom-hamburger { display: none; }
+}
+
+/* Tablette */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .rom-sidebar { width: 200px; }
+  .rom-header { margin-left: 200px; width: calc(100% - 200px); }
+  .rom-dashboard-container { margin-left: 200px; }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .rom-sidebar {
+    left: -220px;
+    width: 220px;
+    transition: left 0.3s ease;
+  }
+  .rom-sidebar.active { left: 0; }
+  .rom-header { margin-left: 0; width: 100%; }
+  .rom-dashboard-container { margin-left: 0; }
+}

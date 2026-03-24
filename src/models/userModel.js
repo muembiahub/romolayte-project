@@ -33,6 +33,24 @@ const findUserProfile = async (uid) => {
 };
 
 
+//  
+const GetAllUserProfile = async () => {
+  const { data, error } = await supabase
+    .from("user_profiles")
+    .select(`
+      *,
+      roles:role_id ( role_id, name ),
+      categories:category_id ( category_id, name ),
+      services:service_id ( service_id, name )
+    `)
+    .order("role_id");
+
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+
+
  const findDemandeRecus = async () => {
   const { data, error } = await supabase
     .from("demande_service")
@@ -81,5 +99,7 @@ const findUserProfile = async (uid) => {
 export {
   createUserProfile,
   findUserProfile,
+  GetAllUserProfile,
   findDemandeRecus
+
 };

@@ -7,6 +7,7 @@ import session from "express-session";
 // Routes
 import router from "./src/views/controllers/routes.js";
 import dashboardRoutes from "./src/routes/dashboardRoutes.js";
+import searchRouter from "./src/models/search.js";
 
 dotenv.config();
 
@@ -32,8 +33,9 @@ app.use(express.static(path.join(process.cwd(), "src/public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-//* =========================  Sessions (OBLIGATOIRE)========================= */
-
+/* =========================
+   Sessions
+========================= */
 app.set("trust proxy", 1);
 
 app.use(session({
@@ -43,7 +45,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // cookie sécurisé uniquement en prod
+    secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 1000 * 60 * 30 // 30 minutes
   }
@@ -53,13 +55,11 @@ app.use(session({
    Middleware de renouvellement
 ========================= */
 app.use((req, res, next) => {
-  // On ne renouvelle que si l’utilisateur est connecté
   if (req.session && req.session.user) {
-    req.session.cookie.maxAge = 1000 * 60 * 30; // reset à 30 min
+    req.session.cookie.maxAge = 1000 * 60 * 30;
   }
   next();
 });
-
 
 /* =========================
    Helmet CSP
@@ -71,11 +71,7 @@ app.use(
       scriptSrc: ["'self'"],
       styleSrc: ["'self'", "https:", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", SUPABASE_URL].filter(Boolean),
-      connectSrc: [
-        "'self'",
-        SUPABASE_URL,
-        "https://nominatim.openstreetmap.org"
-      ].filter(Boolean),
+      connectSrc: ["'self'", SUPABASE_URL, "https://nominatim.openstreetmap.org"].filter(Boolean),
       fontSrc: ["'self'", "https:", "data:"],
     },
   })
@@ -101,10 +97,24 @@ app.use((req, res, next) => {
 });
 
 /* =========================
+   Middleware d'authentification
+========================= */
+function requireAuth(req, res, next) {
+  if (!req.session || !req.session.user) {
+    const err = new Error("Vous devez être connecté pour accéder à cette page.");
+    err.status = 401;
+    return next(err);
+  }
+  next();
+}
+
+/* =========================
    Routes (MVC)
 ========================= */
-app.use("/", router);                 // Pages publiques + auth
-app.use("/dashboard", dashboardRoutes); // Pages protégées
+app.use("/", router);                 
+app.use("/dashboard", requireAuth, dashboardRoutes); // ⚠️ protégé
+app.use("/search", searchRouter);
+
 /* =========================
    404 Handler
 ========================= */
@@ -121,15 +131,20 @@ app.use((err, req, res, next) => {
   console.error("❌ Error:", err.message);
 
   const status = err.status || 500;
-  let title = "Erreur serveur";
 
-  if (status === 400) title = "Requête invalide";
-  if (status === 404) title = "Page introuvable";
+  let title;
+  switch (status) {
+    case 400: title = "Requête invalide"; break;
+    case 401: title = "Non authentifié"; break;
+    case 403: title = "Accès refusé"; break;
+    case 404: title = "Page introuvable"; break;
+    default:  title = "Erreur serveur";
+  }
 
-  res.status(status).render("error", {
-    status,
-    title,
-    message: err.message
+  res.status(status).render("errors", {
+    status: status || 500,
+    title: title || "Erreur serveur",
+    message: err.message || "Une erreur inattendue est survenue."
   });
 });
 

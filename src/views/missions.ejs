@@ -1,0 +1,35 @@
+<%- include('partials/dashboard-header', { title: "Mes Missions" }) %>
+
+<main class="missions-dashboard-container">
+  <h2 class="missions-dashboard-title">🧑‍🔧 Mes Missions</h2>
+
+  <% if (missions && missions.length > 0) { %>
+    <div class="missions-cards-container">
+      <% missions.forEach((mission, index) => { %>
+        <div class="mission-card">
+          <div class="mission-card-header">
+            <div class="mission-meta">
+              <h3 class="mission-service"><%= mission.service_name %></h3>
+              <span class="mission-category"><%= mission.category_name %></span>
+            </div>
+          </div>
+
+          <ul class="mission-info">
+            <li><strong># :</strong> <%= index + 1 %></li>
+            <li><strong>Demande ID :</strong> <%= mission.demande_id %></li>
+            <li><strong>Client :</strong> <%= mission.name || "Non renseigné" %></li>
+            <li><strong>Email :</strong> <a href="mailto:<%= mission.email %>" class="btn-link"><%= mission.email || "Non renseigné" %></a></li>
+            <li><strong>Téléphone :</strong> <%= mission.phone || "Non renseigné" %></li>
+            <li><strong>Prix :</strong> <%= mission.price ? mission.price + " $" : "À discuter" %></li>
+            <li><strong>Lieu :</strong> <%= mission.location || "Non précisé" %></li>
+            <li><strong>Infos :</strong> <%= mission.other_info || "Aucune information supplémentaire" %></li>
+          </ul>
+
+          <small class="mission-date">Créée le <%= mission.created_at %></small>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <p class="no-missions">Aucune mission disponible pour votre profil.</p>
+  <% } %>
+</main>

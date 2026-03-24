@@ -1,13 +1,17 @@
 <%- include('partials/header') %>
 
 <main class="error-container">
-  <h1>Erreur <%= status %></h1>
+  <h1>Erreur <%= typeof status !== 'undefined' ? status : '???' %></h1>
   <p><%= message %></p>
 
   <% if (status === 400) { %>
     <p>⚠️ Requête invalide. Vérifiez vos informations.</p>
   <% } else if (status === 404) { %>
     <p>🔍 La page ou ressource demandée est introuvable.</p>
+  <% } else if (status === 401) { %>
+    <p>🔒 Vous devez être connecté pour accéder à cette page.</p>
+  <% } else if (status === 403) { %>
+    <p>🚫 Accès refusé. Vous n’avez pas les permissions nécessaires.</p>
   <% } else if (status === 500) { %>
     <p>💥 Une erreur interne est survenue. Veuillez réessayer plus tard.</p>
   <% } %>

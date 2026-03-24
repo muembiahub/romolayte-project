@@ -1,23 +1,19 @@
+// * Dashboard Controller * ====================
 
-//  * Dashboard Controller * ====================/**
- import { findUserProfile } from "../../models/userModel.js";
- import { findDemandeRecus } from "../../models/userModel.js";
+import { supabase } from "../../config/database.js";
+import { findUserProfile, findDemandeRecus, GetAllUserProfile } from "../../models/userModel.js";
 
-//  * ✅ Affiche la page dashboard
-//  * ✅ Utilise les données stockées en session
-//  * ❌ Ne gère PAS l'authentification
-//  * ❌ Ne vérifie PAS l'accès (le middleware s'en charge)
-//  */
-
+// ✅ Affiche la page dashboard
 const showDashboard = (req, res) => {
   res.render("dashboard", {
     title: "Dashboard",
     user: req.session.user
   });
 };
-//  pour afficher profile dans dashboard.===========
-// =================================================
 
+// ===============================
+// Profil utilisateur
+// ===============================
 const ROLE_MAP = {
   1: "user",
   2: "prestataire",
@@ -29,6 +25,12 @@ const showProfilePage = async (req, res, next) => {
   try {
     const profile = await findUserProfile(req.session.user.uid);
 
+    if (!profile) {
+      const err = new Error("Profil introuvable");
+      err.status = 404;
+      return next(err);
+    }
+
     res.render("profile", {
       title: "Mon Profil",
       user: {
@@ -38,36 +40,182 @@ const showProfilePage = async (req, res, next) => {
       }
     });
   } catch (err) {
+    err.status = err.status || 500;
     next(err);
   }
 };
 
-const showDemandeRecusPage = async (req, res) => {
+// ===============================
+// Liste des utilisateurs
+// ===============================
+async function showAllUserProfile(req, res, next) {
   try {
-    // Récupération des demandes
+    const { page = 1, limit = 10, search = "", role = "", category = "", service = "" } = req.query;
+    const profiles = await GetAllUserProfile();
+
+    if (!profiles) {
+      const err = new Error("Impossible de charger les utilisateurs.");
+      err.status = 500;
+      return next(err);
+    }
+
+    // Filtrage
+    let filtered = profiles.filter(user => {
+      const matchSearch =
+        user.firstname.toLowerCase().includes(search.toLowerCase()) ||
+        user.lastname.toLowerCase().includes(search.toLowerCase()) ||
+        user.email.toLowerCase().includes(search.toLowerCase());
+
+      const matchRole = role ? user.roles?.name?.toLowerCase() === role.toLowerCase() : true;
+      const matchCategory = category ? user.categories?.name?.toLowerCase() === category.toLowerCase() : true;
+      const matchService = service ? user.services?.name?.toLowerCase() === service.toLowerCase() : true;
+
+      return matchSearch && matchRole && matchCategory && matchService;
+    });
+
+    // Pagination
+    const total = filtered.length;
+    const start = (page - 1) * limit;
+    const end = start + parseInt(limit);
+    const paginated = filtered.slice(start, end);
+
+    res.render("userprofiles", {
+      userProfiles: paginated,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(total / limit),
+      search,
+      role,
+      category,
+      service
+    });
+  } catch (error) {
+    error.status = 500;
+    next(error);
+  }
+}
+
+// ===============================
+// Demandes reçues
+// ===============================
+const showDemandeRecusPage = async (req, res, next) => {
+  try {
     const demandes = await findDemandeRecus();
 
-    // Définition du titre de la page
-    const title = "Liste des demandes";
+    if (!demandes) {
+      const err = new Error("Impossible de charger les demandes.");
+      err.status = 500;
+      return next(err);
+    }
 
-    // Rendu de la vue avec les données
     res.render("demande_recus", { 
-      title, 
+      title: "Liste des demandes", 
       demandes 
     });
   } catch (error) {
-    console.error("Erreur dans showDemandeRecusPage:", error);
-
-    // Rendu d'une page d'erreur 500 avec détails
-    res.status(500).render("errors/500", { 
-      title: "Erreur Serveur",
-      error: "Impossible de charger les demandes.",
-      stack: error.stack || "Vue",
-      message: error.message || "Une erreur est survenue lors du chargement des demandes."
-    });
+    error.status = 500;
+    next(error);
   }
 };
 
+// ===============================
+// Missions
+// ===============================
+async function showMissions(req, res, next) {
+  const userUid = req.session?.user?.uid; // ⚠️ bien uid
 
+  if (!userUid) {
+    const err = new Error("Utilisateur non authentifié ou UID manquant.");
+    err.status = 401;
+    return next(err);
+  }
 
-export { showDashboard, showProfilePage, showDemandeRecusPage };
+  const { data: user, error: userError } = await supabase
+    .from("user_profiles")
+    .select("id, uid, role_id, service_id, category_id")
+    .eq("uid", userUid)
+    .maybeSingle();
+
+  if (userError) {
+    const err = new Error(userError.message);
+    err.status = 500;
+    return next(err);
+  }
+
+  if (!user) {
+    const err = new Error("Profil utilisateur introuvable pour cet UID.");
+    err.status = 404;
+    return next(err);
+  }
+
+  let missions;
+
+  if (user.role_id === 2) {
+    // Prestataire → missions filtrées
+    const { data, error } = await supabase
+      .from("demande_service")
+      .select(`
+        demande_id,
+        category_id,
+        service_id,
+        category_name,
+        service_name,
+        price,
+        name,
+        email,
+        coordinates,
+        location,
+        phone,
+        gender,
+        other_info,
+        created_at
+      `)
+      .eq("service_id", user.service_id)
+      .eq("category_id", user.category_id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      const err = new Error(error.message);
+      err.status = 500;
+      return next(err);
+    }
+    missions = data;
+
+  } else if (user.role_id >= 3) {
+    // Admin / SuperAdmin → toutes les missions
+    const { data, error } = await supabase
+      .from("demande_service")
+      .select(`
+        demande_id,
+        category_id,
+        service_id,
+        category_name,
+        service_name,
+        price,
+        name,
+        email,
+        coordinates,
+        location,
+        phone,
+        gender,
+        other_info,
+        created_at
+      `)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      const err = new Error(error.message);
+      err.status = 500;
+      return next(err);
+    }
+    missions = data;
+
+  } else {
+    const err = new Error("Accès réservé aux prestataires ou administrateurs.");
+    err.status = 403;
+    return next(err);
+  }
+
+  res.render("missions", { user, missions });
+}
+
+export { showDashboard, showProfilePage, showAllUserProfile, showDemandeRecusPage, showMissions };

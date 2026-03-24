@@ -8,7 +8,7 @@ const showCategories = async (req, res) => {
     res.render("categories", { title, categories });
   } catch (error) {
     console.error("Error in showCategories:", error.message);
-    res.status(500).render("errors/500", { 
+    res.status(500).render("errors", { 
       title: 'Server Error ',
       error: "Impossible de charger les catégories.",
       stack: "Vue ",

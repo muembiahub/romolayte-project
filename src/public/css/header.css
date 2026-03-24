@@ -1,45 +1,59 @@
-html, body { height: 100%; margin: 0; }
- body { display: flex; flex-direction: column; min-height: 100vh; overflow-y: auto; font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; }
- main { flex: 1; /* pousse le footer vers le bas */ padding: 10px; }
-h1, h2 {  text-align: center;  color: #004080; font-weight: bold;
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', Arial, sans-serif;
+  background-color: #f4f6f8;
+  color: #333;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Titres */
+h1, h2 {
+  text-align: center;
+  color: #003366;
+  font-weight: 700;
+  margin-bottom: 1rem;
 }
 
 /* Header */
-header {  display: flex;
+header {
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #004080;
-  padding: 10px 20px;
+  background: linear-gradient(90deg, #003366, #0055a5);
+  padding: 15px 30px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
+
 .logo-link {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
   color: inherit;
 }
+
 .site-title {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   margin: 0;
-  line-height: 1.2;
-  font-weight: bold;
-  background: linear-gradient(90deg, #ae0b0b, hsl(210, 7%, 89%));
-  
- 
-  
-  /* Chrome / Safari */
+  font-weight: 800;
+  background: linear-gradient(90deg, #ff4b2b, #ff416c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  
-  /* Firefox */
-  -moz-background-clip: text;
-  -moz-text-fill-color: transparent;
-
-   /* Standard */
   background-clip: text;
 }
 
-
-
+/* Logo */
 .logo-container {
   display: flex;
   align-items: center;
@@ -47,31 +61,46 @@ header {  display: flex;
 }
 
 .logo {
-  width: 50px;
-  height: 50px;
- border-radius: 50%;
- object-fit: cover;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
-
 
 /* Menu */
-.menu-container {
+.navbar {
   display: flex;
+  gap: 30px;
   align-items: center;
 }
+
 .menu-item {
   color: #fff;
   font-weight: 500;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
 }
+
+.menu-item::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: #ffcc00;
+  transition: width 0.3s ease;
+}
+
 .menu-item:hover {
   color: #ffcc00;
 }
-.navbar {
-  display: flex;
-  gap: 40px;
-  align-items: center;
+
+.menu-item:hover::after {
+  width: 100%;
 }
 
 /* Hamburger */
@@ -79,27 +108,28 @@ header {  display: flex;
   display: none;
   flex-direction: column;
   cursor: pointer;
-  gap: 5px;
+  gap: 6px;
 }
+
 .hamburger span {
-  width: 25px;
+  width: 28px;
   height: 3px;
   background-color: #fff;
+  border-radius: 2px;
   transition: all 0.3s ease;
 }
+
 .hamburger.open span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
+  transform: rotate(45deg) translate(6px, 6px);
 }
 .hamburger.open span:nth-child(2) {
   opacity: 0;
 }
 .hamburger.open span:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
+  transform: rotate(-45deg) translate(6px, -6px);
 }
 
-/* =========== bar de recherche =============== */
-
-
+/* Barre de recherche */
 .search-container {
   position: relative;
   display: flex;
@@ -110,36 +140,43 @@ header {  display: flex;
 .search-icon {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   cursor: pointer;
-  color: #0078d7;
+  color: #ffcc00;
+  transition: transform 0.2s ease;
+}
+
+.search-icon:hover {
+  transform: scale(1.1);
 }
 
 #search-input {
   width: 0;
   opacity: 0;
   transition: width 0.3s ease, opacity 0.3s ease;
-  padding: 8px;
+  padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 20px;
+  font-size: 0.95rem;
 }
 
 #search-input.active {
-  width: 200px;
+  width: 220px;
   opacity: 1;
 }
 
 #search-results {
   position: absolute;
-  top: 40px;
+  top: 45px;
   right: 0;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  width: 250px;
-  max-height: 200px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  width: 260px;
+  max-height: 220px;
   overflow-y: auto;
   display: none;
+  animation: fadeIn 0.3s ease;
 }
 
 #search-results.show {
@@ -147,11 +184,132 @@ header {  display: flex;
 }
 
 #search-results p {
-  padding: 8px;
+  padding: 10px;
   margin: 0;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
 #search-results p:hover {
   background: #f0f0f0;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
+  }
+
+  .logo-container {
+    justify-content: center; /* centrer horizontalement */
+    align-items: center;     /* centrer verticalement */
+    width: 100%;
+    margin-bottom: 10px;     /* petit espace sous le logo */
+  }
+
+  .navbar {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    background-color: #003366;
+    padding: 15px 0;
+    border-radius: 8px;
+  }
+
+  .navbar.show {
+    display: flex;
+  }
+
+  .hamburger {
+    display: flex;
+    margin-left: auto;
+  }
+
+  .menu-item {
+    text-align: center;
+    width: 100%;
+    padding: 12px 0;
+  }
+
+  .search-container {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    margin-top: 12px;
+  }
+
+  #search-input.active {
+    width: 100%;
+  }
+
+  #search-results {
+    width: 100%;
+    max-height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-title {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+  .logo-container {
+    justify-content: center; /* centrer horizontalement */
+    align-items: center;     /* centrer verticalement */
+    width: 100%;
+    margin-bottom: 10px;     /* petit espace sous le logo */
+  }
+
+  .logo {
+    width: 45px;
+    height: 45px;
+  }
+
+  h1, h2 {
+    font-size: 1.2rem;
+  }
+
+  main {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 320px) {
+  header {
+    padding: 8px;
+  }
+
+  .site-title {
+    font-size: 1rem;
+    text-align: center;
+  }
+  .logo-container {
+    justify-content: center; /* centrer horizontalement */
+    align-items: center;     /* centrer verticalement */
+    width: 100%;
+    margin-bottom: 10px;     /* petit espace sous le logo */
+  }
+
+  .logo {
+    width: 35px;
+    height: 35px;
+  }
+
+  .menu-item {
+    font-size: 0.85rem;
+  }
+
+  #search-input.active {
+    font-size: 0.85rem;
+    padding: 6px;
+  }
 }
