@@ -200,19 +200,28 @@ header {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 15px;
+    flex-direction: row; /* garder logo, recherche et hamburger sur une ligne */
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
   }
 
   .logo-container {
-    justify-content: center; /* centrer horizontalement */
-    align-items: center;     /* centrer verticalement */
-    width: 100%;
-    margin-bottom: 10px;     /* petit espace sous le logo */
+    flex: 1;
+  }
+
+  .search-container {
+    flex: 2;
+    justify-content: center;
+    margin: 0 10px;
+  }
+
+  .hamburger {
+    display: flex;
+    flex: 0;
+    margin-left: auto; /* reste à droite */
   }
 
   .navbar {
@@ -229,22 +238,10 @@ header {
     display: flex;
   }
 
-  .hamburger {
-    display: flex;
-    margin-left: auto;
-  }
-
   .menu-item {
     text-align: center;
     width: 100%;
     padding: 12px 0;
-  }
-
-  .search-container {
-    margin-left: 0;
-    width: 100%;
-    justify-content: center;
-    margin-top: 12px;
   }
 
   #search-input.active {
@@ -257,59 +254,8 @@ header {
   }
 }
 
-@media (max-width: 480px) {
-  .site-title {
-    font-size: 1.3rem;
-    text-align: center;
-  }
-  .logo-container {
-    justify-content: center; /* centrer horizontalement */
-    align-items: center;     /* centrer verticalement */
-    width: 100%;
-    margin-bottom: 10px;     /* petit espace sous le logo */
-  }
 
-  .logo {
-    width: 45px;
-    height: 45px;
-  }
-
-  h1, h2 {
-    font-size: 1.2rem;
-  }
-
-  main {
-    padding: 10px;
-  }
-}
-
-@media (max-width: 320px) {
-  header {
-    padding: 8px;
-  }
-
-  .site-title {
-    font-size: 1rem;
-    text-align: center;
-  }
-  .logo-container {
-    justify-content: center; /* centrer horizontalement */
-    align-items: center;     /* centrer verticalement */
-    width: 100%;
-    margin-bottom: 10px;     /* petit espace sous le logo */
-  }
-
-  .logo {
-    width: 35px;
-    height: 35px;
-  }
-
-  .menu-item {
-    font-size: 0.85rem;
-  }
-
-  #search-input.active {
-    font-size: 0.85rem;
-    padding: 6px;
-  }
+@media (max-width: 767px) {
+  .logo-container{display: none;}
+ 
 }

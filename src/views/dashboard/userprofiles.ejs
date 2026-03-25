@@ -1,0 +1,73 @@
+<h2 class="rom-page-title">👥 Liste des Utilisateurs</h2>
+
+<!-- Formulaire de filtres -->
+<form method="GET" action="/dashboard/userprofiles" class="filters-form">
+  <input type="text" name="search" placeholder="Recherche..." value="<%= search %>" />
+
+  <select name="role">
+    <option value="">-- Rôle --</option>
+    <option value="Admin" <%= role === "Admin" ? "selected" : "" %>>Admin</option>
+    <option value="Prestataire" <%= role === "Prestataire" ? "selected" : "" %>>Prestataire</option>
+    <option value="Utilisateur" <%= role === "Utilisateur" ? "selected" : "" %>>Utilisateur</option>
+  </select>
+
+  <select name="category">
+    <option value="">-- Catégorie --</option>
+    <option value="Education" <%= category === "Education" ? "selected" : "" %>>Éducation</option>
+    <option value="Santé" <%= category === "Santé" ? "selected" : "" %>>Santé</option>
+    <option value="Finance" <%= category === "Finance" ? "selected" : "" %>>Finance</option>
+  </select>
+
+  <select name="service">
+    <option value="">-- Service --</option>
+    <option value="BYU Pathway" <%= service === "BYU Pathway" ? "selected" : "" %>>BYU Pathway</option>
+    <option value="GlobalGiving" <%= service === "GlobalGiving" ? "selected" : "" %>>GlobalGiving</option>
+    <option value="StarterYou" <%= service === "StarterYou" ? "selected" : "" %>>StarterYou</option>
+  </select>
+
+  <button type="submit" class="rom-btn-gradient">Filtrer</button>
+</form>
+
+<!-- Liste des utilisateurs -->
+<div class="rom-cards-grid">
+  <% userProfiles.forEach((user, index) => { %>
+    <div class="rom-card 
+      <% if (user.roles?.name === 'Admin') { %> rom-admin-card <% } %>
+      <% if (user.roles?.name === 'Prestataire') { %> rom-prestataire-card <% } %>
+      <% if (user.roles?.name === 'Utilisateur') { %> rom-user-card <% } %>
+      <% if (!user.roles?.name) { %> rom-guest-card <% } %>
+    ">
+      <div class="rom-card-header">
+        <img src="<%= user.logo ? user.logo : '/images/avatars.webp' %>" alt="Avatar" class="user-avatar" />
+        <div class="user-meta">
+          <h3 class="rom-card-title"><%= user.firstname %> <%= user.lastname %></h3>
+          <span class="rom-role-badge <%= user.roles?.name %>"><%= user.roles?.name || "Guest" %></span>
+        </div>
+      </div>
+
+      <ul class="rom-card-info">
+        <li><strong># :</strong> <%= index + 1 %></li>
+        <li><strong>ID :</strong> <%= user.id %></li>
+        <li><strong>UID :</strong> <%= user.uid %></li>
+        <li><strong>Email :</strong> 
+          <a href="mailto:<%= user.email %>" class="rom-link"><%= user.email %></a>
+        </li>
+        <li><strong>Catégorie :</strong> <%= user.categories?.name || "—" %></li>
+        <li><strong>Service :</strong> <%= user.services?.name || "—" %></li>
+      </ul>
+    </div>
+  <% }) %>
+</div>
+
+<!-- Pagination -->
+<div class="pagination">
+  <% if (currentPage > 1) { %>
+    <a href="?page=<%= currentPage - 1 %>&search=<%= search %>&role=<%= role %>&category=<%= category %>&service=<%= service %>" class="rom-link">Précédent</a>
+  <% } %>
+
+  <span>Page <%= currentPage %> / <%= totalPages %></span>
+
+  <% if (currentPage < totalPages) { %>
+    <a href="?page=<%= currentPage + 1 %>&search=<%= search %>&role=<%= role %>&category=<%= category %>&service=<%= service %>" class="rom-link">Suivant</a>
+  <% } %>
+</div>

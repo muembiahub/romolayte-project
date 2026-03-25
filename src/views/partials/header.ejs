@@ -12,39 +12,41 @@
   <link rel="stylesheet" href="/css/footer.css">
   <link rel="stylesheet" href="/css/header.css">
   <script src="/js/app.js"></script>
-
-
 </head>
 <body>
   <header>
-  <div class="logo-container">
-    <a href="/" class="logo-link">
-      <img src="https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/logos_category/romo_logo.jpg" 
-           alt="Romolayte Logo" class="logo">
-      <h1 class="site-title">Romolayte</h1>
-    </a>
-  </div>
+    <!-- ✅ Logo à gauche -->
+    <div class="logo-container">
+      <a href="/" class="logo-link">
+        <img src="https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/logos_category/romo_logo.jpg" 
+             alt="Romolayte Logo" class="logo">
+        <h1 class="site-title">Romolayte</h1>
+      </a>
+    </div>
 
-  <!-- Navigation + hamburger à droite --> 
-   <div class="menu-container">
+    <!-- ✅ Barre de recherche au milieu -->
+    <div class="search-container">
+      <button id="search-toggle" class="search-icon">
+        <i class="fas fa-search"></i>
+      </button>
+      <input type="text" id="search-input" placeholder="Rechercher" />
+      <div id="search-results"></div>
+    </div>
+
+    <!-- ✅ Hamburger à droite -->
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <!-- ✅ Menu déroulant en dessous -->
     <nav class="navbar" id="navbar">
-       <div class="menu-item" data-link="/">Accueil</div>
-      <div class="menu-item" data-link="/categories">Catégories</div> 
+      <div class="menu-item" data-link="/">Accueil</div>
+      <div class="menu-item" data-link="/categories">Catégories</div>
       <div class="menu-item" data-link="/services">Services</div>
-      <div class="menu-item" data-link="/auth"> Connexion</div>
-     </nav>
-    <div class="hamburger" id="hamburger"> 
-    <span></span> 
-    <span></span>
-   <span></span> 
-  </div> 
-</div> 
-<div class="search-container">
-  <button id="search-toggle" class="search-icon">
-    <i class="fas fa-search"></i>
-  </button>
-  <input type="text" id="search-input" placeholder="Rechercher" />
-  <div id="search-results"></div>
-</div>
-
-</header>
+      <div class="menu-item" data-link="/auth">Connexion</div>
+    </nav>
+  </header>
+</body>
+</html>

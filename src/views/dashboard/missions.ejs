@@ -1,0 +1,95 @@
+<h2 class="rom-page-title">🧑‍🔧 Mes Missions</h2>
+
+<% if (missions && missions.length > 0) { %>
+  <div class="rom-cards-grid">
+    <% missions.forEach((mission, index) => { %>
+      <div class="rom-card mission-card">
+        
+        <!-- Header -->
+        <div class="rom-card-header">
+          <h3 class="rom-card-title"><%= mission.service_name %></h3>
+          <span class="rom-card-subtitle"><%= mission.category_name %></span>
+        </div>
+
+        <!-- Infos principales -->
+        <ul class="rom-card-info">
+          <li><strong># :</strong> <%= index + 1 %></li>
+          <li><strong>Demande ID :</strong> <%= mission.demande_id %></li>
+          <li><strong>Client :</strong> <%= mission.name || "Non renseigné" %></li>
+          
+          <!-- Email cliquable -->
+          <li><strong>📧 Email :</strong>  
+            <% if (mission.email) { %>
+              <a href="mailto:<%= mission.email %>" class="rom-link">
+                <%= mission.email %>
+              </a>
+            <% } else { %>
+              Non renseigné
+            <% } %>
+          </li>
+
+          <!-- Téléphone cliquable -->
+          <li><strong>📞 Téléphone :</strong>  
+            <% if (mission.phone) { %>
+              <a href="tel:<%= mission.phone %>" class="rom-link">
+                <%= mission.phone %>
+              </a>
+            <% } else { %>
+              Non renseigné
+            <% } %>
+          </li>
+
+          <!-- Lieu cliquable vers Google Maps -->
+          <li><strong>📍 Lieu :</strong>  
+            <% if (mission.location) { %>
+              <a href="https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent(mission.location) %>" 
+                 target="_blank" class="rom-link">
+                <%= mission.location %>
+              </a>
+            <% } else { %>
+              Non précisé
+            <% } %>
+          </li>
+
+          <li><strong>Prix :</strong> <%= mission.price ? mission.price + " $" : "À discuter" %></li>
+          <li><strong>Infos :</strong> <%= mission.other_info || "Aucune information supplémentaire" %></li>
+        </ul>
+
+        <div class="mission-card-status">
+  <h4 class="rom-card-subtitle">📌 Statut</h4>
+  <% if (user.role_id >= 3) { %>
+    <!-- Admin : peut modifier -->
+    <select id="status-<%= mission.demande_id %>" data-id="<%= mission.demande_id %>">
+      <option value="Recus" <%= mission.status === "Recus" ? "selected" : "" %>>Recus</option>
+      <option value="Validé" <%= mission.status === "Validé" ? "selected" : "" %>>Validé</option>
+      <option value="En cours" <%= mission.status === "En cours" ? "selected" : "" %>>En cours</option>
+      <option value="Rejeté" <%= mission.status === "Rejeté" ? "selected" : "" %>>Rejeté</option>
+      <option value="Supprimé" <%= mission.status === "Supprimé" ? "selected" : "" %>>Supprimé</option>
+    </select>
+    <small id="status-msg-<%= mission.demande_id %>" class="rom-status-msg"></small>
+  <% } else { %>
+    <!-- Prestataire ou client : juste voir -->
+    <% if (mission.status === "Validé") { %>
+      <span class="badge-validé">Validé</span>
+    <% } else if (mission.status === "En cours") { %>
+      <span class="badge-encours">En cours</span>
+    <% } else if (mission.status === "Recus") { %>
+      <span class="badge-recus">Reçus</span>
+    <% } else if (mission.status === "Rejeté") { %>
+      <span class="badge-rejete">Rejeté</span>
+    <% } else if (mission.status === "Supprimé") { %>
+      <span class="badge-supprime">Supprimé</span>
+    <% } else { %>
+      <span class="rom-status-view"><%= mission.status %></span>
+    <% } %>
+  <% } %>
+</div>
+
+        <!-- Date -->
+        <small class="rom-card-date">Créée le <%= mission.created_at %></small>
+      </div>
+    <% }) %>
+  </div>
+<% } else { %>
+  <p class="rom-empty">Aucune mission disponible pour votre profil.</p>
+<% } %>

@@ -1,0 +1,83 @@
+<h2 class="rom-page-title">
+  Bienvenue <%= user.firstname %> <%= user.lastname %> 👋
+</h2>
+
+<p class="rom-welcome-sub">
+  Rôle :
+  <span class="rom-role-badge <%= user.role %>">
+    <%= user.role %>
+  </span>
+</p>
+
+<!-- Widgets statistiques -->
+<div class="rom-cards-grid stats-widgets">
+  <div class="rom-card">
+    <h3 class="rom-card-title">👥 Utilisateurs</h3>
+    <p class="rom-card-subtitle"><%= stats.usersCount %> inscrits</p>
+  </div>
+
+  <div class="rom-card">
+    <h3 class="rom-card-title">📋 Missions</h3>
+    <p class="rom-card-subtitle"><%= stats.missionsCount %> en cours</p>
+  </div>
+
+  <div class="rom-card">
+    <h3 class="rom-card-title">🛠 Demandes</h3>
+    <p class="rom-card-subtitle"><%= stats.demandesCount %> reçues</p>
+  </div>
+</div>
+
+<!-- Section rôle -->
+<div class="rom-cards-grid">
+
+  <% if (user.role_level >= 3) { %>
+    <!-- ADMIN & SUPER‑ADMIN -->
+    <div class="rom-card rom-admin-card">
+      <h3 class="rom-card-title">⚙️ Administration</h3>
+      <p>En tant qu’administrateur, vous pouvez :</p>
+      <ul class="rom-card-info">
+        <li>👥 Gérer les utilisateurs</li>
+        <li>🛡️ Attribuer des rôles</li>
+        <li>🗂️ Superviser les services et catégories</li>
+      </ul>
+      <a href="/dashboard/userprofiles" class="rom-btn-gradient">
+        Gérer les utilisateurs
+      </a>
+    </div>
+
+  <% } else if (user.role_level === 2) { %>
+    <!-- PRESTATAIRE -->
+    <div class="rom-card rom-prestataire-card">
+      <h3 class="rom-card-title">🧑‍🔧 Prestataire</h3>
+      <p>Vous avez accès aux fonctionnalités prestataires.</p>
+      <a href="/dashboard/missions" class="rom-btn-gradient">
+        Voir mes missions
+      </a>
+    </div>
+
+  <% } else if (user.role_level === 1) { %>
+    <!-- UTILISATEUR -->
+    <div class="rom-card rom-user-card">
+      <h3 class="rom-card-title">📂 Mon service</h3>
+      <p>
+        Vous êtes inscrit au service
+        <strong>ID <%= user.service_id %></strong>
+        dans la catégorie
+        <strong>ID <%= user.category_id %></strong>.
+      </p>
+      <a href="/services/<%= user.service_id %>" class="rom-btn-gradient">
+        Voir mon service
+      </a>
+    </div>
+
+  <% } else { %>
+    <!-- GUEST / RESTRICTED -->
+    <div class="rom-card rom-guest-card">
+      <h3 class="rom-card-title">👤 Compte restreint</h3>
+      <p>
+        Votre rôle actuel ne vous donne pas accès aux fonctionnalités avancées.
+      </p>
+    </div>
+  <% } %>
+
+</div>

@@ -1,19 +1,8 @@
-// * Dashboard Controller * ====================
-
+import ejs from "ejs";
+import path from "path";
 import { supabase } from "../../config/database.js";
 import { findUserProfile, findDemandeRecus, GetAllUserProfile } from "../../models/userModel.js";
 
-// ✅ Affiche la page dashboard
-const showDashboard = (req, res) => {
-  res.render("dashboard", {
-    title: "Dashboard",
-    user: req.session.user
-  });
-};
-
-// ===============================
-// Profil utilisateur
-// ===============================
 const ROLE_MAP = {
   1: "user",
   2: "prestataire",
@@ -21,6 +10,60 @@ const ROLE_MAP = {
   4: "super-admin"
 };
 
+// ===============================
+// Page d’accueil du dashboard
+// ===============================
+const showDashboard = async (req, res, next) => {
+  try {
+    if (!req.session.user) {
+      return res.redirect("/login");
+    }
+
+    // Compter les utilisateurs
+    const { count: usersCount, error: usersError } = await supabase
+      .from("user_profiles")
+      .select("*", { count: "exact", head: true });
+    if (usersError) throw usersError;
+
+    // Compter les missions
+    const { count: missionsCount, error: missionsError } = await supabase
+      .from("demande_service")
+      .select("*", { count: "exact", head: true });
+    if (missionsError) throw missionsError;
+
+    // Compter les demandes
+    const { count: demandesCount, error: demandesError } = await supabase
+      .from("demande_service")
+      .select("*", { count: "exact", head: true });
+    if (demandesError) throw demandesError;
+
+    // Rendu du body avec stats
+    const body = await ejs.renderFile(
+      path.join(process.cwd(), "src/views/dashboard/dashboard-home.ejs"),
+      {
+        user: req.session.user,
+        stats: {
+          usersCount,
+          missionsCount,
+          demandesCount
+        }
+      }
+    );
+
+    res.render("dashboard/dashboard-layout", {
+      title: "Tableau de bord",
+      user: req.session.user,
+      body
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+// ===============================
+// Profil utilisateur
+// ===============================
 const showProfilePage = async (req, res, next) => {
   try {
     const profile = await findUserProfile(req.session.user.uid);
@@ -31,16 +74,23 @@ const showProfilePage = async (req, res, next) => {
       return next(err);
     }
 
-    res.render("profile", {
-      title: "Mon Profil",
-      user: {
-        ...profile,
-        role: ROLE_MAP[profile.role_id],
-        role_level: profile.role_id
+    const body = await ejs.renderFile(
+      path.join(process.cwd(), "src/views/dashboard/profile.ejs"),
+      {
+        user: {
+          ...profile,
+          role: ROLE_MAP[profile.role_id],
+          role_level: profile.role_id
+        }
       }
+    );
+
+    res.render("dashboard/dashboard-layout", {
+      title: "Mon Profil",
+      user: req.session.user,
+      body
     });
   } catch (err) {
-    err.status = err.status || 500;
     next(err);
   }
 };
@@ -79,17 +129,25 @@ async function showAllUserProfile(req, res, next) {
     const end = start + parseInt(limit);
     const paginated = filtered.slice(start, end);
 
-    res.render("userprofiles", {
-      userProfiles: paginated,
-      currentPage: parseInt(page),
-      totalPages: Math.ceil(total / limit),
-      search,
-      role,
-      category,
-      service
+    const body = await ejs.renderFile(
+      path.join(process.cwd(), "src/views/dashboard/userprofiles.ejs"),
+      {
+        userProfiles: paginated,
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(total / limit),
+        search,
+        role,
+        category,
+        service
+      }
+    );
+
+    res.render("dashboard/dashboard-layout", {
+      title: "Liste des Utilisateurs",
+      user: req.session.user,
+      body
     });
   } catch (error) {
-    error.status = 500;
     next(error);
   }
 }
@@ -107,12 +165,17 @@ const showDemandeRecusPage = async (req, res, next) => {
       return next(err);
     }
 
-    res.render("demande_recus", { 
-      title: "Liste des demandes", 
-      demandes 
+    const body = await ejs.renderFile(
+      path.join(process.cwd(), "src/views/dashboard/demande_recus.ejs"),
+      { demandes, user: req.session.user }  
+    );
+
+    res.render("dashboard/dashboard-layout", {
+      title: "Liste des demandes",
+      user: req.session.user,
+      body
     });
   } catch (error) {
-    error.status = 500;
     next(error);
   }
 };
@@ -121,7 +184,7 @@ const showDemandeRecusPage = async (req, res, next) => {
 // Missions
 // ===============================
 async function showMissions(req, res, next) {
-  const userUid = req.session?.user?.uid; // ⚠️ bien uid
+  const userUid = req.session?.user?.uid;
 
   if (!userUid) {
     const err = new Error("Utilisateur non authentifié ou UID manquant.");
@@ -136,9 +199,7 @@ async function showMissions(req, res, next) {
     .maybeSingle();
 
   if (userError) {
-    const err = new Error(userError.message);
-    err.status = 500;
-    return next(err);
+    return next(new Error(userError.message));
   }
 
   if (!user) {
@@ -150,7 +211,6 @@ async function showMissions(req, res, next) {
   let missions;
 
   if (user.role_id === 2) {
-    // Prestataire → missions filtrées
     const { data, error } = await supabase
       .from("demande_service")
       .select(`
@@ -165,6 +225,7 @@ async function showMissions(req, res, next) {
         coordinates,
         location,
         phone,
+        status,
         gender,
         other_info,
         created_at
@@ -173,15 +234,10 @@ async function showMissions(req, res, next) {
       .eq("category_id", user.category_id)
       .order("created_at", { ascending: false });
 
-    if (error) {
-      const err = new Error(error.message);
-      err.status = 500;
-      return next(err);
-    }
+    if (error) return next(new Error(error.message));
     missions = data;
 
-  } else if (user.role_id >= 3) {
-    // Admin / SuperAdmin → toutes les missions
+  } else if (user.role_id > 3) {
     const { data, error } = await supabase
       .from("demande_service")
       .select(`
@@ -196,17 +252,14 @@ async function showMissions(req, res, next) {
         coordinates,
         location,
         phone,
+        status,
         gender,
         other_info,
         created_at
       `)
       .order("created_at", { ascending: false });
 
-    if (error) {
-      const err = new Error(error.message);
-      err.status = 500;
-      return next(err);
-    }
+    if (error) return next(new Error(error.message));
     missions = data;
 
   } else {
@@ -215,7 +268,18 @@ async function showMissions(req, res, next) {
     return next(err);
   }
 
-  res.render("missions", { user, missions });
+  const body = await ejs.renderFile(
+  path.join(process.cwd(), "src/views/dashboard/missions.ejs"),
+  { missions, user: req.session.user }   // ✅ ajout de user
+);
+
+
+  res.render("dashboard/dashboard-layout", {
+  title: "Mes Missions",
+  user: req.session.user,
+  body
+});
+
 }
 
 export { showDashboard, showProfilePage, showAllUserProfile, showDemandeRecusPage, showMissions };

@@ -62,6 +62,7 @@ const GetAllUserProfile = async () => {
       price,
       email,
       phone,
+      status,
       location,
       coordinates,
       gender,

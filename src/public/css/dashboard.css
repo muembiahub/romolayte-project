@@ -1,47 +1,119 @@
-/*  ===================== home page sur Dashboard ======= */
-
-/* Style commun à toutes les cartes */
-.rom-card {
-  border-radius: 10px;
-  padding: 20px;
-  margin: 15px 0;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease-in-out;
+/* ===============================
+   TITRES DE PAGE
+=============================== */
+.rom-page-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #111827;
 }
 
+
+/* ===============================
+   GRILLE DE CARTES
+=============================== */
+.rom-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ===============================
+   CARTE GLOBALE
+=============================== */
+.rom-card {
+  background: #fff;
+  border-radius: 10px;
+  gap: 2.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+   margin-bottom: 2rem;  
+}
 .rom-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* ADMIN */
+.rom-card-header {
+  margin-bottom: 0.8rem;
+}
+.rom-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111827;
+}
+.rom-card-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.rom-card-info {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+}
+.rom-card-info li {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.rom-card-date {
+  display: block;
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+.rom-card img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.rom-link {
+  color: #3b82f6;
+  text-decoration: none;
+}
+.rom-link:hover {
+  text-decoration: underline;
+}
+
+.rom-empty {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin-top: 2rem;
+}
+
+/* ===============================
+   VARIANTES DE CARTES PAR RÔLE
+=============================== */
 .rom-admin-card {
   background: linear-gradient(135deg, #ff4b2b, #ff416c);
   color: #fff;
   border-left: 5px solid #c0392b;
 }
-
-/* PRESTATAIRE */
 .rom-prestataire-card {
   background: linear-gradient(135deg, #3498db, #2ecc71);
   color: #fff;
   border-left: 5px solid #2980b9;
 }
-
-/* USER */
 .rom-user-card {
   background: linear-gradient(135deg, #f1c40f, #e67e22);
   color: #fff;
   border-left: 5px solid #d35400;
 }
-
-/* GUEST */
 .rom-guest-card {
   background: linear-gradient(135deg, #95a5a6, #7f8c8d);
   color: #fff;
   border-left: 5px solid #2c3e50;
 }
 
-/* Badge rôle - style commun */
+/* ===============================
+   BADGES DE RÔLE
+=============================== */
 .rom-role-badge {
   padding: 6px 12px;
   border-radius: 20px;
@@ -50,633 +122,237 @@
   font-size: 0.9rem;
   display: inline-block;
 }
-
-/* Badge ADMIN */
 .rom-role-badge.Admin {
   background: linear-gradient(135deg, #c0392b, #e74c3c);
   color: #fff;
 }
-
-/* Badge PRESTATAIRE */
 .rom-role-badge.Prestataire {
   background: linear-gradient(135deg, #2980b9, #3498db);
   color: #fff;
 }
-
-/* Badge UTILISATEUR */
 .rom-role-badge.Utilisateur {
   background: linear-gradient(135deg, #d35400, #e67e22);
   color: #fff;
 }
-
-/* Badge GUEST */
 .rom-role-badge.Guest {
   background: linear-gradient(135deg, #7f8c8d, #95a5a6);
   color: #fff;
 }
 
-/* 🌙 Dark Mode */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #121212;
-    color: #e0e0e0;
-  }
-
-  .rom-card {
-    box-shadow: 0 4px 12px rgba(255,255,255,0.1);
-  }
-
-  .rom-admin-card {
-    background: linear-gradient(135deg, #8e2b2b, #b33939);
-    border-left: 5px solid #ff6b6b;
-  }
-
-  .rom-prestataire-card {
-    background: linear-gradient(135deg, #1f3c88, #1abc9c);
-    border-left: 5px solid #3498db;
-  }
-
-  .rom-user-card {
-    background: linear-gradient(135deg, #b9770e, #d35400);
-    border-left: 5px solid #f39c12;
-  }
-
-  .rom-guest-card {
-    background: linear-gradient(135deg, #444, #666);
-    border-left: 5px solid #999;
-  }
-
-  .rom-role-badge.Admin {
-    background: linear-gradient(135deg, #ff6b6b, #c0392b);
-  }
-
-  .rom-role-badge.Prestataire {
-    background: linear-gradient(135deg, #3498db, #1abc9c);
-  }
-
-  .rom-role-badge.Utilisateur {
-    background: linear-gradient(135deg, #f39c12, #d35400);
-  }
-
-  .rom-role-badge.Guest {
-    background: linear-gradient(135deg, #7f8c8d, #95a5a6);
-  }
-}
 
 
-
-
-
-/* ========================== Demande pages sur dashboard =================== */
-
-/* Container principal */
-.demande-dashboard-container {
-  margin-left: 240px; /* espace réservé pour la sidebar */
-  padding: 2rem;
-  background: #f9fafb;
-  min-height: 100vh;
-}
-
-.demande-dashboard-title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 1.5rem;
-}
-
-/* Grille des cartes */
-.demande-cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
-}
-
-/* Carte */
-.demande-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.demande-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-}
-
-/* Header de carte */
-.demande-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.demande-card-id {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #2563eb;
-}
-.demande-card-date {
-  font-size: 0.9rem;
-  color: #6b7280;
-}
-
-/* Corps de carte */
-.demande-card-body p,
-.demande-card-service p,
-.demande-card-prestataire p {
-  margin: 0.3rem 0;
-  color: #374151;
-  font-size: 0.95rem;
-}
-
-.demande-card-body strong,
-.demande-card-service strong {
-  color: #111827;
-}
-
-/* Service demandé */
-.demande-card-service-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #059669;
-  margin-bottom: 0.5rem;
-}
-
-/* Prestataire */
-.demande-card-prestataire-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #9333ea;
-  margin-bottom: 0.5rem;
-}
-
-.demande-card-no-prestataire {
-  color: #9ca3af;
-  font-style: italic;
-}
-
-/* Responsive */
-@media (max-width: 767px) {
-  .demande-dashboard-container {
-    margin-left: 0;
-    padding: 1rem;
-  }
-  .demande-cards-container {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-
-/* ========================== Profle page sur dashboard ============ */
-
-/* ============================
-   PAGE PROFIL
-============================ */
-.profile-container {
-  margin-left: 240px; /* espace réservé pour la sidebar */
-  padding: 2rem;
-  background: #f9fafb;
-  min-height: 100vh;
-}
-
-.page-title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 1.5rem;
-}
-
-/* ============================
-   CARTE PROFIL PRINCIPALE
-============================ */
-.profile-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.profile-avatar-large {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #3b82f6;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.profile-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.profile-name {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #111827;
-}
-
-.profile-role {
-  font-size: 1rem;
-  color: #374151;
-}
-
-.role-badge {
-  display: inline-block;
-  padding: 0.25rem 0.7rem;
+/*  ================================ 
+     Status
+/*  ================================ */
+.demande-card-status select {
+  padding: 6px 10px;
   border-radius: 6px;
-  font-size: 0.85rem;
   font-weight: 600;
-  margin-left: 0.5rem;
-  background: #e5e7eb;
-  color: #111827;
-}
-.role-badge.admin { background: #3b82f6; color: #fff; }
-.role-badge.super-admin { background: #9333ea; color: #fff; }
-.role-badge.prestataire { background: #10b981; color: #fff; }
-.role-badge.user { background: #6b7280; color: #fff; }
-
-/* ============================
-   INFOS PROFIL
-============================ */
-.profile-info {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.profile-info li {
-  margin: 0.5rem 0;
-  font-size: 0.95rem;
-  color: #374151;
-}
-.profile-info a {
-  color: #2563eb;
-  text-decoration: none;
-}
-.profile-info a:hover {
-  text-decoration: underline;
+  font-size: 0.9rem;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* ============================
-   ACTIONS UTILISATEUR
-============================ */
-.profile-actions h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+/* Effet hover */
+.demande-card-status select:hover {
+  transform: scale(1.05);
 }
 
-.actions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.action-card {
+/* Message sous le select */
+.rom-status-msg {
   display: block;
-  background: #f3f4f6;
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: 500;
-  color: #1f2937;
-  text-decoration: none;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-.action-card:hover {
-  background: #e5e7eb;
-  transform: translateY(-2px);
+  margin-top: 4px;
+  font-size: 0.8rem;
 }
 
-/* ============================
-   SECTIONS SELON RÔLE
-============================ */
-.admin-section h3 { color: #3b82f6; }
-.prestataire-section h3 { color: #10b981; }
-.user-section h3 { color: #6b7280; }
+/* Badges colorés avec icônes */
+.badge-validé::before {
+  content: "✅ ";
+}
+.badge-validé {
+  background: #28a745;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  animation: fadeIn 0.5s ease-in;
+}
 
-.btn-gradient {
+.badge-encours::before {
+  content: "🔄 ";
+}
+.badge-encours {
+  background: #ff9800;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  animation: pulse 1.5s infinite;
+}
+
+.badge-recus::before {
+  content: "📥 ";
+}
+.badge-recus {
+  background: #007bff;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.badge-rejete::before {
+  content: "❌ ";
+}
+.badge-rejete {
+  background: #dc3545;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  animation: shake 0.4s ease-in-out;
+}
+
+.badge-supprime::before {
+  content: "🗑️ ";
+}
+.badge-supprime {
+  background: #6c757d;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
+/* ===============================
+   BOUTON GRADIENT
+=============================== */
+.rom-btn-gradient {
   display: inline-block;
   padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #3b82f6, #06b6d4);
-  color: #fff;
+  border-radius: 6px;
   font-weight: 600;
   text-decoration: none;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  color: #fff;
   transition: background 0.3s ease;
 }
-.btn-gradient:hover {
+.rom-btn-gradient:hover {
   background: linear-gradient(90deg, #06b6d4, #3b82f6);
 }
 
-/* ============================
-   RESPONSIVE
-============================ */
-@media (max-width: 767px) {
-  .profile-container {
-    margin-left: 0;
-    padding: 1rem;
-  }
-  .profile-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .actions-grid {
-    grid-template-columns: 1fr;
-  }
-}
 
-/* ============================
-   DARK MODE GLOBAL
-============================ */
-body.dark-mode .profile-container {
-  background: #0d1117;
-  color: #e6edf3;
-}
-
-body.dark-mode .page-title {
-  color: #e6edf3;
-}
-
-body.dark-mode .card {
-  background: #161b22;
-  color: #e6edf3;
-  border: 1px solid #30363d;
-}
-
-body.dark-mode .profile-avatar-large {
-  border-color: #58a6ff;
-}
-
-body.dark-mode .profile-name {
-  color: #e6edf3;
-}
-
-body.dark-mode .profile-info li {
-  color: #e6edf3;
-}
-body.dark-mode .profile-info a {
-  color: #58a6ff;
-}
-
-body.dark-mode .action-card {
-  background: #21262d;
-  color: #e6edf3;
-}
-body.dark-mode .action-card:hover {
-  background: #30363d;
-}
-
-body.dark-mode .btn-gradient {
-  background: linear-gradient(90deg, #58a6ff, #3fb950);
-}
-body.dark-mode .btn-gradient:hover {
-  background: linear-gradient(90deg, #3fb950, #58a6ff);
-}
-
-
-/* ====================================================================== */
-/* ========================= Utiilsateurs Pages ========================= */
-.users-dashboard-container{ margin-left: 240px; /* espace réservé pour la sidebar */
-  padding: 2rem;
-  background: #f9fafb;
-  min-height: 100vh;
-}
-.users-cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
-}
-
-.user-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  padding: 1.5rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.user-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-}
-
-.user-card-header {
+/* ===============================
+   FORMULAIRE DE FILTRES
+=============================== */
+.filters-form {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;              /* espace entre les champs */
+  margin-bottom: 2rem;    /* espace sous le formulaire */
+  padding: 1rem;          /* espace interne */
+  background: #f3f4f6;    /* fond gris clair */
+  border-radius: 8px;     /* coins arrondis */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-.user-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #3b82f6;
-}
-
-.user-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.user-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #111827;
-}
-
-.role-badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
+.filters-form input,
+.filters-form select {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.6rem;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
+}
+
+.filters-form button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
   font-weight: 600;
-  background: #e5e7eb;
-  color: #111827;
-}
-
-.user-info {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 1rem 0;
-}
-.user-info li {
-  margin: 0.3rem 0;
-  font-size: 0.9rem;
-  color: #374151;
-}
-
-.btn-link {
-  color: #2563eb;
-  text-decoration: none;
-  font-weight: 600;
-}
-.btn-link:hover {
-  text-decoration: underline;
+  cursor: pointer;
 }
 
 
 
-
-
-
-
-/* Dark mode */
-body.dark-mode .user-card {
+/* ===============================
+   DARK MODE
+=============================== */
+body.dark-mode .rom-card {
   background: #161b22;
   color: #e6edf3;
   border: 1px solid #30363d;
 }
-body.dark-mode .user-card:hover {
+body.dark-mode .rom-card:hover {
   border-color: #58a6ff;
   box-shadow: 0 4px 12px rgba(88,166,255,0.4);
 }
-body.dark-mode .user-avatar {
-  border-color: #58a6ff;
-}
-body.dark-mode .user-name {
-  color: #e6edf3;
-}
-body.dark-mode .user-info li {
-  color: #e6edf3;
-}
-body.dark-mode .btn-link {
+body.dark-mode .rom-card-title {
   color: #58a6ff;
 }
-body.dark-mode .modal-content {
-  background: #161b22;
-  color: #e6edf3;
+body.dark-mode .rom-card-subtitle {
+  color: #8b949e;
 }
-
-
-
-
-
-
-
-
-
-/* ===============================
-   Missions Page Styling
-=============================== */
-
-.missions-dashboard-container {
-   margin-left: 240px; /* espace réservé pour la sidebar */
-  padding: 2rem;
-  background: #f9fafb;
-  min-height: 100vh;
+body.dark-mode .rom-card-date {
+  color: #8b949e;
 }
-
-.missions-dashboard-title {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  color: var(--text-primary);
+body.dark-mode .rom-btn-gradient {
+  background: linear-gradient(90deg, #58a6ff, #3fb950);
 }
-
-.missions-cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-}
-
-.mission-card {
-  background: var(--card-bg);
-  border-radius: 10px;
-  padding: 1.2rem;
-  box-shadow: var(--card-shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.mission-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--card-shadow-hover);
-}
-
-.mission-card-header {
-  margin-bottom: 0.8rem;
-}
-
-.mission-service {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.mission-category {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
-
-.mission-info {
-  list-style: none;
-  padding: 0;
-  margin: 0.5rem 0;
-}
-
-.mission-info li {
-  margin: 0.3rem 0;
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-}
-
-.mission-date {
-  display: block;
-  margin-top: 0.8rem;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-.no-missions {
-  text-align: center;
-  font-size: 1.1rem;
-  color: var(--text-muted);
-  margin-top: 2rem;
+body.dark-mode .rom-btn-gradient:hover {
+  background: linear-gradient(90deg, #3fb950, #58a6ff);
 }
 
 /* ===============================
-   Mode clair par défaut
+   RESPONSIVE
 =============================== */
-:root {
-  --text-primary: #2c3e50;
-  --text-secondary: #555;
-  --text-muted: #888;
-  --card-bg: #fff;
-  --card-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  --card-shadow-hover: 0 6px 14px rgba(0,0,0,0.12);
-  --bg-main: #f9f9f9;
+@media (max-width: 1024px) {
+  .rom-page-title {
+    font-size: 1.8rem;
+  }
+  .rom-card {
+    padding: 1rem;
+  }
 }
-
-/* ===============================
-   Mode sombre
-=============================== */
-[data-theme="dark"] {
-  --text-primary: #ecf0f1;
-  --text-secondary: #bdc3c7;
-  --text-muted: #95a5a6;
-  --card-bg: #2c3e50;
-  --card-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  --card-shadow-hover: 0 6px 14px rgba(0,0,0,0.6);
-  --bg-main: #1a1a1a;
+@media (max-width: 768px) {
+  .rom-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .rom-page-title {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+  .rom-card {
+    padding: 0.9rem;
+  }
 }
-
-body {
-  background: var(--bg-main);
-  color: var(--text-primary);
-  font-family: "Segoe UI", Roboto, sans-serif;
-  transition: background 0.3s ease, color 0.3s ease;
+@media (max-width: 480px) {
+  .rom-page-title {
+    font-size: 1.4rem;
+  }
+  .rom-card {
+    padding: 0.8rem;
+  }
+  .rom-card-title {
+    font-size: 1rem;
+  }
 }
