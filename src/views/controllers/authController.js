@@ -1,13 +1,13 @@
 import { auth } from "../../config/database.js";
 import { supabase } from "../../config/database.js";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
-} from "firebase/auth";
+import {  createUserWithEmailAndPassword,signInWithEmailAndPassword} from "firebase/auth";
 import { createUserProfile } from "../../models/userModel.js";
 
+
+
+
 /* =========================
-   SIGNUP
+   SIGNUP (JSON only, avec gestion des erreurs)
 ========================= */
 const signup = async (req, res) => {
   const {
@@ -24,29 +24,21 @@ const signup = async (req, res) => {
   } = req.body;
 
   try {
+    // Vérification mots de passe
     if (password !== confirm_password) {
-      const { data: categories } = await supabase
-        .from("categories")
-        .select("category_id, name");
-
-      return res.status(400).render("auth", {
-        title: "Authentification",
-        error: "Les mots de passe ne correspondent pas",
-        categories
+      return res.status(400).json({
+        success: false,
+        field: "confirm_password",
+        message: "Les mots de passe ne correspondent pas"
       });
     }
 
-    // Firebase signup
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
+    // Création compte Firebase
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
 
-    // Supabase profile
-    await createUserProfile({
+    // Création profil Supabase
+    const result = await createUserProfile({
       uid: firebaseUser.uid,
       email: firebaseUser.email,
       firstname,
@@ -60,19 +52,51 @@ const signup = async (req, res) => {
       created_at: new Date()
     });
 
-     return res.json({ success: true, redirect: "/dashboard" });
-  } catch (error) {
-    const { data: categories } = await supabase
-      .from("categories")
-      .select("category_id, name");
+    // Vérifier si createUserProfile a renvoyé une erreur
+    if (result && result.error) {
+      return res.status(400).json({
+        success: false,
+        message: "Erreur lors de la création du profil Supabase : " + result.error.message
+      });
+    }
 
-    res.status(400).render("auth", {
-      title: "Authentification",
-      error: error.message,
-      categories
+    // Succès → retour sur la page auth avec paramètre registered=true
+    return res.json({
+      success: true,
+      redirect: "/auth?registered=true",
+      message: "Compte créé avec succès. Veuillez vous connecter."
+    });
+
+  } catch (error) {
+    // Gestion des erreurs Firebase courantes
+    let field = null;
+    let message = "Erreur lors de l'inscription";
+
+    switch (error.code) {
+      case "auth/email-already-in-use":
+        field = "email";
+        message = "Cette adresse email est déjà utilisée. Veuillez en choisir une autre.";
+        break;
+      case "auth/invalid-email":
+        field = "email";
+        message = "Adresse email invalide.";
+        break;
+      case "auth/weak-password":
+        field = "password";
+        message = "Mot de passe trop faible. Minimum 6 caractères.";
+        break;
+      default:
+        message = error.message || message;
+    }
+
+    return res.status(400).json({
+      success: false,
+      field,
+      message
     });
   }
 };
+
 /* =========================
    LOGIN
 ========================= */
