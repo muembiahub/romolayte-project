@@ -10,15 +10,12 @@
   <% }) %>
 
   <!-- Valeurs -->
-  <h2>Nos valeurs</h2>
-  <ul>
+
     <% values.forEach(val => { %>
-      <li>
-        <img src="<%= withDefaultImage(val.icon_url, defaults.icon) %>" alt="<%= val.title %>">
-        <strong><%= val.title %></strong> : <%= val.description %>
-      </li>
+    
+        <p><strong><%= val.title %></strong> : <%= val.description %></p>
+     
     <% }) %>
-  </ul>
 
   <!-- Équipe -->
   <h2>Notre équipe</h2>
