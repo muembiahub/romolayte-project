@@ -2,7 +2,6 @@ import express from "express";
 import { supabase } from "../../config/database.js";
 
 // Pages controllers
-import { showHomePage } from "./index.js";
 import { showCategories } from "./categories.js";
 import {
   servicesPages,
@@ -20,7 +19,11 @@ import {
   signup,
   login,
   logout
-} from "./authController.js";
+} 
+from "./authController.js";
+
+import { showTermsPage, showPrivacyPage } from "./termsConttrollers.js";
+import { sendContact, showContactform } from "./contactControllers.js";
 
 const router = express.Router();
 
@@ -31,7 +34,6 @@ const asyncHandler = (fn) => (req, res, next) =>
 /* =========================
    Pages publiques
 ========================= */
-router.get("/", asyncHandler(showHomePage));
 router.get("/categories", asyncHandler(showCategories));
 
 router.get("/services", asyncHandler(servicesPages));
@@ -39,6 +41,10 @@ router.get("/services-details/:id", asyncHandler(servicesPagesDetails));
 router.get("/servicecategory/:id", asyncHandler(servicesPagesByCategory));
 
 router.get("/about", asyncHandler(showAboutUsPage));
+router.get("/terms", asyncHandler(showTermsPage));
+router.get("/privacy", asyncHandler(showPrivacyPage));
+router.get("/contact", asyncHandler(showContactform));
+router.post("/send-contact", asyncHandler(sendContact));
 
 router.get("/demande-service", asyncHandler(showForm));
 router.post("/demande-service", asyncHandler(submitForm));
@@ -58,6 +64,7 @@ router.get("/auth", asyncHandler(async (req, res) => {
     .order("category_id", { ascending: true });
 
   res.render("auth", {
+    layout: false,
     title: "Authentification",
     categories: categories || [],
     error: null,

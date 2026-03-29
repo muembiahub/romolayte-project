@@ -22,9 +22,11 @@ main {
 h1, h2 {
   text-align: center;
   color: #003366;
-  font-weight: 700;
-  margin-bottom: 1rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  font-style: italic;
 }
+h4{text-align: center; color: #ff416c;}
 
 /* Header */
 header {

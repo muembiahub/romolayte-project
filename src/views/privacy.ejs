@@ -1,0 +1,61 @@
+<%- include('partials/header.ejs') %>
+
+<main class="container my-5">
+  <!-- Titre stylisé avec icône -->
+  <h1 class="title-romolayte mb-4">
+    <i class="fas fa-lock me-2"></i> Politique de Confidentialité – ROMOLAYTE
+  </h1>
+  <p>ROMOLAYTE attache une importance particulière à la protection des données à caractère personnel et s’engage à assurer un niveau élevé de sécurité et de confidentialité conformément aux standards internationaux applicables.</p>
+  <p class="text-muted text-center">Dernière mise à jour : <%= lastUpdated %></p>
+
+  <div class="table-responsive shadow-sm rounded">
+    <table class="table table-striped table-bordered align-middle">
+      <thead class="table-success">
+        <tr>
+          <th scope="col"><i class="fas fa-hashtag"></i> Section</th>
+          <th scope="col"><i class="fas fa-heading"></i> Titre</th>
+          <th scope="col"><i class="fas fa-file-alt"></i> Contenu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% policy.forEach(function(item) { %>
+          <tr>
+            <td class="fw-bold text-center text-success"><%= item.section_num %></td>
+            <td class="fw-semibold text-success"><%= item.section_title %></td>
+            <td>
+              <% 
+                const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/;
+                const match = item.section_content.match(emailRegex);
+                if (match) {
+              %>
+                <%- item.section_content.replace(
+                      match[0], 
+                      `<a href="mailto:${match[0]}" class="text-decoration-none text-success fw-semibold"><i class="fas fa-envelope"></i> ${match[0]}</a>`
+                    ) %>
+              <% } else { %>
+                <%= item.section_content %>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<%- include('partials/footer.ejs') %>
+
+<!-- Style personnalisé -->
+<style>
+  /* Palette pour Privacy (vert + gris clair) */
+  .title-romolayte {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    color: #2d6a4f; /* vert foncé */
+    background: linear-gradient(to right, #95d5b2, #d8f3dc); /* vert pastel */
+    padding: 20px;
+    border-radius: 8px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  }
+</style>

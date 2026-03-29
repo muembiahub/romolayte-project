@@ -8,12 +8,14 @@ const servicesPages = async (req, res) => {
   try {
     const services = await getAllServices();
     res.render("services", {
+      layout: false,
       title: "Nos Services Disponibles",
       services
     });
   } catch (error) {
     console.error("❌ Error in servicesPages:", error.message);
-    res.status(500).render("errors/500", {
+    res.status(500).render("errors", {
+      layout: false,
       title: "Erreur Serveur",
       message: "Impossible de charger les services"
     });
@@ -28,7 +30,8 @@ const servicesPagesDetails = async (req, res) => {
     const service = await getServiceById(req.params.id);
 
     if (!service) {
-      return res.status(404).render("errors/404", {
+      return res.status(404).render("errors", {
+        layout: false,
         title: "Erreur 404",
         message: "Service introuvable"
       });
@@ -47,6 +50,7 @@ const servicesPagesDetails = async (req, res) => {
 
     // 🔹 Rendu de la page
     res.render("serviceDetails", {
+      layout: false,
       title: "Détails du Service",
       service,
       relatedServices: filteredRelated.slice(0, 8), // limite à 8
@@ -56,7 +60,8 @@ const servicesPagesDetails = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error in servicesPagesDetails:", error.message);
-    res.status(500).render("errors/500", {
+    res.status(500).render("errors", {
+      layout: false,
       title: "Erreur Serveur",
       message: "Impossible de charger les détails du service"
     });
@@ -73,19 +78,22 @@ const servicesPagesByCategory = async (req, res) => {
     const services = await getServicesByCategory(categoryId);
 
     if (!services || services.length === 0) {
-      return res.status(404).render("errors/404", {
+      return res.status(404).render("errors", {
+        layout: false,
         title: "Erreur 404",
         message: "Aucun service trouvé pour cette catégorie"
       });
     }
 
     res.render("services", {
+      layout: false,
       title: `Services de la catégorie ${services[0].categories.name}`,
       services
     });
   } catch (error) {
     console.error("❌ Error in servicesPagesByCategory:", error.message);
-    res.status(500).render("errors/500", {
+    res.status(500).render("errors", {
+      layout: false,
       title: "Erreur Serveur",
       message: "Impossible de charger les services par catégorie"
     });

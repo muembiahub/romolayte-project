@@ -14,6 +14,7 @@ const showAboutUsPage = async (req, res) => {
     const { aboutPages, teamMembers, companyValues, milestones, partners } = await getAllAboutPages();
 
     res.render('about', {
+      layout: false,
       title: 'À propos de nous',
       aboutSections: aboutPages,
       values: companyValues,

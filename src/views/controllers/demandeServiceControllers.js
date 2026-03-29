@@ -9,6 +9,7 @@ const showForm = async (req, res) => {
     const price = req.query.price || "Sur devis";
 
     res.render("demandeService", {
+      layout: false,
       title: "Demande de service",
       category_name,
       service_name,
@@ -16,7 +17,8 @@ const showForm = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error in showForm:", error.message);
-    res.status(500).render("errors/500", {
+    res.status(500).render("errors", {
+      layout: false,
       title: "Erreur Serveur",
       message: "Impossible de charger le formulaire"
     });
@@ -174,6 +176,7 @@ const submitForm = async (req, res) => {
 
     // 🔹 Page de succès
     res.render("demande-service-success", {
+      layout: false,
       title: "Demande envoyée",
       ...defaults
     });

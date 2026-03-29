@@ -1,4 +1,5 @@
 import express from "express";
+import expressLayouts from "express-ejs-layouts";
 import path from "path";
 import dotenv from "dotenv";
 import helmet from "helmet";
@@ -26,6 +27,12 @@ app.set("views", path.join(process.cwd(), "src/views"));
    Static Files
 ========================= */
 app.use(express.static(path.join(process.cwd(), "src/public")));
+
+// Activer express-ejs-layouts
+app.use(expressLayouts);
+
+// Définir le layout par défaut
+app.set("layout", "dashboard/dashboard-layout");
 
 /* =========================
    Body Parsers
@@ -142,6 +149,7 @@ app.use((err, req, res, next) => {
   }
 
   res.status(status).render("errors", {
+    layout: false,
     status: status || 500,
     title: title || "Erreur serveur",
     message: err.message || "Une erreur inattendue est survenue."

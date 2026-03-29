@@ -9,6 +9,9 @@ import {
   showMissions
 } from "../views/controllers/dashboardController.js";
 
+import {showMessageContact} from "../views/controllers/contactControllers.js";
+import{ deleteContact, updateContactStatus} from "../models/contactModel.js"
+
 
 const router = express.Router();
 
@@ -22,6 +25,9 @@ router.get("/demande_recus", requireAuth, showDemandeRecusPage);
 router.get("/profile", requireAuth, showProfilePage);
 router.get("/userprofiles", requireAuth, showAllUserProfile);
 router.get("/missions", requireAuth, showMissions);
+router.get("/messages", requireAuth,showMessageContact );
+router.post("/messages/:id/status", requireAuth, updateContactStatus);
+router.post("/messages/:id/delete", requireAuth, deleteContact);
 
 /*
 |--------------------------------------------------------------------------
