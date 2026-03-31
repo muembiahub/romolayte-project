@@ -1,6 +1,6 @@
 // controllers/contactController.js
-import { supabase } from "../../config/database.js";
-import { insertDemandeService } from "../../models/demandeServiceModel.js";
+import { supabase } from "../config/database.js";
+import { insertDemandeService } from "../models/demandeServiceModel.js";
 
 const showForm = async (req, res) => {
   try {

@@ -1,7 +1,7 @@
 import ejs from "ejs";
 import path from "path";
-import { supabase } from "../../config/database.js";
-import { findUserProfile, findDemandeRecus, GetAllUserProfile } from "../../models/userModel.js";
+import { supabase } from "../config/database.js";
+import { findUserProfile, findDemandeRecus, GetAllUserProfile } from "../models/userModel.js";
 
 const ROLE_MAP = {
   1: "user",

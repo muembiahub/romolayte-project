@@ -1,7 +1,7 @@
-import { auth } from "../../config/database.js";
-import { supabase } from "../../config/database.js";
+import { auth } from "../config/database.js";
+import { supabase } from "../config/database.js";
 import {  createUserWithEmailAndPassword,signInWithEmailAndPassword} from "firebase/auth";
-import { createUserProfile } from "../../models/userModel.js";
+import { createUserProfile } from "../models/userModel.js";
 
 
 

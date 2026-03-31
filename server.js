@@ -6,7 +6,7 @@ import helmet from "helmet";
 import session from "express-session";
 
 // Routes
-import router from "./src/views/controllers/routes.js";
+import router from "./src/routes/routes.js";
 import dashboardRoutes from "./src/routes/dashboardRoutes.js";
 import searchRouter from "./src/models/search.js";
 

@@ -7,9 +7,9 @@ import {
   showAllUserProfile,
   showDemandeRecusPage,
   showMissions
-} from "../views/controllers/dashboardController.js";
+} from "../controllers/dashboardController.js";
 
-import {showMessageContact} from "../views/controllers/contactControllers.js";
+import {showMessageContact} from "../controllers/contactControllers.js";
 import{ deleteContact, updateContactStatus} from "../models/contactModel.js"
 
 

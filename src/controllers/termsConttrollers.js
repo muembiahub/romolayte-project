@@ -1,7 +1,7 @@
 // src/controllers/termsController.js
-import { getAllTerms } from "../../models/termsModels.js";
+import { getAllTerms } from "../models/termsModels.js";
 // src/controllers/privacyController.js
-import { getPrivacy } from "../../models/termsModels.js";
+import { getPrivacy } from "../models/termsModels.js";
 
 const showTermsPage = async (req, res) => {
   try {

@@ -1,6 +1,6 @@
 // src/views/controllers/aboutController.js
-import { getAllAboutPages } from '../../models/about.js';
-import { withDefaultImage, formatDate } from '../../models/helpers.js';
+import { getAllAboutPages } from "../models/about.js";
+import { withDefaultImage, formatDate } from '../models/helpers.js';
 
 const defaults = {
   avatar: 'https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/defauts/avatars.webp',

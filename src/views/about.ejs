@@ -1,50 +1,131 @@
 <%- include('partials/header') %>
-<main class="about-page">
-  <h1><%= title %></h1>
+<main class="about-page container my-5">
+
+  <!-- Titre principal -->
+  <h1 class="display-4 fw-bold text-dark text-center mb-4">
+    <i class="fas fa-info-circle text-primary me-2"></i>
+    <%= title %>
+  </h1>
+  <hr class="w-25 mx-auto border-primary mb-5">
 
   <!-- Sections principales -->
-  <% aboutSections.forEach(section => { %>
-    <section>
-      <p><%= section.content %></p>
-    </section>
-  <% }) %>
+<!-- Sections principales -->
+<% if (aboutSections && aboutSections.length) { %>
+  <section class="mb-5">
+    <h2 class="mb-4 text-dark fw-semibold text-center">
+      <i class="fas fa-align-left text-secondary me-2"></i>
+      À propos
+    </h2>
+    <div class="about-sections">
+      <% aboutSections.forEach(section => { %>
+        <div class="about-section-item mb-3">
+          <i class="fas fa-dot-circle text-primary me-2"></i>
+          <span class="text-muted"><%= section.content %></span>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+<% } %>
+
 
   <!-- Valeurs -->
-
-    <% values.forEach(val => { %>
-    
-        <p><strong><%= val.title %></strong> : <%= val.description %></p>
-     
-    <% }) %>
+  <% if (values && values.length) { %>
+    <section class="mb-5">
+      <h2 class="mb-3 text-dark fw-semibold">
+        <i class="fas fa-heart text-danger me-2"></i>
+        Nos valeurs
+      </h2>
+      <ul class="list-group list-group-flush">
+        <% values.forEach(val => { %>
+          <li class="list-group-item d-flex align-items-center">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            <span><strong><%= val.title %></strong> : <%= val.description %></span>
+          </li>
+        <% }) %>
+      </ul>
+    </section>
+  <% } %>
 
   <!-- Équipe -->
-  <h2>Notre équipe</h2>
-  <% team.forEach(member => { %>
-    <div>
-      <img src="<%= withDefaultImage(member.photo_url, defaults.avatar) %>" alt="<%= member.name %>" class="defauts-avatar">
-      <h3><%= member.name %></h3>
-      <p><%= member.role %></p>
-      <p><%= member.bio %></p>
-    </div>
-  <% }) %>
+  <% if (team && team.length) { %>
+    <section class="mb-5">
+      <h2 class="mb-4 text-dark fw-semibold">
+        <i class="fas fa-users text-primary me-2"></i>
+        Notre équipe
+      </h2>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <% team.forEach(member => { %>
+          <div class="col">
+            <div class="card h-100 shadow-sm border-0 text-center">
+              <img src="<%= withDefaultImage(member.photo_url, defaults.avatar) %>" 
+                   alt="Photo de <%= member.name %>" 
+                   class="card-img-top img-fluid rounded-circle border p-2 mx-auto mt-3"
+                   style="width: 140px; height: 140px; object-fit: cover;">
+              <div class="card-body">
+                <h3 class="card-title h5"><%= member.name %></h3>
+                <p class="text-muted mb-1"><i class="fas fa-user-tag me-1"></i><%= member.role %></p>
+                <p class="card-text"><%= member.bio %></p>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
 
   <!-- Milestones -->
-  <h2>Notre histoire</h2>
-  <% milestones.forEach(ms => { %>
-    <div>
-      <h3><%= ms.year %> - <%= ms.title %></h3>
-      <p><%= ms.description %></p>
-      <img src="<%= withDefaultImage(ms.image_url, defaults.milestone) %>" alt="<%= ms.title %>">
-    </div>
-  <% }) %>
+  <% if (milestones && milestones.length) { %>
+    <section class="mb-5">
+      <h2 class="mb-4 text-dark fw-semibold">
+        <i class="fas fa-history text-warning me-2"></i>
+        Notre histoire
+      </h2>
+      <div class="row row-cols-1 row-cols-md-2 g-4">
+        <% milestones.forEach(ms => { %>
+          <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+              <img src="<%= withDefaultImage(ms.image_url, defaults.milestone) %>" 
+                   alt="<%= ms.title %>" 
+                   class="card-img-top img-fluid">
+              <div class="card-body">
+                <h3 class="card-title h5 fw-bold">
+                  <i class="fas fa-calendar-alt me-1 text-primary"></i>
+                  <%= ms.year %> - <%= ms.title %>
+                </h3>
+                <p class="card-text text-muted"><%= ms.description %></p>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
 
   <!-- Partenaires -->
-  <h2>Nos partenaires</h2>
-  <% partners.forEach(partner => { %>
-    <div>
-      <img src="<%= withDefaultImage(partner.logo_url, defaults.logo) %>" alt="<%= partner.name %> " class="defauts-logo">
-      <a href="<%= partner.website_url %>"><%= partner.name %></a>
-    </div>
-  <% }) %>
+  <% if (partners && partners.length) { %>
+    <section class="mb-5">
+      <h2 class="mb-4 text-dark fw-semibold">
+        <i class="fas fa-handshake text-success me-2"></i>
+        Nos partenaires
+      </h2>
+      <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <% partners.forEach(partner => { %>
+          <div class="col text-center">
+            <img src="<%= withDefaultImage(partner.logo_url, defaults.logo) %>" 
+                 alt="Logo de <%= partner.name %>" 
+                 class="img-fluid mb-2 partner-logo"
+                 style="max-height: 80px; object-fit: contain;">
+            <p>
+              <a href="<%= partner.website_url %>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-external-link-alt me-1"></i>
+                <%= partner.name %>
+              </a>
+            </p>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+
 </main>
 <%- include('partials/footer') %>

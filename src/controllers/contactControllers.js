@@ -1,5 +1,5 @@
 // src/controllers/contactController.js
-import { getAllContacts, insertContact } from "../../models/contactModel.js";
+import { getAllContacts, insertContact } from "../models/contactModel.js";
 
 const showContactform = (req, res) => {
   res.render("contact", {

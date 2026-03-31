@@ -1,5 +1,5 @@
 import { name } from "ejs";
-import { getAllServices, getServiceById, getServicesByCategory } from "../../models/services.js";
+import { getAllServices, getServiceById, getServicesByCategory } from "../models/services.js";
 
 /**
  * 1. Liste de tous les services

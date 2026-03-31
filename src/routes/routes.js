@@ -1,18 +1,18 @@
 import express from "express";
-import { supabase } from "../../config/database.js";
+import { supabase } from "../config/database.js";
 
 // Pages controllers
-import { showCategories } from "./categories.js";
+import { showCategories } from "../controllers/categories.js";
 import {
   servicesPages,
   servicesPagesDetails,
   servicesPagesByCategory
-} from "./services.js";
-import { showAboutUsPage } from "./aboutUs.js";
+} from "../controllers/services.js";
+import { showAboutUsPage } from "../controllers/aboutUs.js";
 import {
   showForm,
   submitForm
-} from "./demandeServiceControllers.js";
+} from "../controllers/demandeServiceControllers.js";
 
 // Auth controller (MVC propre ✅)
 import {
@@ -20,10 +20,10 @@ import {
   login,
   logout
 } 
-from "./authController.js";
+from "../controllers/authController.js";
 
-import { showTermsPage, showPrivacyPage } from "./termsConttrollers.js";
-import { sendContact, showContactform } from "./contactControllers.js";
+import { showTermsPage, showPrivacyPage } from "../controllers/termsConttrollers.js";
+import { sendContact, showContactform } from "../controllers/contactControllers.js";
 
 const router = express.Router();
 
@@ -34,6 +34,7 @@ const asyncHandler = (fn) => (req, res, next) =>
 /* =========================
    Pages publiques
 ========================= */
+router.get("/", asyncHandler(showCategories));
 router.get("/categories", asyncHandler(showCategories));
 
 router.get("/services", asyncHandler(servicesPages));
