@@ -1,61 +1,98 @@
-main.about-page {
-  max-width: 960px;
+:root {
+  --max-width: 960px;
+  --font-family: 'Segoe UI', sans-serif;
+  --text-color: #333;
+  --primary-color: #2c3e50;
+  --card-bg: #f9f9f9;
+  --border-radius: 8px;
+  --spacing: 1rem;
+  --shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.about-page {
+  max-width: var(--max-width);
   margin: 0 auto;
   padding: 2rem;
-  font-family: 'Segoe UI', sans-serif;
-  color: #333;
+  font-family: var(--font-family);
+  color: var(--text-color);
 }
 
-.about-page h1, h2 {
+.about-page h1,
+.about-page h2 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #2c3e50;
+  color: var(--primary-color);
 }
 
-.about-page.section, .div {
+.about-page section {
   margin-bottom: 2rem;
-  padding: 1rem;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+  padding: var(--spacing);
+  border-radius: var(--border-radius);
+  background-color: var(--card-bg);
 }
 
-.defauts-avatar {  max-width: 100%;  height: auto;  display: block;  margin: 1rem auto;  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+.default-avatar {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: var(--spacing) auto;
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+}
+
+.default-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-right: var(--spacing);
 }
 
 .about-page ul {
   list-style: none;
   padding: 0;
 }
-.defauts-logo{width: 100px; height: 100px; object-fit: contain; margin-right: 1rem}
 
 .about-page ul li {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: var(--spacing);
+  margin-bottom: var(--spacing);
 }
 
-.about-page  ul li img {
+.about-page ul li img {
   width: 48px;
   height: 48px;
   object-fit: contain;
 }
 
-.team img {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
+.team-photo {
+  width: 100%;
+  height: 250px;
   object-fit: cover;
+  object-position: top center;
+  border-radius: var(--border-radius);
 }
 
+@media (max-width: 768px) {
+  .about-page {
+    padding: 1rem;
+  }
 
+  .team-photo {
+    height: auto;
+  }
 
-.about-page   a {
-  color: #2980b9;
-  text-decoration: none;
-}
+  .card-title {
+    font-size: 1rem;
+  }
 
-.about-page  a:hover {
-  text-decoration: underline;
+  .default-logo {
+    margin: 0 auto var(--spacing);
+    display: block;
+  }
+
+  .about-page ul li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

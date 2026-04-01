@@ -18,6 +18,7 @@ footer .footer-section {
 footer h4 {
   margin-bottom: 10px;
   font-size: 16px;
+  text-align: start;
   border-bottom: 1px solid #fff;
   padding-bottom: 5px;
 }

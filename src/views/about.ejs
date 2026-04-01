@@ -8,29 +8,27 @@
   </h1>
   <hr class="w-25 mx-auto border-primary mb-5">
 
-  <!-- Sections principales -->
-<!-- Sections principales -->
-<% if (aboutSections && aboutSections.length) { %>
-  <section class="mb-5">
-    <h2 class="mb-4 text-dark fw-semibold text-center">
-      <i class="fas fa-align-left text-secondary me-2"></i>
-      Qui sommes-nous ?
-    </h2>
-    <div class="about-sections">
-      <% aboutSections.forEach(section => { %>
-        <div class="about-section-item mb-3">
-          <i class="fas fa-dot-circle text-primary me-2"></i>
-          <span class="text-muted"><%= section.content %></span>
-        </div>
-      <% }) %>
-    </div>
-  </section>
-<% } %>
-
+  <!-- Qui sommes-nous -->
+  <% if (aboutSections && aboutSections.length) { %>
+    <section>
+      <h2 class="mb-4 text-dark fw-semibold text-center">
+        <i class="fas fa-align-left text-secondary me-2"></i>
+        Qui sommes-nous ?
+      </h2>
+      <div class="about-sections">
+        <% aboutSections.forEach(section => { %>
+          <div class="about-section-item mb-3">
+            <i class="fas fa-dot-circle text-primary me-2"></i>
+            <span class="text-muted"><%= section.content %></span>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
 
   <!-- Valeurs -->
   <% if (values && values.length) { %>
-    <section class="mb-5">
+    <section>
       <h2 class="mb-3 text-dark fw-semibold">
         <i class="fas fa-heart text-danger me-2"></i>
         Nos valeurs
@@ -48,23 +46,36 @@
 
   <!-- Équipe -->
   <% if (team && team.length) { %>
-    <section class="mb-5">
-      <h2 class="mb-4 text-dark fw-semibold">
+    <section class="team">
+      <h2 class="mb-4 text-dark fw-semibold text-center">
         <i class="fas fa-users text-primary me-2"></i>
         Notre équipe
       </h2>
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
         <% team.forEach(member => { %>
           <div class="col">
             <div class="card h-100 shadow-sm border-0 text-center">
               <img src="<%= withDefaultImage(member.photo_url, defaults.avatar) %>" 
-                   alt="Photo de <%= member.name %>" 
-                   class="card-img-top img-fluid rounded-circle border p-2 mx-auto mt-3"
-                   style="width: 140px; height: 140px; object-fit: cover;">
+                   alt="Portrait de <%= member.name %>, <%= member.role %>" 
+                   class="card-img-top img-fluid team-photo"
+                   loading="lazy">
               <div class="card-body">
-                <h3 class="card-title h5"><%= member.name %></h3>
-                <p class="text-muted mb-1"><i class="fas fa-user-tag me-1"></i><%= member.role %></p>
-                <p class="card-text"><%= member.bio %></p>
+                <h3 class="card-title h5"><%= member.name || "Nom indisponible" %></h3>
+                <p class="text-muted mb-1">
+                  <i class="fas fa-user-tag me-1"></i>
+                  <%= member.role || "Rôle non défini" %>
+                </p>
+                <p class="card-text collapse" id="bio-<%= member.name.replace(/\s+/g, '-') %>">
+                  <%= member.bio || "Biographie à venir..." %>
+                </p>
+                <% if (member.bio && member.bio.length > 120) { %>
+                  <a class="btn btn-sm btn-outline-primary mt-2" 
+                     data-bs-toggle="collapse" 
+                     href="#bio-<%= member.name.replace(/\s+/g, '-') %>" 
+                     aria-label="Voir la biographie complète de <%= member.name %>">
+                    Voir plus
+                  </a>
+                <% } %>
               </div>
             </div>
           </div>
@@ -73,9 +84,9 @@
     </section>
   <% } %>
 
-  <!-- Milestones -->
+  <!-- Histoire -->
   <% if (milestones && milestones.length) { %>
-    <section class="mb-5">
+    <section>
       <h2 class="mb-4 text-dark fw-semibold">
         <i class="fas fa-history text-warning me-2"></i>
         Notre histoire
@@ -103,7 +114,7 @@
 
   <!-- Partenaires -->
   <% if (partners && partners.length) { %>
-    <section class="mb-5">
+    <section>
       <h2 class="mb-4 text-dark fw-semibold">
         <i class="fas fa-handshake text-success me-2"></i>
         Nos partenaires
@@ -113,8 +124,7 @@
           <div class="col text-center">
             <img src="<%= withDefaultImage(partner.logo_url, defaults.logo) %>" 
                  alt="Logo de <%= partner.name %>" 
-                 class="img-fluid mb-2 partner-logo"
-                 style="max-height: 80px; object-fit: contain;">
+                 class="img-fluid mb-2 default-logo">
             <p>
               <a href="<%= partner.website_url %>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm">
                 <i class="fas fa-external-link-alt me-1"></i>
