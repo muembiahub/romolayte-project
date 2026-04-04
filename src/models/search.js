@@ -1,5 +1,5 @@
 import express from 'express';
-import {supabase }from '../config/database.js';
+import { supabase } from '../config/database.js';
 
 const router = express.Router();
 
@@ -7,11 +7,12 @@ router.get('/', async (req, res) => {
   try {
     const q = (req.query.q || '').trim();
 
+    // Si la requête est vide, renvoyer un succès avec des listes vides
     if (!q) {
       return res.json({ success: true, services: [], categories: [] });
     }
 
-    // Exécuter les deux recherches en parallèle
+    // Exécuter les recherches en parallèle
     const [servicesResult, categoriesResult] = await Promise.all([
       supabase
         .from('services')
@@ -26,7 +27,7 @@ router.get('/', async (req, res) => {
         .limit(5),
     ]);
 
-    // Vérifier erreurs
+    // Vérifier les erreurs
     if (servicesResult.error || categoriesResult.error) {
       return res.status(500).json({
         success: false,
@@ -38,6 +39,7 @@ router.get('/', async (req, res) => {
       });
     }
 
+    // Réponse JSON avec les résultats
     res.json({
       success: true,
       services: servicesResult.data || [],

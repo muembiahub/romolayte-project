@@ -1,143 +1,160 @@
-<%- include('partials/header.ejs') %>
+<!-- ================= CONTACT PAGE ================= -->
 
-<!-- Import Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<div class="container my-5 contact-page">
 
-<main class="container my-5">
-  <!-- Titre stylisé avec icône -->
-  <h1 class="title-romolayte-contact mb-4">
-    <i class="fas fa-envelope-open-text me-2"></i> Contactez-nous – ROMOLAYTE
-  </h1>
-  <p class="text-center text-muted">
-    Vous avez une question, une demande ou besoin d’assistance ? Remplissez le formulaire ci-dessous ou utilisez nos coordonnées directes.
-  </p>
+  <!-- ===== PAGE HEADER ===== -->
+  <header class="text-center mb-5">
+    <h1 class="contact-title mb-3">
+      <i class="fa-solid fa-envelope-open-text me-2 text-primary"></i>
+      Contactez‑nous – ROMOLAYTE
+    </h1>
 
-  <!-- Section coordonnées -->
-  <div class="row my-4">
+    <p class="text-muted fs-6">
+      Besoin d’informations, d’assistance ou d’un devis ?
+      Notre équipe est à votre écoute.
+    </p>
+
+    <hr class="contact-divider">
+  </header>
+
+  <!-- ===== CONTACT INFOS ===== -->
+  <section class="row g-4 text-center mb-5">
+
     <!-- Email -->
-    <div class="col-md-3 text-center">
-      <i class="fas fa-envelope fa-2x text-primary mb-2"></i>
-      <p>
-        <a href="mailto:romolayte@infos.space" class="text-decoration-none fw-semibold text-primary">
-          infos@romolayte.space
-        </a>
-      </p>
-    </div>
+    <div class="col-6 col-md-3">
+  <div class="contact-box">
+    <i class="fa-solid fa-envelope contact-icon text-primary"></i>
+    <p class="mb-0">
+      <a
+        href="mailto:contact@romolayte.space"
+        class="contact-email"
+      >
+        contact@romolayte.space
+      </a>
+    </p>
+  </div>
+</div>
 
-    <!-- Téléphone -->
-    <div class="col-md-3 text-center">
-      <i class="fas fa-phone fa-2x text-success mb-2"></i>
-      <p>
-        <a href="tel:+243825267122" class="text-decoration-none text-success fw-semibold">
-          +243 825 267 122
-        </a>
-      </p>
+    <!-- Phone -->
+    <div class="col-6 col-md-3">
+      <div class="contact-box">
+        <i class="fa-solid fa-phone contact-icon text-success"></i>
+        <p class="mb-0">
+          <a href="tel:+243825267122">
+            +243 825 267 122
+          </a>
+        </p>
+      </div>
     </div>
 
     <!-- WhatsApp -->
-    <div class="col-md-3 text-center">
-      <i class="fab fa-whatsapp fa-2x text-success mb-2"></i>
-      <p>
-        <a href="https://wa.me/243825267122" target="_blank" class="text-decoration-none text-success fw-semibold">
-          WhatsApp
-        </a>
-      </p>
+    <div class="col-6 col-md-3">
+      <div class="contact-box">
+        <i class="fa-brands fa-whatsapp contact-icon text-success"></i>
+        <p class="mb-0">
+          <a href="https://wa.me/243825267122" target="_blank" rel="noopener">
+            WhatsApp
+          </a>
+        </p>
+      </div>
     </div>
 
-    <!-- Adresse -->
-    <div class="col-md-3 text-center">
-      <i class="fas fa-map-marker-alt fa-2x text-danger mb-2"></i>
-      <p class="fw-semibold text-danger">
-        <a href="https://www.google.com/maps/place/Lubumbashi,+RDC" 
-           target="_blank" 
-           class="text-decoration-none text-danger fw-semibold">
-          Lubumbashi, RDC
-        </a>
-      </p>
+    <!-- Location -->
+    <div class="col-6 col-md-3">
+      <div class="contact-box">
+        <i class="fa-solid fa-location-dot contact-icon text-danger"></i>
+        <p class="mb-0">
+          <a
+            href="https://www.google.com/maps/place/Lubumbashi,+RDC"
+            target="_blank"
+            rel="noopener"
+          >
+            Lubumbashi, RDC
+          </a>
+        </p>
+      </div>
     </div>
-  </div>
 
-  <!-- Messages de succès ou d'erreur -->
+  </section>
+
+  <!-- ===== ALERTS ===== -->
   <% if (successMessage) { %>
-    <div class="alert alert-success text-center fw-semibold" role="alert">
-      <i class="fas fa-check-circle me-2"></i> <%= successMessage %>
+    <div class="alert alert-success text-center rounded-3">
+      <i class="fa-solid fa-circle-check me-2"></i>
+      <%= successMessage %>
     </div>
   <% } %>
 
   <% if (errorMessage) { %>
-    <div class="alert alert-danger text-center fw-semibold" role="alert">
-      <i class="fas fa-exclamation-triangle me-2"></i> <%= errorMessage %>
+    <div class="alert alert-danger text-center rounded-3">
+      <i class="fa-solid fa-triangle-exclamation me-2"></i>
+      <%= errorMessage %>
     </div>
   <% } %>
 
-  <!-- Formulaire de contact -->
-  <div class="card shadow-lg rounded p-4">
-    <form action="/send-contact" method="POST">
-      <div class="mb-3">
-        <label for="name" class="form-label fw-semibold">
-          <i class="fas fa-user me-2"></i> Nom
-        </label>
-        <input type="text" class="form-control" id="name" name="name" placeholder="Votre nom complet" required>
+  <!-- ===== CONTACT FORM ===== -->
+  <section class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <div class="card contact-card shadow-lg border-0">
+        <div class="card-body p-4 p-lg-5">
+
+          <h2 class="h5 text-center mb-4">
+            Envoyez‑nous un message
+          </h2>
+
+          <form action="/send-contact" method="POST">
+
+            <div class="mb-3">
+              <label class="form-label">
+                <i class="fa-solid fa-user me-2"></i> Nom
+              </label>
+              <input
+                type="text"
+                name="name"
+                class="form-control"
+                placeholder="Votre nom complet"
+                required
+              >
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">
+                <i class="fa-solid fa-envelope me-2"></i> Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                class="form-control"
+                placeholder="Votre adresse email"
+                required
+              >
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">
+                <i class="fa-solid fa-comment-dots me-2"></i> Message
+              </label>
+              <textarea
+                name="message"
+                rows="5"
+                class="form-control"
+                placeholder="Écrivez votre message ici..."
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 contact-submit">
+              <i class="fa-solid fa-paper-plane me-2"></i>
+              Envoyer le message
+            </button>
+
+          </form>
+
+        </div>
       </div>
 
-      <div class="mb-3">
-        <label for="email" class="form-label fw-semibold">
-          <i class="fas fa-envelope me-2"></i> Email
-        </label>
-        <input type="email" class="form-control" id="email" name="email" placeholder="Votre adresse email" required>
-      </div>
+    </div>
+  </section>
 
-      <div class="mb-3">
-        <label for="message" class="form-label fw-semibold">
-          <i class="fas fa-comment-dots me-2"></i> Message
-        </label>
-        <textarea class="form-control" id="message" name="message" rows="5" placeholder="Votre message..." required></textarea>
-      </div>
-
-      <button type="submit" class="btn btn-primary w-100 fw-bold">
-        <i class="fas fa-paper-plane me-2"></i> Envoyer
-      </button>
-    </form>
-  </div>
-</main>
-
-<%- include('partials/footer.ejs') %>
-
-<!-- Style personnalisé -->
-<style>
-  /* Palette pour Contact (bleu clair + blanc) */
-  .title-romolayte-contact {
-    font-size: 2.5rem;
-    font-weight: 700;
-    text-align: center;
-    color: #0077b6; /* bleu clair */
-    background: linear-gradient(to right, #caf0f8, #ade8f4);
-    padding: 20px;
-    border-radius: 8px;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-  }
-
-  .title-romolayte-contact:hover {
-    background: linear-gradient(to right, #ade8f4, #caf0f8);
-    color: #023e8a;
-    cursor: pointer;
-  }
-
-  .card {
-    border: none;
-  }
-
-  .form-label {
-    color: #023e8a;
-  }
-
-  .btn-primary {
-    background-color: #0077b6;
-    border: none;
-  }
-
-  .btn-primary:hover {
-    background-color: #023e8a;
-  }
-</style>
+</div>

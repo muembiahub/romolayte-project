@@ -1,13 +1,55 @@
-import { auth } from "../config/database.js";
-import { supabase } from "../config/database.js";
-import {  createUserWithEmailAndPassword,signInWithEmailAndPassword} from "firebase/auth";
+import { auth, supabase } from "../config/database.js";
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword 
+} from "firebase/auth";
 import { createUserProfile } from "../models/userModel.js";
 
+const ROLE_MAP = {
+  1: "user",
+  2: "prestataire",
+  3: "admin",
+  4: "super-admin"
+};
 
-
+// Fonction utilitaire pour formater les erreurs Firebase
+function formatFirebaseError(error) {
+  switch (error.code) {
+    case "auth/email-already-in-use":
+      return {
+        field: "email",
+        message: "🚫 Cette adresse e‑mail est déjà utilisée. Veuillez en choisir une autre."
+      };
+    case "auth/invalid-email":
+      return {
+        field: "email",
+        message: "⚠️ L'adresse e‑mail saisie est invalide."
+      };
+    case "auth/weak-password":
+      return {
+        field: "password",
+        message: "🔒 Votre mot de passe est trop faible. Utilisez au moins 6 caractères."
+      };
+    case "auth/user-not-found":
+      return {
+        field: "usernameOrEmail",
+        message: "❌ Aucun compte trouvé avec ces identifiants."
+      };
+    case "auth/wrong-password":
+      return {
+        field: "password",
+        message: "🔑 Mot de passe incorrect. Veuillez réessayer."
+      };
+    default:
+      return {
+        field: null,
+        message: "❌ Une erreur inattendue est survenue : " + error.message
+      };
+  }
+}
 
 /* =========================
-   SIGNUP (JSON only, avec gestion des erreurs)
+   SIGNUP avec session + rôle
 ========================= */
 const signup = async (req, res) => {
   const {
@@ -24,12 +66,11 @@ const signup = async (req, res) => {
   } = req.body;
 
   try {
-    // Vérification mots de passe
     if (password !== confirm_password) {
       return res.status(400).json({
         success: false,
         field: "confirm_password",
-        message: "Les mots de passe ne correspondent pas"
+        message: "⚠️ Les mots de passe ne correspondent pas."
       });
     }
 
@@ -37,7 +78,7 @@ const signup = async (req, res) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
 
-    // Création profil Supabase
+    // Création profil Supabase avec rôle par défaut (ex: 1)
     const result = await createUserProfile({
       uid: firebaseUser.uid,
       email: firebaseUser.email,
@@ -48,163 +89,92 @@ const signup = async (req, res) => {
       category_id,
       service_id,
       username,
-      role_id: 1,
+      role_id: 1, // rôle par défaut
       created_at: new Date()
     });
 
-    // Vérifier si createUserProfile a renvoyé une erreur
     if (result && result.error) {
       return res.status(400).json({
         success: false,
-        message: "Erreur lors de la création du profil Supabase : " + result.error.message
+        message: "❌ Erreur lors de la création du profil Supabase : " + result.error.message
       });
     }
 
-    // Succès → retour sur la page auth avec paramètre registered=true
-    return res.json({
-      success: true,
-      redirect: "/auth?registered=true",
-      message: "Compte créé avec succès. Veuillez vous connecter."
-    });
+    // ✅ Stocker l’utilisateur en session avec rôle
+    req.session.user = {
+      uid: firebaseUser.uid,
+      username,
+      email: firebaseUser.email,
+      role_id: 1,
+      role: ROLE_MAP[1]
+    };
+
+    return res.redirect("/dashboard");
 
   } catch (error) {
-    // Gestion des erreurs Firebase courantes
-    let field = null;
-    let message = "Erreur lors de l'inscription";
-
-    switch (error.code) {
-      case "auth/email-already-in-use":
-        field = "email";
-        message = "Cette adresse email est déjà utilisée. Veuillez en choisir une autre.";
-        break;
-      case "auth/invalid-email":
-        field = "email";
-        message = "Adresse email invalide.";
-        break;
-      case "auth/weak-password":
-        field = "password";
-        message = "Mot de passe trop faible. Minimum 6 caractères.";
-        break;
-      default:
-        message = error.message || message;
-    }
-
+    const formatted = formatFirebaseError(error);
     return res.status(400).json({
       success: false,
-      field,
-      message
+      field: formatted.field,
+      message: formatted.message
     });
   }
 };
 
 /* =========================
-   LOGIN
+   LOGIN avec session + rôle
 ========================= */
-const login = async (req, res, next) => {
-  let { usernameOrEmail, password } = req.body;
+const login = async (req, res) => {
+  const { usernameOrEmail, password } = req.body;
 
   try {
     if (!usernameOrEmail || !password) {
       return res.status(400).json({
         success: false,
         field: !usernameOrEmail ? "usernameOrEmail" : "password",
-        message: "Identifiant et mot de passe requis"
+        message: "⚠️ Identifiant et mot de passe requis."
       });
     }
 
-    usernameOrEmail = usernameOrEmail.trim().toLowerCase();
-    let emailToUse = usernameOrEmail;
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(usernameOrEmail)) {
-      const { data, error } = await supabase
-        .from("user_profiles")
-        .select("email")
-        .ilike("username", usernameOrEmail)
-        .single();
-
-      if (error || !data) {
-        return res.status(400).json({
-          success: false,
-          field: "usernameOrEmail",
-          message: "Utilisateur introuvable"
-        });
-      }
-
-      emailToUse = data.email;
-    }
-
-    // Firebase login
-    let userCredential;
-    try {
-      userCredential = await signInWithEmailAndPassword(auth, emailToUse, password);
-    } catch (err) {
-      return res.status(400).json({
-        success: false,
-        field: "password",
-        message: "Email ou Mot de passe incorrect"
-      });
-    }
-
+    const userCredential = await signInWithEmailAndPassword(auth, usernameOrEmail, password);
     const firebaseUser = userCredential.user;
 
-    // Supabase profile
-    const { data: profile, error } = await supabase
+    // Récupérer le profil Supabase (incluant role_id)
+    const { data: userProfile, error } = await supabase
       .from("user_profiles")
       .select("*")
       .eq("uid", firebaseUser.uid)
       .single();
 
-    if (error || !profile) {
-      return res.status(400).json({
+    if (error || !userProfile) {
+      return res.status(404).json({
         success: false,
-        field: "usernameOrEmail",
-        message: "Profil utilisateur introuvable"
+        message: "❌ Profil utilisateur introuvable."
       });
     }
 
-    /* ✅ SESSION */
-    const ROLE_MAP = {
-      1: "user",
-      2: "prestataire",
-      3: "admin",
-      4: "super-admin"
-    };
-
-    const roleId = profile.role_id;
-    const roleName = ROLE_MAP[roleId] || "user";
-
+    // ✅ Stocker l’utilisateur en session avec rôle
     req.session.user = {
-      uid: profile.uid,
-      username: profile.username,
-      email: profile.email,
-      firstname: profile.firstname,
-      lastname: profile.lastname,
-      logo: profile.logo,
-      birthday: profile.birthday,
-      created_at: profile.created_at,
-      role_id: roleId,
-      role: roleName,
-      role_level: roleId,
-      service_id: profile.service_id,
-      category_id: profile.category_id
+      uid: firebaseUser.uid,
+      username: userProfile.username,
+      email: firebaseUser.email,
+      role_id: userProfile.role_id,
+      role: userProfile.role_id ? ROLE_MAP[userProfile.role_id] : "user",
+      firstname: userProfile.firstname,
+      lastname: userProfile.lastname,
     };
-//  
-   req.session.save(err => {
-  if (err) return next(err);
-  res.json({ success: true, redirect: "/dashboard" });
-});
 
+    return res.redirect("/dashboard");
 
   } catch (error) {
-    return res.status(500).json({
+    const formatted = formatFirebaseError(error);
+    return res.status(401).json({
       success: false,
-      field: null,
-      message: "Erreur interne du serveur"
+      field: formatted.field,
+      message: formatted.message
     });
   }
 };
-
 
 /* =========================
    LOGOUT

@@ -26,6 +26,10 @@
 
     "@supabase/supabase-js": "2.39.4",
 
+    "bcrypt": "^6.0.0",
+
+    "bootstrap": "^5.3.8",
+
     "connect-flash": "^0.1.1",
 
     "dotenv": "^16.3.1",
@@ -44,7 +48,11 @@
 
     "iceberg-js": "^0.8.1",
 
+    "jsonwebtoken": "^9.0.3",
+
     "multer": "^2.1.1",
+
+    "nodemailer": "^8.0.4",
 
     "passport": "^0.7.0",
 

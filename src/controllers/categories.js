@@ -2,20 +2,29 @@ import { getCategories } from "../models/categories.js";
 
 const showCategories = async (req, res) => {
   try {
-    const categories = await getCategories();
-    const  home = "Bienvenue chez  Romolayte. Nous vous présentons nos différentes catégories de services"
-    const title = "Liste des nos catégories";
 
+    // Fetch all categories from DB
+    const categories = await getCategories();
+
+    // Set page title
+    const title = "Liste de nos catégories";
+
+    // Render page with layout
     res.render("categories", {
-      layout: false,
-      home, title, categories });
+      layout: "partials/layoute",   // ❗ Ensure your layout file is named layout.ejs
+      title,
+      categories,
+    });
+
   } catch (error) {
-    console.error("Error in showCategories:", error.message);
-    res.status(500).render("errors", { 
-      title: 'Server Error ',
-      error: "Impossible de charger les catégories.",
-      stack: "Vue ",
-      message: "Impossible de charger les catégories." 
+    console.error("❌ Error in showCategories:", error.message);
+
+    res.status(500).render("errors", {
+      layout: "layout",
+      title: "Erreur Serveur",
+      message: "Impossible de charger les catégories.",
+      error: error.message,
+      stack: error.stack,
     });
   }
 };

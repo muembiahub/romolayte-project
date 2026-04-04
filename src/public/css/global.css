@@ -1,0 +1,255 @@
+/* =====================================================
+   GLOBAL LAYOUT & THEME VARIABLES
+===================================================== */
+
+:root {
+  /* Layout */
+  --navbar-height: 72px;
+  --radius: 0.75rem;
+  --transition-fast: 0.2s ease;
+  --transition-base: 0.3s ease;
+
+  /* Light theme */
+  --header-bg: #0721e3;
+  --bg-color: #ffffff;
+  --text-color: #212529;
+  --card-bg: #ffffff;
+  --border-color: #dee2e6;
+  --navbar-bg: #ffffff;
+  --footer-bg: #121212;
+  --footer-text: #cccccc;
+  --muted-text: #6c757d;
+}
+
+/* =====================================================
+   BASE
+===================================================== */
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding-top: var(--navbar-height);
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base);
+}
+
+/* Main content spacing */
+.main-content {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+/* =====================================================
+   NAVBAR (Sticky + Smart)
+===================================================== */
+
+
+/* Facebook */
+.list-inline-item.fa-facebook-f {
+  color: #1877f2; /* Facebook blue */
+  font-size: large;
+}
+
+/* Instagram (gradient look) */
+.list-inline-item .fa-instagram {
+  color: #e4405f; /* Instagram pink/red */
+}
+
+/* YouTube */
+.list-inline-item .fa-youtube {
+  color: #ff0000; /* YouTube red */
+}
+
+/* LinkedIn */
+.list-inline-item .fa-linkedin-in {
+  color: #0a66c2; /* LinkedIn blue */
+}
+
+/* Optional: hover effect */
+.top-page .list-inline-item a:hover i {
+  opacity: 0.8;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
+
+.navbar {
+  background-color: var(--navbar-bg);
+  transition:
+    transform var(--transition-base),
+    background-color var(--transition-base);
+  box-shadow: 0 2px 4px rgba(0,0,0,.04);
+}
+
+/* Navbar hidden on scroll down */
+.navbar.nav-hidden {
+  transform: translateY(-100%);
+}
+
+/* Navbar links */
+.navbar .nav-link {
+  font-weight: 500;
+  color: var(--text-color);
+  transition: color var(--transition-fast);
+}
+
+.navbar .nav-link {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.navbar .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background-color: yellow;
+  transition: width 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+  color: var(--header-bg);
+}
+
+.navbar .nav-link:hover::after {
+  width: 100%; /* animated underline grows from left to right */
+}
+
+
+/* Toggler focus fix */
+.navbar-toggler:focus {
+  box-shadow: none;
+}
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: var(--footer-text);
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+.footer a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* =====================================================
+   CARDS / PANELS
+===================================================== */
+
+.card,
+.auth-panel {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  border-radius: var(--radius);
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+}
+
+/* =====================================================
+   TEXT & UTILITIES
+===================================================== */
+
+.text-muted {
+  color: var(--muted-text) !important;
+}
+
+hr {
+  border-color: var(--border-color);
+}
+
+/* Focus accessibility */
+:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* =====================================================
+   DARK MODE
+===================================================== */
+
+body.dark {
+  --bg-color: #121212;
+  --text-color: #eaeaea;
+  --card-bg: #1e1e1e;
+  --border-color: #2f2f2f;
+  --navbar-bg: #1a1a1a;
+  --footer-bg: #0d0d0d;
+  --footer-text: #bbbbbb;
+  --muted-text: #9aa0a6;
+}
+
+/* Dark mode hover fixes */
+body.dark .navbar .nav-link:hover {
+  color: #66b2ff;
+}
+
+/* =====================================================
+   SYSTEM PREFERS COLOR SCHEME (OPTIONNEL)
+===================================================== */
+
+@media (prefers-color-scheme: dark) {
+  body:not(.dark):not(.light-forced) {
+    --bg-color: #121212;
+    --text-color: #eaeaea;
+    --card-bg: #1e1e1e;
+    --border-color: #2f2f2f;
+    --navbar-bg: #1a1a1a;
+    --footer-bg: #0d0d0d;
+    --footer-text: #bbbbbb;
+    --muted-text: #9aa0a6;
+  }
+}
+
+/* =====================================================
+   AUTH FORMS TOGGLE
+===================================================== */
+
+.form-block {
+  display: none;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.form-block.active {
+  display: block;
+  opacity: 1;
+}
+
+/* =====================================================
+   BUTTON ENHANCEMENTS
+===================================================== */
+
+.btn {
+  border-radius: var(--radius);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.btn:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}

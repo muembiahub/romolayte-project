@@ -69,17 +69,61 @@ app.use((req, res, next) => {
 });
 
 /* =========================
-   Helmet CSP
+   Helmet - Content Security Policy (CSP)
 ========================= */
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
+      /* Valeur par défaut */
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "https:", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", SUPABASE_URL].filter(Boolean),
-      connectSrc: ["'self'", SUPABASE_URL, "https://nominatim.openstreetmap.org"].filter(Boolean),
-      fontSrc: ["'self'", "https:", "data:"],
+
+      /* JavaScript */
+      scriptSrc: [
+        "'self'",
+        "https://cdn.jsdelivr.net",       // Bootstrap JS
+        "'unsafe-inline'",               // scripts inline
+      ],
+
+      /* Attributs JS inline (onclick, onload…) */
+      scriptSrcAttr: [
+        "'unsafe-inline'",
+      ],
+
+      /* CSS */
+      styleSrc: [
+        "'self'",
+        "https://cdn.jsdelivr.net",       // Bootstrap CSS
+        "https://cdnjs.cloudflare.com",   // Font Awesome CSS
+        "'unsafe-inline'",
+      ],
+
+      /* Images */
+      imgSrc: [
+        "'self'",
+        "data:",
+        SUPABASE_URL,
+      ].filter(Boolean),
+
+      /* Requêtes réseau / source maps */
+      connectSrc: [
+        "'self'",
+        SUPABASE_URL,
+        "https://nominatim.openstreetmap.org",
+        "https://cdn.jsdelivr.net",       // Bootstrap .map
+      ].filter(Boolean),
+
+      /* Polices */
+      fontSrc: [
+        "'self'",
+        "https://cdnjs.cloudflare.com",   // Font Awesome fonts
+        "https://cdn.jsdelivr.net",
+        "data:",
+      ],
+
+      /* Sécurité renforcée */
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      frameAncestors: ["'self'"],
     },
   })
 );
@@ -149,7 +193,7 @@ app.use((err, req, res, next) => {
   }
 
   res.status(status).render("errors", {
-    layout: false,
+    layout: "partials/layoute",
     status: status || 500,
     title: title || "Erreur serveur",
     message: err.message || "Une erreur inattendue est survenue."

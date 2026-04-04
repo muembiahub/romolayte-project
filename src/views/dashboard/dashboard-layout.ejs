@@ -65,20 +65,20 @@
       </div>
       <nav>
         <ul>
-          <% if (user.role_level >= 1) { %>
+          <% if (user.role_id >= 1) { %>
             <li><a href="/dashboard"><i class="fas fa-home"></i> Accueil</a></li>
           <% } %>
-          <% if (user.role_level >= 2) { %>
+          <% if (user.role_id >= 2) { %>
             <li><a href="/dashboard/missions"><i class="fas fa-briefcase"></i> Mes Tâches</a></li>
           <% } %>
-          <% if (user.role_level >= 3) { %>
+          <% if (user.role_id >= 3) { %>
             <li class="rom-sidebar-title">Administration</li>
             <li><a href="/dashboard/userprofiles"><i class="fas fa-users"></i> Utilisateurs</a></li>
             <li><a href="/dashboard/demande_recus"><i class="fas fa-cogs"></i> Demandes</a></li>
             <li><a href="/dashboard/statistique"><i class="fas fa-chart-bar"></i> Statistique</a></li>
             <li><a href="/dashboard/messages"><i class="fas fa-envelope"></i> Messages</a></li>
           <% } %>
-          <% if (user.role_level >= 4) { %>
+          <% if (user.role_id >= 4) { %>
             <li class="rom-sidebar-title">Super Administration</li>
             <li><a href="/dashboard/changeroles"><i class="fas fa-user-tag"></i> Rôles & Permissions</a></li>
             <li><a href="/dashboard/changesystem"><i class="fas fa-server"></i> Paramètres Système</a></li>

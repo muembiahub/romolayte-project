@@ -10,27 +10,45 @@
 </p>
 
 <!-- Widgets statistiques -->
+ <% if (user.role === "admin" || user.role === "super-admin") { %>
 <div class="rom-cards-grid stats-widgets">
   <div class="rom-card">
     <h3 class="rom-card-title">👥 Utilisateurs</h3>
     <p class="rom-card-subtitle"><%= stats.usersCount %> inscrits</p>
   </div>
-
-  <div class="rom-card">
-    <h3 class="rom-card-title">📋 Missions</h3>
-    <p class="rom-card-subtitle"><%= stats.missionsCount %> en cours</p>
-  </div>
-
   <div class="rom-card">
     <h3 class="rom-card-title">🛠 Demandes</h3>
     <p class="rom-card-subtitle"><%= stats.demandesCount %> reçues</p>
   </div>
+  <div class="rom-card">
+    <h3 class="rom-card-title">📋 Missions</h3>
+    <p class="rom-card-subtitle"><%= stats.missionsCount %> en cours</p>
+  </div>
+  <% } else if (user.role === "prestataire") { %>
+    <!-- PRESTATAIRE -->
+    <div class="rom-card">
+    <h3 class="rom-card-title">📋 Missions</h3>
+    <p class="rom-card-subtitle"><%= stats.missionsCount %> en cours</p>
+  </div>
+  <% } else { %>
+    <!-- USER -->
+    <div class="rom-card">
+    <h3 class="rom-card-title"> Message</h3>
+    <p class="rom-card-subtitle"> Vous etes special pour nous </p>
+  </div>
+  <% } %>
 </div>
+
+
+
+
+
+  
 
 <!-- Section rôle -->
 <div class="rom-cards-grid">
 
-  <% if (user.role_level >= 3) { %>
+  <% if (user.role_id >= 3) { %>
     <!-- ADMIN & SUPER‑ADMIN -->
     <div class="rom-card rom-admin-card">
       <h3 class="rom-card-title">⚙️ Administration</h3>
@@ -45,7 +63,7 @@
       </a>
     </div>
 
-  <% } else if (user.role_level === 2) { %>
+  <% } else if (user.role_id === 2) { %>
     <!-- PRESTATAIRE -->
     <div class="rom-card rom-prestataire-card">
       <h3 class="rom-card-title">🧑‍🔧 Prestataire</h3>
@@ -55,7 +73,7 @@
       </a>
     </div>
 
-  <% } else if (user.role_level === 1) { %>
+  <% } else if (user.role_id === 1) { %>
     <!-- UTILISATEUR -->
     <div class="rom-card rom-user-card">
       <h3 class="rom-card-title">📂 Mon service</h3>

@@ -37,11 +37,19 @@ const showDashboard = async (req, res, next) => {
       .select("*", { count: "exact", head: true });
     if (demandesError) throw demandesError;
 
+    // show user_profiles infos
+    const { data: user_profiles, error: user_profilesError } = await supabase
+      .from("user_profiles")
+      .select("*")
+      .eq("uid", req.session.user.uid);
+    if (user_profilesError) throw user_profilesError;
+
     // Rendu du body avec stats
     const body = await ejs.renderFile(
       path.join(process.cwd(), "src/views/dashboard/dashboard-home.ejs"),
       {
         user: req.session.user,
+        user_profiles,
         stats: {
           usersCount,
           missionsCount,
@@ -59,6 +67,7 @@ const showDashboard = async (req, res, next) => {
     next(err);
   }
 };
+
 
 
 // ===============================
@@ -79,8 +88,7 @@ const showProfilePage = async (req, res, next) => {
       {
         user: {
           ...profile,
-          role: ROLE_MAP[profile.role_id],
-          role_level: profile.role_id
+          role: ROLE_MAP[profile.role_id]
         }
       }
     );

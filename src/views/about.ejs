@@ -1,81 +1,89 @@
-<%- include('partials/header') %>
-<main class="about-page container my-5">
+<!-- ================= ABOUT PAGE ================= -->
 
-  <!-- Titre principal -->
-  <h1 class="display-4 fw-bold text-dark text-center mb-4">
-    <i class="fas fa-info-circle text-primary me-2"></i>
-    <%= title %>
-  </h1>
-  <hr class="w-25 mx-auto border-primary mb-5">
+<div class="container py-5">
 
-  <!-- Qui sommes-nous -->
+  <!-- ===== Titre ===== -->
+  <header class="text-center mb-5">
+    <h1 class="display-5 fw-bold text-dark">
+      <i class="fas fa-info-circle text-primary me-2"></i>
+      <%= title %>
+    </h1>
+    <hr class="w-25 mx-auto border-primary mt-3">
+  </header>
+
+  <!-- ===== Qui sommes-nous ===== -->
   <% if (aboutSections && aboutSections.length) { %>
-    <section>
-      <h2 class="mb-4 text-dark fw-semibold text-center">
+    <section class="mb-5">
+      <h2 class="mb-4 fw-semibold text-center">
         <i class="fas fa-align-left text-secondary me-2"></i>
         Qui sommes-nous ?
       </h2>
-      <div class="about-sections">
+
+      <div class="mx-auto" style="max-width: 900px;">
         <% aboutSections.forEach(section => { %>
-          <div class="about-section-item mb-3">
-            <i class="fas fa-dot-circle text-primary me-2"></i>
-            <span class="text-muted"><%= section.content %></span>
+          <div class="d-flex align-items-start mb-3">
+            <i class="fas fa-dot-circle text-primary me-2 mt-1"></i>
+            <p class="text-muted mb-0"><%= section.content %></p>
           </div>
         <% }) %>
       </div>
     </section>
   <% } %>
 
-  <!-- Valeurs -->
+  <!-- ===== Nos valeurs ===== -->
   <% if (values && values.length) { %>
-    <section>
-      <h2 class="mb-3 text-dark fw-semibold">
+    <section class="mb-5">
+      <h2 class="mb-4 fw-semibold">
         <i class="fas fa-heart text-danger me-2"></i>
         Nos valeurs
       </h2>
+
       <ul class="list-group list-group-flush">
         <% values.forEach(val => { %>
-          <li class="list-group-item d-flex align-items-center">
-            <i class="fas fa-check-circle text-success me-2"></i>
-            <span><strong><%= val.title %></strong> : <%= val.description %></span>
+          <li class="list-group-item d-flex align-items-start">
+            <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+            <span>
+              <strong><%= val.title %></strong> — <%= val.description %>
+            </span>
           </li>
         <% }) %>
       </ul>
     </section>
   <% } %>
 
-  <!-- Équipe -->
+  <!-- ===== Équipe ===== -->
   <% if (team && team.length) { %>
-    <section class="team">
-      <h2 class="mb-4 text-dark fw-semibold text-center">
+    <section class="mb-5">
+      <h2 class="mb-4 fw-semibold text-center">
         <i class="fas fa-users text-primary me-2"></i>
         Notre équipe
       </h2>
+
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
         <% team.forEach(member => { %>
           <div class="col">
             <div class="card h-100 shadow-sm border-0 text-center">
-              <img src="<%= withDefaultImage(member.photo_url, defaults.avatar) %>" 
-                   alt="Portrait de <%= member.name %>, <%= member.role %>" 
-                   class="card-img-top img-fluid team-photo"
-                   loading="lazy">
+
+              <img
+                src="<%= withDefaultImage(member.photo_url, defaults.avatar) %>"
+                alt="Portrait de <%= member.name %>"
+                class="card-img-top team-photo"
+                loading="lazy"
+              >
+
               <div class="card-body">
-                <h3 class="card-title h5"><%= member.name || "Nom indisponible" %></h3>
-                <p class="text-muted mb-1">
+                <h3 class="h5 mb-1">
+                  <%= member.name || 'Nom indisponible' %>
+                </h3>
+
+                <p class="text-muted mb-2">
                   <i class="fas fa-user-tag me-1"></i>
-                  <%= member.role || "Rôle non défini" %>
+                  <%= member.role || 'Rôle non défini' %>
                 </p>
-                <p class="card-text collapse" id="bio-<%= member.name.replace(/\s+/g, '-') %>">
-                  <%= member.bio || "Biographie à venir..." %>
+
+                <p class="card-text text-muted">
+                  <%= member.bio || 'Biographie à venir…' %>
                 </p>
-                <% if (member.bio && member.bio.length > 120) { %>
-                  <a class="btn btn-sm btn-outline-primary mt-2" 
-                     data-bs-toggle="collapse" 
-                     href="#bio-<%= member.name.replace(/\s+/g, '-') %>" 
-                     aria-label="Voir la biographie complète de <%= member.name %>">
-                    Voir plus
-                  </a>
-                <% } %>
               </div>
             </div>
           </div>
@@ -84,26 +92,34 @@
     </section>
   <% } %>
 
-  <!-- Histoire -->
+  <!-- ===== Histoire ===== -->
   <% if (milestones && milestones.length) { %>
-    <section>
-      <h2 class="mb-4 text-dark fw-semibold">
+    <section class="mb-5">
+      <h2 class="mb-4 fw-semibold">
         <i class="fas fa-history text-warning me-2"></i>
         Notre histoire
       </h2>
+
       <div class="row row-cols-1 row-cols-md-2 g-4">
         <% milestones.forEach(ms => { %>
           <div class="col">
-            <div class="card shadow-sm border-0 h-100">
-              <img src="<%= withDefaultImage(ms.image_url, defaults.milestone) %>" 
-                   alt="<%= ms.title %>" 
-                   class="card-img-top img-fluid">
+            <div class="card h-100 shadow-sm border-0">
+
+              <img
+                src="<%= withDefaultImage(ms.image_url, defaults.milestone) %>"
+                alt="<%= ms.title %>"
+                class="card-img-top"
+                loading="lazy"
+              >
+
               <div class="card-body">
-                <h3 class="card-title h5 fw-bold">
-                  <i class="fas fa-calendar-alt me-1 text-primary"></i>
-                  <%= ms.year %> - <%= ms.title %>
+                <h3 class="h5 fw-bold mb-2">
+                  <i class="fas fa-calendar-alt text-primary me-1"></i>
+                  <%= ms.year %> — <%= ms.title %>
                 </h3>
-                <p class="card-text text-muted"><%= ms.description %></p>
+                <p class="text-muted mb-0">
+                  <%= ms.description %>
+                </p>
               </div>
             </div>
           </div>
@@ -112,21 +128,31 @@
     </section>
   <% } %>
 
-  <!-- Partenaires -->
+  <!-- ===== Partenaires ===== -->
   <% if (partners && partners.length) { %>
     <section>
-      <h2 class="mb-4 text-dark fw-semibold">
+      <h2 class="mb-4 fw-semibold">
         <i class="fas fa-handshake text-success me-2"></i>
         Nos partenaires
       </h2>
+
       <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
         <% partners.forEach(partner => { %>
           <div class="col text-center">
-            <img src="<%= withDefaultImage(partner.logo_url, defaults.logo) %>" 
-                 alt="Logo de <%= partner.name %>" 
-                 class="img-fluid mb-2 default-logo">
-            <p>
-              <a href="<%= partner.website_url %>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm">
+            <img
+              src="<%= withDefaultImage(partner.logo_url, defaults.logo) %>"
+              alt="Logo de <%= partner.name %>"
+              class="img-fluid mb-2 default-logo"
+              loading="lazy"
+            >
+
+            <p class="mb-0">
+              <a
+                href="<%= partner.website_url %>"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-outline-primary btn-sm"
+              >
                 <i class="fas fa-external-link-alt me-1"></i>
                 <%= partner.name %>
               </a>
@@ -137,5 +163,4 @@
     </section>
   <% } %>
 
-</main>
-<%- include('partials/footer') %>
+</div>

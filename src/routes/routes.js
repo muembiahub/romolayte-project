@@ -10,8 +10,8 @@ import {
 } from "../controllers/services.js";
 import { showAboutUsPage } from "../controllers/aboutUs.js";
 import {
-  showForm,
-  submitForm
+  submitServiceRequest,
+  showMessageSuccessPage
 } from "../controllers/demandeServiceControllers.js";
 
 // Auth controller (MVC propre ✅)
@@ -47,32 +47,45 @@ router.get("/privacy", asyncHandler(showPrivacyPage));
 router.get("/contact", asyncHandler(showContactform));
 router.post("/send-contact", asyncHandler(sendContact));
 
-router.get("/demande-service", asyncHandler(showForm));
-router.post("/demande-service", asyncHandler(submitForm));
-
+router.post("/demande-service",submitServiceRequest);
+router.get("/demande-success/:demandeId",showMessageSuccessPage);
 /* =========================
    Authentification
 ========================= */
-router.get("/auth", asyncHandler(async (req, res) => {
-  // ✅ Si déjà connecté → redirection sécurisée
-  if (req.session.user) {
-    return res.redirect("/dashboard");
-  }
+router.get(
+  "/auth",
+  asyncHandler(async (req, res) => {
+    // ✅ Si déjà connecté → redirection sécurisée
+    if (req.session.user) {
+      return res.redirect("/dashboard");
+    }
 
-  const { data: categories } = await supabase
-    .from("categories")
-    .select("category_id, name")
-    .order("category_id", { ascending: true });
+    // ✅ Charger les catégories pour le signup
+    const { data: categories, error } = await supabase
+      .from("categories")
+      .select("category_id, name")
+      .order("category_id", { ascending: true });
 
-  res.render("auth", {
-    layout: false,
-    title: "Authentification",
-    categories: categories || [],
-    error: null,
-    registered: req.query.registered === "true"
-  });
-}));
+    if (error) {
+      console.error("Erreur chargement catégories:", error);
+      return res.status(500).render("errors/500", {
+        layout: "partials/layoute",
+        title: "Erreur serveur"
+      });
+    }
 
+    // ✅ Rendu avec le layout commun
+    res.render("auth", {
+      layout: "partials/layoute",
+      title: "Authentification",
+      categories: categories || []
+    });
+  })
+);
+
+/* =========================
+   Auth API (AJAX)
+========================= */
 router.post("/auth/signup", asyncHandler(signup));
 router.post("/auth/login", asyncHandler(login));
 router.get("/logout", logout);
@@ -92,10 +105,16 @@ router.get(
       .order("name", { ascending: true });
 
     if (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(400).json({
+        success: false,
+        message: error.message
+      });
     }
 
-    res.json(data);
+    res.json({
+      success: true,
+      services: data
+    });
   })
 );
 

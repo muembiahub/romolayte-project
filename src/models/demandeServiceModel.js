@@ -1,13 +1,21 @@
-// models/demandeServiceModel.js
-import { createClient } from "@supabase/supabase-js";
+// src/models/demandeServiceModel.js
+import { supabase } from "../config/database.js";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-);
+/**
+ * Insertion d'une demande de service
+ */
+const insertDemandeService = async (demande) => {
+  const { data, error } = await supabase
+    .from("demande_service")
+    .insert([demande])
+    .select(); // renvoie la ligne insérée
 
-const insertDemandeService = async (data) => {
-  return await supabase.from("demande_service").insert([data]);
+  if (error) {
+    throw error; // on laisse le contrôleur gérer l'erreur
+  }
+
+  // retourne directement l'objet inséré (première ligne)
+  return data[0];
 };
 
 export { insertDemandeService };

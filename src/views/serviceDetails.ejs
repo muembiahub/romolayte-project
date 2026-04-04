@@ -1,71 +1,349 @@
-<%- include('partials/header') %>
+<!-- ================= SERVICE DETAILS ================= -->
+<!-- ================= SERVICE DETAILS ================= -->
+<div class="container">
+  <section class="row g-5 align-items-start my-5">
 
-<main id="service-details-page" class="service-details-container">
-  <section id="service-details-section" class="service-details-block">
-    <!-- Image à gauche -->
-    <div id="service-image-wrapper" class="service-details-image">
-      <% if (service.logo) { %>
-        <img id="service-logo" src="<%= service.logo %>" alt="<%= service.name %>" />
-      <% } else { %>
-        <img id="service-logo-default" src="/images-services/default.webp" alt="Service" />
-      <% } %>
-    </div>
-
-    <!-- Infos à droite -->
-    <div id="service-info-wrapper" class="service-details-info">
-      <h1 id="service-title"><%= service.name %></h1>
-      <p id="service-description"><%= service.description %></p>
-      
-      <p id="service-price">
-        <% if (service.price) { %>
-          <strong>Prix :</strong> <%= service.price %> $
-        <% } else { %>
-          <strong>Prix :</strong> Sur devis
-        <% } %>
-      </p>
-
-      <p id="service-category">
-        <strong>Catégorie :</strong> <%= service.categories.name %>
-      </p>
-
-      <% if (service.details) { %>
-        <div id="service-extra">
-          <h2>Informations supplémentaires</h2>
-          <p><%= service.details %></p>
+    <!-- ===== Image ===== -->
+    <div class="col-md-5">
+      <div class="card border-0 shadow-lg">
+        <div class="card-body pt-4">
+          <img
+            src="<%= service.logo || '/images-services/default.webp' %>"
+            alt="<%= service.name %>"
+            class="img-fluid rounded service-image"
+            loading="lazy"
+          >
         </div>
-      <% } %>
-
-      <% if (service.requirements) { %>
-        <div id="service-requirements">
-          <h2>Pré-requis</h2>
-          <p><%= service.requirements %></p>
-        </div>
-      <% } %>
-
-      <% if (service.duration) { %>
-        <p id="service-duration">
-          <strong>Durée :</strong> <%= service.duration %>
-        </p>
-      <% } %>
-
-      <!-- Boutons en bas -->
-      <div class="service-details-actions">
-        <a id="back-to-services" href="/categories?category_id=<%= service.category_id %>" class="btn-service-details">← Retour aux Categories</a>
-        
-            <a id="contact-us" 
-   href="/demande-service?category_name=<%= safeCategory %>&service_name=<%= safeService %>&price=<%= safePrice %>" 
-   class="btn-service-contact">
-   Demander ce service
-</a>
       </div>
     </div>
+
+    <!-- ===== Informations ===== -->
+    <div class="col-md-7">
+      <div class="card shadow-lg border-0 h-100">
+        <div class="card-body d-flex flex-column p-4 p-lg-5">
+
+          <!-- Title -->
+          <h1 class="fw-bold mb-3">
+            <i class="fa-solid fa-briefcase me-2 text-primary"></i>
+            <%= service.name %>
+          </h1>
+
+          <!-- Description -->
+          <% if (service.description) { %>
+            <p class="text-muted mb-4">
+              <%= service.description %>
+            </p>
+          <% } %>
+
+          <!-- Meta -->
+          <div class="mb-3 d-flex flex-wrap gap-2">
+              <span class="badge bg-primary-subtle text-primary">
+  💰 <strong>Prix :</strong>
+  <%= service.price ? service.price + ' $' : 'Sur devis' %>
+</span>
+
+            <span class="badge bg-secondary-subtle text-secondary">
+              🗂 <strong>Catégorie :</strong>
+              <%= service.categories?.name || 'Non définie' %>
+            </span>
+          </div>
+
+          <!-- Duration -->
+          <% if (service.duration) { %>
+            <p class="mb-3">
+              ⏱ <strong>Durée :</strong> <%= service.duration %>
+            </p>
+          <% } %>
+
+          <!-- Extra info -->
+          <% if (service.details) { %>
+            <div class="mt-3 p-3 bg-light rounded">
+              <h6 class="fw-bold mb-1">Informations supplémentaires</h6>
+              <p class="text-muted mb-0"><%= service.details %></p>
+            </div>
+          <% } %>
+
+          <% if (service.requirements) { %>
+            <div class="mt-3 p-3 bg-light rounded">
+              <h6 class="fw-bold mb-1">Pré‑requis</h6>
+              <p class="text-muted mb-0"><%= service.requirements %></p>
+            </div>
+          <% } %>
+
+          <!-- Actions -->
+          <div class="mt-auto pt-4 border-top d-flex flex-wrap gap-3">
+            <a
+              href="/categories?category_id=<%= service.category_id %>"
+              class="btn btn-outline-secondary px-4"
+            >
+              ← Retour aux catégories
+            </a>
+
+            <button
+              type="button"
+              id="openServiceModalBtn"
+              class="btn btn-primary px-4"
+              data-category="<%= service.categories?.name || 'Non définie' %>"
+              data-service="<%= service.name %>"
+              data-price="<%= service.price ?? '' %>"
+            >
+              <i class="fa-solid fa-paper-plane me-1"></i>
+              Demander ce service
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
   </section>
-  </main>
+</div>
 
- <%- include('partials/services-related', { services: relatedServices }) %>
+<!-- ================= RELATED SERVICES ================= -->
+<section class="mt-5">
+  <%- include('partials/services-related', { services: relatedServices }) %>
+</section>
 
+<!-- ================= SERVICE REQUEST MODAL ================= -->
+<div
+  class="modal fade"
+  id="serviceRequestModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 rounded-4 position-relative">
 
+      <!-- ================= HEADER ================= -->
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          <i class="fa-solid fa-paper-plane me-2"></i>
+          Demande de service
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Fermer"
+        ></button>
+      </div>
 
+      <!-- ================= BODY ================= -->
+      <div class="modal-body p-4 p-lg-5 position-relative">
 
+        <!-- ✅ TOAST ENRICHED -->
+        <div class="toast-container position-absolute top-0 end-0 p-3">
+          <div
+            id="modalToast"
+            class="toast align-items-start border-0"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+          >
+            <div class="d-flex">
+              <div class="toast-body">
+                <h6 class="toast-title mb-1"></h6>
+                <p class="toast-message mb-0 small"></p>
+              </div>
+              <button
+                class="btn-close me-2 m-auto"
+                data-bs-dismiss="toast"
+              ></button>
+            </div>
+          </div>
+        </div>
 
-<%- include('partials/footer') %>
+        <!-- ================= FORM ================= -->
+        <form
+          action="/demande-service"
+          method="POST"
+          class="needs-validation"
+          novalidate
+        >
+
+          <!-- ===== SERVICE INFO ===== -->
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label">
+                <i class="fa-solid fa-tags me-1 text-primary"></i>
+                Catégorie
+              </label>
+              <input
+                id="modal-category"
+                name="category_name"
+                class="form-control"
+                readonly
+                required
+              >
+              <div class="invalid-feedback">Catégorie manquante.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">
+                <i class="fa-solid fa-briefcase me-1 text-primary"></i>
+                Service
+              </label>
+              <input
+                id="modal-service"
+                name="service_name"
+                class="form-control"
+                readonly
+                required
+              >
+              <div class="invalid-feedback">Service manquant.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">
+                <i class="fa-solid fa-money-bill-wave me-1 text-primary"></i>
+                Prix
+              </label>
+              <input
+                id="modal-price"
+                name="price"
+                class="form-control"
+                readonly
+                required
+              >
+              <div class="invalid-feedback">Prix non disponible.</div>
+            </div>
+
+          </div>
+
+          <hr class="my-4">
+
+          <!-- ===== CLIENT INFO ===== -->
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fa-solid fa-user me-1"></i>
+              Nom complet
+            </label>
+            <input
+              name="name"
+              class="form-control"
+              placeholder="Votre nom complet"
+              required
+            >
+            <div class="invalid-feedback">Veuillez entrer votre nom.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fa-solid fa-envelope me-1"></i>
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              class="form-control"
+              placeholder="exemple@email.com"
+              required
+            >
+            <div class="invalid-feedback">
+              Veuillez entrer une adresse email valide.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fa-brands fa-whatsapp me-1 text-success"></i>
+              Numéro WhatsApp
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              class="form-control"
+              placeholder="+243825267122"
+              required
+            >
+            <div class="invalid-feedback">
+              Numéro WhatsApp requis.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fa-solid fa-venus-mars me-1"></i>
+              Genre
+            </label>
+            <select
+              name="gender"
+              class="form-select"
+              required
+            >
+              <option value="" disabled selected>Choisir votre genre</option>
+              <option value="Homme">Homme</option>
+              <option value="Femme">Femme</option>
+              <option value="Autre">Autre</option>
+            </select>
+            <div class="invalid-feedback">
+              Veuillez sélectionner votre genre.
+            </div>
+          </div>
+
+          <!-- ===== VILLE (AUTO GPS UNIQUEMENT) ===== -->
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fa-solid fa-location-dot me-1"></i>
+              Quartier / Ville (détecté automatiquement)
+            </label>
+            <input
+              id="cityInput"
+              name="city"
+              class="form-control"
+              placeholder="Détection automatique via GPS"
+              readonly
+            >
+            <div class="form-text text-muted" id="cityHelp">
+              Ce champ est rempli automatiquement à partir de votre position GPS.
+            </div>
+          </div>
+
+          <!-- ===== GPS POSITION (OBLIGATOIRE) ===== -->
+          <div class="mb-4">
+            <label class="form-label">
+              <i class="fa-solid fa-crosshairs me-1"></i>
+              Position GPS (obligatoire)
+            </label>
+            <input
+              id="locationInput"
+              name="location"
+              class="form-control"
+              placeholder="Cliquez sur « Utiliser ma position »"
+              readonly
+              required
+            >
+            <div class="invalid-feedback">
+              La localisation GPS est obligatoire.
+            </div>
+          </div>
+
+          <!-- ===== ACTIONS ===== -->
+          <div class="d-flex flex-column flex-md-row gap-3 justify-content-between">
+
+            <button
+              type="button"
+              id="getLocationBtn"
+              class="btn btn-outline-primary w-100 w-md-auto"
+            >
+              <i class="fa-solid fa-location-crosshairs me-1"></i>
+              Utiliser ma position
+            </button>
+
+            <button
+              type="submit"
+              class="btn btn-success px-4 w-100 w-md-auto"
+            >
+              <i class="fa-solid fa-paper-plane me-1"></i>
+              Envoyer la demande
+            </button>
+
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

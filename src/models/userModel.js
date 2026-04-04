@@ -33,6 +33,7 @@ const findUserProfile = async (uid) => {
 };
 
 
+
 //  
 const GetAllUserProfile = async () => {
   const { data, error } = await supabase

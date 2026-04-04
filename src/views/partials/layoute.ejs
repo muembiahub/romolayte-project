@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title || 'Romolayte' %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Favicon -->
+  <link rel="icon" href="/images/favicon.png" type="image/png">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/global.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<header class="fixed-top">
+  <!-- Top social + search bar -->
+  <div class="bg-dark text-white py-2 m-0">
+    <div class="container">
+      <div class="row align-items-center">
+        <!-- Social icons -->
+        <div class="col-md-6">
+          <ul class="list-inline mb-0  text-center text-md-start">
+            <li class="list-inline-item">
+              <a href="https://www.facebook.com/Romolayte" target="_blank">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a href="https://www.instagram.com/romolayte/" target="_blank">
+                <i class="fab fa-instagram"></i>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a href="https://twitter.com/romolayte" target="_blank" >
+                <i class="fab fa-twitter"></i>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a href="https://www.ticktock.com/in/romolayte/" target="_blank">
+                <i class="fab fa-tiktok"></i>
+              </a>
+
+            </li>
+            <li class="list-inline-item">
+              <a href="https://www.youtube.com/@romolayte" target="_blank" >
+                <i class="fab fa-youtube"></i>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a href="https://www.linkedin.com/company/romolayte" target="_blank">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Search bar -->
+        <div class="col-md-6">
+  <form id="searchForm" class="shadow-sm rounded">
+    <div class="input-group">
+      <input type="text" id="searchInput" class="form-control" placeholder="Rechercher..." name="q" required>
+      <button class="btn btn-danger text-white" type="submit">
+        <i class="fa-solid fa-search me-1"></i> Rechercher
+      </button>
+    </div>
+  </form>
+  <div id="searchResults" class="mt-3"></div>
+</div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Main navbar -->
+  <nav class="navbar navbar-expand-lg bg-white text-dark border-top m-0">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="/categories">
+        <img src="https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/logos_category/romo_logo.jpg" alt="Romolayte" height="40" class="me-2 rounded-circle">
+        <strong>Romolayte</strong>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link " href="/categories"> <i class="fa-solid fa-home"> </i> Accueil</a></li>
+          <li class="nav-item"><a class="nav-link " href="/services">Services</a></li>
+          <li class="nav-item"><a class="nav-link " href="/about">À propos</a></li>
+          <li class="nav-item"><a class="nav-link " href="/contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link " href="/auth"><i class="fa-solid fa-user me-1"></i> Connexion</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+ 
+
+  <!-- ================= MAIN ================= -->
+  <main class="container my-4">
+    <!-- Résultats -->
+ 
+    <%- body %>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer mt-auto py-4  border-top  text-light">
+    <div class="container text-center small">
+
+      <p class="mb-1">
+        <strong>ROMOLAYTE</strong> — Technologie & services techniques fiables
+      </p>
+
+      <p class="mb-1">
+        &copy; <%= new Date().getFullYear() %> Romolayte. Tous droits réservés.
+      </p>
+
+      <p class="mb-0">
+        <a href="/privacy" class="footer-link">Politique de confidentialité</a>
+        |
+        <a href="/terms" class="footer-link">Conditions d’utilisation</a>
+      </p>
+
+    </div>
+  </footer>
+
+  <!-- ================= TOAST ================= -->
+  <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+    <div
+      id="appToast"
+      class="toast align-items-center border-0"
+      role="alert"
+    >
+      <div class="d-flex">
+        <div class="toast-body" id="toastMessage">Action réussie ✅</div>
+        <button class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SCRIPTS ================= -->
+   <script src="/js/functions.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+
+</body>
+</html>

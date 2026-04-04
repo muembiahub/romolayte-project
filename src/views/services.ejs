@@ -1,42 +1,80 @@
-<%- include('partials/header') %>
+<main class="container my-5">
 
-<main class="container">
-  <section class="services">
-    <h1><%= title %></h1>
+  <!-- ================= Page Header ================= -->
+  <header class="text-center mb-5">
+    <h1 class="fw-bold"><%= title %></h1>
+  </header>
 
-    <% if (services && services.length > 0) { %>
-      <div class="services-grid">
-        <% services.forEach(service => { %>
-          <div class="service-card">
-            <div class="service-image">
-              <img 
-                src="<%= service.logo || 'https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/services-images/default.webp' %>" 
-                alt="<%= service.name %>" 
-                onerror="this.onerror=null;this.src='https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/services-images/default.webp';" />
+  <% if (services && services.length > 0) { %>
+
+    <!-- ================= Services Grid ================= -->
+    <div class="row g-4">
+
+      <% services.forEach(service => { %>
+
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card h-100 shadow-sm border-0">
+
+            <!-- Service Image -->
+            <div class="ratio ratio-4x3">
+              <img
+                src="<%= service.logo || 'https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/services-images/default.webp' %>"
+                alt="<%= service.name %>"
+                class="card-img-top object-fit-cover"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/services-images/default.webp';"
+              >
             </div>
 
-            <div class="service-info">
-              <h2><%= service.name %></h2>
-              <p class="description"><%= service.description %></p>
-              <p class="price">
-                <% if (service.price) { %>
-                  <strong>Prix :</strong> <%= service.price %> $
-                <% } else { %>
-                  <strong>Prix :</strong> Sur devis
-                <% } %>
+            <!-- Card Body -->
+            <div class="card-body d-flex flex-column text-center">
+
+              <h5 class="card-title mb-2">
+                <i class="fa-solid fa-briefcase me-1 text-primary"></i>
+                <%= service.name %>
+              </h5>
+
+              <% if (service.description) { %>
+                <p class="card-text small text-muted mb-2">
+                  <%= service.description %>
+                </p>
+              <% } %>
+
+              <p class="mb-1">
+                <strong>Prix :</strong>
+                <%= service.price ? service.price + ' $' : 'Sur devis' %>
               </p>
-              <p class="category">
-                <strong>Catégorie :</strong> <%= service.categories.name %>
+
+              <p class="mb-3">
+                <strong>Catégorie :</strong>
+                <%= service.categories?.name || 'Non définie' %>
               </p>
-              <a href="/services-details/<%= service.service_id %>" class="btn">Voir détails</a>
+
+              <!-- Action -->
+              <a
+                href="/services-details/<%= service.service_id %>"
+                class="btn btn-outline-primary mt-auto"
+              >
+                Voir les détails
+              </a>
+
             </div>
+
           </div>
-        <% }) %>
-      </div>
-    <% } else { %>
-      <p class="no-services">Aucun service disponible pour le moment.</p>
-    <% } %>
-  </section>
-</main>
+        </div>
 
-<%- include('partials/footer') %>
+      <% }) %>
+
+    </div>
+
+  <% } else { %>
+
+    <!-- ================= Empty State ================= -->
+    <div class="alert alert-info text-center mt-5">
+      <i class="fa-solid fa-circle-info me-2"></i>
+      Aucun service disponible pour le moment.
+    </div>
+
+  <% } %>
+
+</main>
