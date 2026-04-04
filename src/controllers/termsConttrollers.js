@@ -18,10 +18,12 @@ const showTermsPage = async (req, res) => {
           year: "numeric"
         })
       : "N/A";
+      const title = "Conditions Générales d'Utilisation"
 
     // Passage des données à la vue EJS
     res.render("terms", {
-      layout: false,
+      layout: "partials/layoute",
+      title,
       terms,
       lastUpdated
     });
@@ -45,9 +47,11 @@ const showPrivacyPage = async (req, res) => {
           year: "numeric"
         })
       : "N/A";
+      const title = "Politique de confidentialité";
 
     res.render("privacy", { 
-      layout: false,
+      layout: "partials/layoute",
+      title,
       policy, lastUpdated });
   } catch (err) {
     res.status(500).send("Erreur lors du chargement de la politique : " + err.message);

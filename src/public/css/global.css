@@ -139,7 +139,8 @@ body {
 }
 
 .footer a {
-  color: var(--footer-text);
+  color: var(--header-bg);
+  font-size: 500;
   text-decoration: none;
   transition: opacity var(--transition-fast);
 }
@@ -147,6 +148,7 @@ body {
 .footer a:hover {
   opacity: 0.8;
   text-decoration: underline;
+  color: yellow;
 }
 
 /* =====================================================

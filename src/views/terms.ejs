@@ -1,95 +1,111 @@
-<%- include('partials/header.ejs') %>
+<main class="container my-5"
+      data-bs-spy="scroll"
+      data-bs-target="#cgu-summary"
+      data-bs-offset="120"
+      tabindex="0">
 
-<!-- Import Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Titre principal -->
+  <header class="row justify-content-center mb-5">
+    <div class="col-12 col-lg-10 text-center">
+      <h1 class="fw-bold text-warning mb-3">
+        <i class="fa-solid fa-scroll me-2"></i>
+        Conditions Générales d’Utilisation
+      </h1>
 
-<main class="container my-5">
-  <!-- Titre stylisé avec icône -->
-  <h1 class="title-romolayte-cgu mb-4">
-    <i class="fas fa-scroll me-2"></i> Conditions Générales d’Utilisation – ROMOLAYTE
-  </h1>
-  <p>Les présentes Conditions Générales d’Utilisation (CGU) régissent l’accès et l’utilisation des services proposés par ROMOLAYTE.</p>
-  <p class="text-muted text-center">Dernière mise à jour : <%= lastUpdated %></p>
+      <p class="text-muted">
+        ROMOLAYTE · Dernière mise à jour : <%= lastUpdated %>
+      </p>
 
-  <div class="table-responsive shadow-lg rounded">
-    <table class="table table-hover table-bordered align-middle">
-      <thead class="table-header-custom">
-        <tr>
-          <th scope="col"><i class="fas fa-hashtag"></i> Section</th>
-          <th scope="col"><i class="fas fa-heading"></i> Titre</th>
-          <th scope="col"><i class="fas fa-file-alt"></i> Contenu</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% terms.forEach(function(item) { %>
-          <tr>
-            <td class="fw-bold text-center text-warning"><%= item.section_num %></td>
-            <td class="fw-semibold text-primary"><%= item.section_title %></td>
-            <td>
-              <% 
-                const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/;
-                const match = item.section_content.match(emailRegex);
-                if (match) {
-              %>
-                <%- item.section_content.replace(
-                      match[0], 
-                      `<a href="mailto:${match[0]}" class="text-decoration-none text-info fw-semibold"><i class="fas fa-envelope"></i> ${match[0]}</a>`
-                    ) %>
-              <% } else { %>
-                <%= item.section_content %>
-              <% } %>
-            </td>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
+      <p class="lead mt-3">
+        Les présentes conditions définissent les règles d’accès,
+        d’utilisation ainsi que les droits et obligations des utilisateurs
+        de la plateforme ROMOLAYTE.
+      </p>
+    </div>
+  </header>
+
+  <div class="row justify-content-center">
+
+    <!-- ✅ SOMMAIRE (Scroll-Spy) -->
+    <nav id="cgu-summary"
+         class="col-lg-3 d-none d-lg-block position-sticky"
+         style="top: 110px;">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="fw-bold mb-3">
+            <i class="fa-solid fa-list me-2"></i> Sommaire
+          </h6>
+
+          <div class="nav nav-pills flex-column gap-2">
+            <% terms.forEach(function(item) { %>
+              <a class="nav-link"
+                 href="#section-<%= item.section_num %>">
+                <%= item.section_num %>. <%= item.section_title %>
+              </a>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ✅ CONTENU CGU -->
+    <section class="col-12 col-lg-7">
+
+      <% terms.forEach(function(item) { %>
+        <article id="section-<%= item.section_num %>"
+                 class="card shadow-sm border-0 mb-4">
+
+          <!-- Titre section -->
+          <div class="card-header bg-primary text-white d-flex align-items-center">
+            <span class="badge bg-warning text-dark rounded-circle me-3 px-3 py-2 fw-bold">
+              <%= item.section_num %>
+            </span>
+            <h2 class="h5 mb-0 fw-semibold">
+              <%= item.section_title %>
+            </h2>
+          </div>
+
+          <!-- Contenu -->
+          <div class="card-body">
+            <%
+              const emailRegex =
+                /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
+
+              const content = item.section_content.replace(
+                emailRegex,
+                (email) => `
+                  <a href="mailto:${email}"
+                     class       </a>
+                `
+              );
+            %>
+
+            <p class="lh-lg mb-0">
+              <%- content %>
+            </p>
+          </div>
+
+        </article>
+      <% }); %>
+
+    </section>
   </div>
 </main>
 
-<%- include('partials/footer.ejs') %>
-
-<!-- Style personnalisé -->
 <style>
-  /* Palette pour CGU (bleu moderne + doré) */
-  .title-romolayte-cgu {
-    font-size: 2.5rem;
-    font-weight: 700;
-    text-align: center;
-    color: #fcbf49; /* doré */
-    background: linear-gradient(to right, #1e3c72, #2a5298); /* bleu moderne */
-    padding: 20px;
-    border-radius: 8px;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
-    transition: all 0.3s ease;
+  .nav-pills .nav-link {
+    font-size: 0.95rem;
+    color: #2a5298;
   }
 
-  .title-romolayte-cgu:hover {
-    background: linear-gradient(to right, #2a5298, #1e3c72);
-    color: #ffe066;
-    cursor: pointer;
+  .nav-pills .nav-link.active {
+    background-color: #2a5298;
+    color: #ffffff;
   }
 
-  /* Header du tableau stylisé */
-  .table-header-custom {
-    background: linear-gradient(135deg, #2a5298, #49628f);
-    color: #fff;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .table-header-custom th {
-    padding: 15px;
-    border: none;
-    text-align: center;
-    vertical-align: middle;
-  }
-
-  /* Effet hover sur les colonnes */
-  .table-header-custom th:hover {
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    color: #fcbf49;
-    transition: all 0.3s ease;
-    cursor: pointer;
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.7rem;
+    }
   }
 </style>
