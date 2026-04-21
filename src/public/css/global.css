@@ -135,12 +135,13 @@ body {
 .footer {
   background-color: var(--footer-bg);
   color: var(--footer-text);
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .footer a {
   color: var(--header-bg);
-  font-size: 500;
+  opacity: 0.8;
+  font-size: 1rem;
   text-decoration: none;
   transition: opacity var(--transition-fast);
 }

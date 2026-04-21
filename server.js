@@ -165,7 +165,6 @@ function requireAuth(req, res, next) {
 app.use("/", router);                 
 app.use("/dashboard", requireAuth, dashboardRoutes); // ⚠️ protégé
 app.use("/search", searchRouter);
-
 /* =========================
    404 Handler
 ========================= */
@@ -179,8 +178,6 @@ app.use((req, res, next) => {
    Global Error Handler
 ========================= */
 app.use((err, req, res, next) => {
-  console.error("❌ Error:", err.message);
-
   const status = err.status || 500;
 
   let title;
@@ -189,16 +186,37 @@ app.use((err, req, res, next) => {
     case 401: title = "Non authentifié"; break;
     case 403: title = "Accès refusé"; break;
     case 404: title = "Page introuvable"; break;
-    default:  title = "Erreur serveur";
+    case 500: title = "Erreur interne"; break;
+    default:  title = "Erreur inattendue";
   }
 
+  // Log interne (stack trace en dev seulement)
+  console.error("❌ Error:", err.message);
+  if (req.app.get("env") !== "production") {
+    console.error(err.stack);
+  }
+
+  // Réponse utilisateur (toujours propre)
   res.status(status).render("errors", {
     layout: "partials/layoute",
-    status: status || 500,
-    title: title || "Erreur serveur",
-    message: err.message || "Une erreur inattendue est survenue."
+    status,
+    title,
+    message: err.message || "Une erreur inattendue s’est produite."
   });
 });
+
+/* =========================
+   Fallback (catch-all)
+========================= */
+app.use((req, res) => {
+  res.status(500).render("errors", {
+    layout: "partials/layoute",
+    status: 500,
+    title: "Erreur serveur",
+    message: "Une erreur inattendue s’est produite."
+  });
+});
+
 
 /* =========================
    Start Server
