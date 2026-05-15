@@ -1,17 +1,16 @@
 import { getCategories } from "../models/categories.js";
 
-const showCategories = async (req, res) => {
+const showCategories = async (req, res, next) => {
   try {
-
-    // Fetch all categories from DB
+    // Récupérer toutes les catégories depuis la DB
     const categories = await getCategories();
 
-    // Set page title
+    // Définir le titre de la page
     const title = "Liste de nos catégories";
 
-    // Render page with layout
+    // Rendu avec layout
     res.render("categories", {
-      layout: "partials/layoute",   // ❗ Ensure your layout file is named layout.ejs
+      layout: "partials/layoute",   // ⚠️ Vérifie que ton layout existe bien
       title,
       categories,
     });
@@ -19,13 +18,10 @@ const showCategories = async (req, res) => {
   } catch (error) {
     console.error("❌ Error in showCategories:", error.message);
 
-    res.status(500).render("errors", {
-      layout: "layout",
-      title: "Erreur Serveur",
-      message: "Impossible de charger les catégories.",
-      error: error.message,
-      stack: error.stack,
-    });
+    // On passe l'erreur au middleware global pour uniformiser le rendu
+    error.status = 500;
+    error.message = "Impossible de charger les catégories.";
+    next(error);
   }
 };
 

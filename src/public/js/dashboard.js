@@ -29,22 +29,45 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Dark/Light mode avec sauvegarde ---
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark-mode");
-    themeSwitch.checked = true;
-  }
+// --- Gestion du Thème (Dark/Light) avec Préférence Système ---
 
-  themeSwitch.addEventListener("change", () => {
-    if (themeSwitch.checked) {
-      document.body.classList.add("dark-mode");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.body.classList.remove("dark-mode");
-      localStorage.setItem("theme", "light");
-    }
+const themeSwitch = document.querySelector("#themeSwitch"); // Assurez-vous que l'ID correspond
+const storageKey = "theme";
+const darkClass = "dark-mode";
+
+// 1. Déterminer le thème initial (Stocké -> Système -> Clair)
+const getInitialTheme = () => {
+  const savedTheme = localStorage.getItem(storageKey);
+  if (savedTheme) return savedTheme;
+
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return prefersDark ? "dark" : "light";
+};
+
+// 2. Appliquer le thème au DOM
+const applyTheme = (theme) => {
+  if (theme === "dark") {
+    document.documentElement.classList.add(darkClass); // Utilise documentElement (html) pour impacter tout le CSS
+    if (themeSwitch) themeSwitch.checked = true;
+  } else {
+    document.documentElement.classList.remove(darkClass);
+    if (themeSwitch) themeSwitch.checked = false;
+  }
+};
+
+// 3. Initialisation au chargement
+const currentTheme = getInitialTheme();
+applyTheme(currentTheme);
+
+// 4. Écouteur de changement sur le switch
+if (themeSwitch) {
+  themeSwitch.addEventListener("change", (e) => {
+    const newTheme = e.target.checked ? "dark" : "light";
+    applyTheme(newTheme);
+    localStorage.setItem(storageKey, newTheme);
   });
+}
+
 
 
 

@@ -16,7 +16,6 @@
   --card-bg: #ffffff;
   --border-color: #dee2e6;
   --navbar-bg: #ffffff;
-  --footer-bg: #121212;
   --footer-text: #cccccc;
   --muted-text: #6c757d;
 }
@@ -30,12 +29,8 @@ html, body {
 }
 
 body {
-  background-color: var(--bg-color);
   color: var(--text-color);
   padding-top: var(--navbar-height);
-  transition:
-    background-color var(--transition-base),
-    color var(--transition-base);
 }
 
 /* Main content spacing */
@@ -79,11 +74,11 @@ body {
 
 
 .navbar {
-  background-color: var(--navbar-bg);
   transition:
     transform var(--transition-base),
     background-color var(--transition-base);
   box-shadow: 0 2px 4px rgba(0,0,0,.04);
+  color: black;
 }
 
 /* Navbar hidden on scroll down */
@@ -94,8 +89,8 @@ body {
 /* Navbar links */
 .navbar .nav-link {
   font-weight: 500;
-  color: var(--text-color);
   transition: color var(--transition-fast);
+  color: #0d0d0d;
 }
 
 .navbar .nav-link {
@@ -110,7 +105,6 @@ body {
   bottom: -2px;
   width: 0;
   height: 2px;
-  background-color: yellow;
   transition: width 0.3s ease;
 }
 
@@ -128,29 +122,9 @@ body {
   box-shadow: none;
 }
 
-/* =====================================================
-   FOOTER
-===================================================== */
 
-.footer {
-  background-color: var(--footer-bg);
-  color: var(--footer-text);
-  font-size: 1rem;
-}
 
-.footer a {
-  color: var(--header-bg);
-  opacity: 0.8;
-  font-size: 1rem;
-  text-decoration: none;
-  transition: opacity var(--transition-fast);
-}
 
-.footer a:hover {
-  opacity: 0.8;
-  text-decoration: underline;
-  color: yellow;
-}
 
 /* =====================================================
    CARDS / PANELS
@@ -158,11 +132,9 @@ body {
 
 .card,
 .auth-panel {
-  background-color: var(--card-bg);
   border-color: var(--border-color);
   border-radius: var(--radius);
   transition:
-    background-color var(--transition-base),
     border-color var(--transition-base),
     box-shadow var(--transition-base);
 }
@@ -248,7 +220,6 @@ body.dark .navbar .nav-link:hover {
 .btn {
   border-radius: var(--radius);
   transition:
-    background-color var(--transition-fast),
     color var(--transition-fast),
     box-shadow var(--transition-fast);
 }

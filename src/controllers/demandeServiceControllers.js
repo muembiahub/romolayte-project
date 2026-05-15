@@ -1,13 +1,18 @@
 // src/controllers/serviceRequestController.js
+
 import { supabase } from "../config/database.js";
 import { insertDemandeService } from "../models/demandeServiceModel.js";
-import { sendConfirmationEmail } from "../utils/emailService.js";
+import { sendConfirmationEmail }
+from "../services/email.js";
 
 /* =====================================================
    SUBMIT SERVICE REQUEST
 ===================================================== */
+
 const submitServiceRequest = async (req, res) => {
+
   try {
+
     const {
       category_name,
       service_name,
@@ -17,27 +22,32 @@ const submitServiceRequest = async (req, res) => {
       phone,
       email,
       city,
-      location // ✅ GPS obligatoire (lat, lon)
+      location
     } = req.body;
 
     /* ================= VALIDATION ================= */
 
+    // identité obligatoire
     if (!name || !email) {
       return res.redirect("/services?error=missing_identity");
     }
 
+    // validation email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email)) {
       return res.redirect("/services?error=invalid_email");
     }
 
-    // ✅ GPS obligatoire (lat, lon)
+    // GPS obligatoire
     if (!location || !String(location).includes(",")) {
       return res.redirect("/services?error=missing_location");
     }
+
     const safeCoordinates = String(location).trim();
 
-    /* ================= CATÉGORIE ================= */
+    /* ================= CATEGORY ================= */
+
     const { data: category, error: catError } = await supabase
       .from("categories")
       .select("category_id")
@@ -45,10 +55,14 @@ const submitServiceRequest = async (req, res) => {
       .single();
 
     if (catError || !category) {
+
+      console.error("❌ Catégorie invalide :", catError);
+
       return res.redirect("/services?error=invalid_category");
     }
 
     /* ================= SERVICE ================= */
+
     const { data: service, error: serviceError } = await supabase
       .from("services")
       .select("service_id")
@@ -56,81 +70,152 @@ const submitServiceRequest = async (req, res) => {
       .single();
 
     if (serviceError || !service) {
+
+      console.error("❌ Service invalide :", serviceError);
+
       return res.redirect("/services?error=invalid_service");
     }
 
-    /* ================= DOUBLON ================= */
-    const { data: existing } = await supabase
+    /* ================= DUPLICATE CHECK ================= */
+
+    const { data: existing, error: duplicateError } = await supabase
       .from("demande_service")
       .select("demande_id")
       .eq("service_id", service.service_id)
       .eq("email", email)
       .maybeSingle();
 
+    if (duplicateError) {
+      console.error("❌ Erreur vérification doublon :", duplicateError);
+    }
+
     if (existing) {
+
       return res.redirect(
         `/services-details/${service.service_id}?error=already_requested`
       );
     }
 
-    /* ================= PRIX ================= */
+    /* ================= PRICE ================= */
+
     let finalPrice = null;
+
     if (price && price !== "Sur devis") {
-      const cleanedPrice = String(price).replace(/[^\d.]/g, "");
-      finalPrice = cleanedPrice ? Number(cleanedPrice) : null;
+
+      const cleanedPrice = String(price)
+        .replace(/[^\d.]/g, "");
+
+      finalPrice = cleanedPrice
+        ? Number(cleanedPrice)
+        : null;
     }
 
-  const demande = await insertDemandeService({
+    /* ================= INSERT DEMANDE ================= */
+
+const demande = await insertDemandeService({
+
   category_id: category.category_id,
+
   service_id: service.service_id,
+
   category_name,
+
   service_name,
+
   price: finalPrice,
+
   name,
-  gender,
-  phone,
+
+  gender: gender || null,
+
+  phone: phone || null,
+
   email,
-  coordinates: safeCoordinates,   // ✅ GPS vérité terrain
-  location: city || null,         // ✅ dérivé du GPS
+
+  coordinates: safeCoordinates,
+
+  location: city || null,
+
   status: "Reçus"
 });
 
-/* ✅ ENVOI EMAIL CONFIRMATION CLIENT (NON BLOQUANT) */
-sendConfirmationEmail(demande).catch(err => {
-  console.error("❌ Erreur envoi email confirmation :", err.message);
-});
+console.log("✅ Nouvelle demande :", demande.demande_id);
 
-/* ================= REDIRECTION ================= */
-return res.redirect(`/demande-success/${demande.demande_id}`);
+/* ================= EMAIL CONFIRMATION ================= */
 
+try {
 
-  } catch (error) {
-    console.error("❌ Demande service:", error);
-    return res.redirect("/services?error=server_error");
-  }
+  await sendConfirmationEmail(demande);
+
+  console.log(
+    "✅ Fonction email appelée"
+  );
+
+} catch (emailError) {
+
+  console.error(
+    "❌ Erreur email :",
+    emailError.message
+  );
+}
+
+/* ================= SUCCESS ================= */
+
+return res.redirect(
+  `/demande-success/${demande.demande_id}`
+);
+
+} catch (error) {
+
+  console.error(
+    "❌ Erreur submitServiceRequest :",
+    error
+  );
+
+  return res.redirect(
+    "/services?error=server_error"
+  );
+}
 };
 
 /* =====================================================
-   SUCCESS PAGE (RÉCAPITULATIF)
+   SUCCESS PAGE
 ===================================================== */
+
 const showMessageSuccessPage = async (req, res) => {
-  const { demandeId } = req.params;
 
-  const { data: demande, error } = await supabase
-    .from("demande_service")
-    .select("*")
-    .eq("demande_id", demandeId)
-    .single();
+  try {
 
-  if (error || !demande) {
-    return res.redirect("/services?error=not_found");
+    const { demandeId } = req.params;
+
+    const { data: demande, error } = await supabase
+      .from("demande_service")
+      .select("*")
+      .eq("demande_id", demandeId)
+      .single();
+
+    if (error || !demande) {
+
+      console.error("❌ Demande introuvable :", error);
+
+      return res.redirect("/services?error=not_found");
+    }
+
+    return res.render("demande-success", {
+
+      layout: "partials/layoute",
+
+      title: "Demande envoyée",
+
+      demande
+    });
+
+  } catch (error) {
+
+    console.error("❌ Erreur success page :", error);
+
+    return res.redirect("/services?error=server_error");
   }
-
-  res.render("demande-success", {
-    layout: "partials/layoute",
-    title: "Demande envoyée",
-    demande
-  });
 };
 
 export {

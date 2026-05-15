@@ -9,7 +9,7 @@
 
     <!-- Main Message -->
     <p class="fs-5 mt-3">
-      <%= message %>
+      <%= typeof message !== 'undefined' && message ? message : "Une erreur inattendue s’est produite." %>
     </p>
 
     <!-- Contextual Messages -->

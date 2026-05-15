@@ -17,12 +17,12 @@ const servicesPages = async (req, res) => {
       services
     });
   } catch (error) {
-    console.error("❌ Error in servicesPages:", error.message);
-    res.status(500).render("errors", {
-      layout: "partials/layoute",
-      title: "Erreur Serveur",
-      message: "Impossible de charger les services"
-    });
+    console.error("❌ Error in showCategories:", error.message);
+
+    // On passe l'erreur au middleware global pour uniformiser le rendu
+    error.status = 500;
+    error.message = "Impossible de charger les services.";
+    next(error);
   }
 };
 
@@ -66,13 +66,13 @@ const servicesPagesDetails = async (req, res) => {
       safeService,
       safePrice
     });
-  } catch (error) {
-    console.error("❌ Error in servicesPagesDetails:", error.message);
-    res.status(500).render("errors", {
-      layout: false,
-      title: "Erreur Serveur",
-      message: "Impossible de charger les détails du service"
-    });
+  }catch (error) {
+    console.error("❌ Error in showCategories:", error.message);
+
+    // On passe l'erreur au middleware global pour uniformiser le rendu
+    error.status = 500;
+    error.message = "Impossible de charger les catégories.";
+    next(error);
   }
 };
 

@@ -93,6 +93,9 @@
 .contact-card textarea {
   resize: none;
 }
+p{
+  color: black;
+}
 
 /* ----- Submit button ----- */
 .contact-submit {

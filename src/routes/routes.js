@@ -54,32 +54,43 @@ router.get("/demande-success/:demandeId",showMessageSuccessPage);
 ========================= */
 router.get(
   "/auth",
-  asyncHandler(async (req, res) => {
-    // ✅ Si déjà connecté → redirection sécurisée
-    if (req.session.user) {
-      return res.redirect("/dashboard");
-    }
+  asyncHandler(async (req, res, next) => {
+    try {
+      // ✅ Si déjà connecté → redirection sécurisée
+      if (req.session.user) {
+        return res.redirect("/dashboard");
+      }
 
-    // ✅ Charger les catégories pour le signup
-    const { data: categories, error } = await supabase
-      .from("categories")
-      .select("category_id, name")
-      .order("category_id", { ascending: true });
+      // ✅ Charger les catégories pour le signup
+      const { data: categories, error } = await supabase
+        .from("categories")
+        .select("category_id, name")
+        .order("category_id", { ascending: true });
 
-    if (error) {
-      console.error("Erreur chargement catégories:", error);
-      return res.status(500).render("errors/500", {
-        layout: "partials/layoute",
-        title: "Erreur serveur"
+      if (error) {
+        console.error("❌ Erreur chargement catégories:", error.message);
+
+        // On délègue au middleware global d'erreurs
+        error.status = 500;
+        error.message = "Impossible de charger les catégories.";
+        return next(error);
+      }
+
+      // ✅ Rendu avec le layout commun
+      res.render("auth", {
+        layout: "partials/layoute",   // ⚠️ Vérifie que ton layout existe bien
+        title: "Authentification",
+        categories: categories || []
       });
-    }
 
-    // ✅ Rendu avec le layout commun
-    res.render("auth", {
-      layout: "partials/layoute",
-      title: "Authentification",
-      categories: categories || []
-    });
+    } catch (err) {
+      console.error("❌ Exception dans /auth:", err.message);
+
+      // On passe l'erreur au middleware global
+      err.status = 500;
+      err.message = "Une erreur inattendue s’est produite lors du chargement de la page d’authentification.";
+      next(err);
+    }
   })
 );
 

@@ -1,212 +1,302 @@
 <!-- ================= AUTH PAGE ================= -->
-
 <div class="container py-5">
   <div class="row justify-content-center">
-    <div class="col-xl-6 col-lg-7 col-md-9">
+    <div class="col-xl-6 col-lg-7 col-md-10">
+      <div class="card shadow-lg border-0 rounded-4 overflow-hidden bg-body">
+        
+        <!-- Indicateur visuel de progression -->
+        <div class="progress rounded-0" style="height: 5px;">
+          <div id="auth-progress" class="progress-bar bg-primary" style="width: 50%; transition: width 0.4s ease;"></div>
+        </div>
 
-      <div class="card shadow-lg border-0 rounded-4 auth-panel">
         <div class="card-body p-4 p-lg-5">
-
           <!-- Retour -->
-          <div class="mb-3">
-            <a href="/categories" class="text-decoration-none">
-              <i class="fa-solid fa-arrow-left me-1"></i> Retour
+          <div class="mb-4">
+            <a href="/categories" class="btn btn-sm btn-outline-secondary rounded-pill shadow-sm">
+              <i class="fa-solid fa-arrow-left me-2"></i>Retour
             </a>
           </div>
 
-          <!-- Titre -->
-          <h2 id="form-title" class="text-center fw-bold mb-4">
-            Connexion
-          </h2>
+          <!-- En-tête -->
+          <div class="text-center mb-5">
+            <h2 id="form-title" class="fw-bold text-body">Connexion</h2>
+            <p id="form-subtitle" class="text-muted small">Heureux de vous revoir !</p>
+          </div>
 
-          <!-- ================= LOGIN FORM ================= -->
-          <form  id="login-form"class="form-block active" action="/auth/login"  method="POST">
-            <div class="mb-3">
-              <label for="login-identifier" class="form-label">
-                <i class="fa-solid fa-user me-1"></i>
-                Username ou Email
-              </label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="fa-solid fa-user"></i>
-                </span>
-                <input
-                  type="text"
-                  id="login-identifier"
-                  name="usernameOrEmail"
-                  class="form-control"
-                  placeholder="Entrez votre username ou email"
-                  required
-                >
+          <!-- Zone de notifications générale -->
+          <div id="auth-alert" class="alert alert-danger d-none rounded-3 small" role="alert"></div>
+
+          <!-- ================= FORMULAIRE CONNEXION ================= -->
+          <form id="login-form" class="auth-form" method="POST">
+            <div class="form-floating mb-3">
+              <input type="text" id="login-identifier" name="usernameOrEmail" class="form-control bg-transparent" placeholder="Nom d'utilisateur" required>
+              <label for="login-identifier" class="text-body"><i class="fa-solid fa-user me-2 opacity-50"></i>Username ou Email</label>
+              <div class="invalid-feedback" id="err-usernameOrEmail"></div>
+            </div>
+            
+            <div class="input-group mb-3">
+              <div class="form-floating flex-grow-1">
+                <input type="password" id="login-password" name="password" class="form-control border-end-0 bg-transparent" placeholder="Mot de passe" required>
+                <label for="login-password" class="text-body"><i class="fa-solid fa-lock me-2 opacity-50"></i>Mot de passe</label>
               </div>
-              <small id="usernameError" class="text-danger"></small>
+              <button type="button" class="btn btn-outline-secondary border-start-0 toggle-password" style="border-color: var(--bs-border-color);">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              <div class="invalid-feedback" id="err-password"></div>
             </div>
 
-            <div class="mb-3">
-              <label for="login-password" class="form-label">
-                <i class="fa-solid fa-lock me-1"></i>
-                Mot de passe
-              </label>
-              <div class="input-group password-group">
-                <span class="input-group-text">
-                  <i class="fa-solid fa-lock"></i>
-                </span>
-                <input
-                  type="password"
-                  id="login-password"
-                  name="password"
-                  class="form-control"
-                  placeholder="Entrez votre mot de passe"
-                  required
-                  minlength="8"
-                >
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary toggle-password"
-                >
-                  <i class="fa-solid fa-eye"></i>
-                </button>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="rememberMe">
+                <label class="form-check-label small text-body" for="rememberMe">Rester connecté</label>
               </div>
-              <small id="passwordError" class="text-danger"></small>
+              <a href="/forgot-password" class="small text-decoration-none fw-bold text-primary">Oublié ?</a>
             </div>
 
-            <div class="text-end mb-3">
-              <a href="/forgot-password" class="forgot-link">
-                Mot de passe oublié ?
-              </a>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 py-2">
-              <i class="fa-solid fa-right-to-bracket me-1"></i>
-              Se connecter
+            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-3 py-2 shadow-sm">
+              Se connecter <i class="fa-solid fa-paper-plane ms-2"></i>
             </button>
           </form>
 
-          <!-- ================= SIGNUP FORM ================= -->
-          <form
-            id="signup-form"
-            class="form-block"
-            action="/auth/signup"
-            method="POST"
-          >
-
+          <!-- ================= FORMULAIRE INSCRIPTION ================= -->
+          <form id="signup-form" class="auth-form d-none" method="POST">
             <div class="row g-3">
+              <div class="col-md-6 form-floating">
+                <input type="text" name="firstname" class="form-control bg-transparent" placeholder="Prénom" required>
+                <label class="ms-2 text-body">Prénom</label>
+              </div>
+              <div class="col-md-6 form-floating">
+                <input type="text" name="lastname" class="form-control bg-transparent" placeholder="Nom" required>
+                <label class="ms-2 text-body">Nom</label>
+              </div>
+              <div class="col-12 form-floating">
+                <input type="date" name="birthday" class="form-control bg-transparent" required>
+                <label class="ms-2 text-body">Date de naissance</label>
+              </div>
+              
+              <!-- Catégorie & Services dynamiques -->
               <div class="col-md-6">
-                <label class="form-label">Prénom</label>
-                <input type="text" name="firstname" class="form-control" required>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label">Nom</label>
-                <input type="text" name="lastname" class="form-control" required>
-              </div>
-
-              <div class="col-12">
-                <label class="form-label">Date de naissance</label>
-                <input type="date" name="birthday" class="form-control" required>
-              </div>
-
-              <div class="col-12">
-                <label class="form-label">Catégorie</label>
-                <select id="signup-category" name="category_id" class="form-select" required>
-                  <option value="" selected disabled>
-                    -- Sélectionner une catégorie --
-                  </option>
+                <label class="form-label small fw-bold text-body">Catégorie</label>
+                <select id="signup-category" name="category_id" class="form-select bg-transparent border-primary-subtle" required>
+                  <option value="" selected disabled>Choisir...</option>
                   <% categories.forEach(function(cat) { %>
-                    <option value="<%= cat.category_id %>">
-                      <%= cat.name %>
-                    </option>
+                    <option value="<%= cat.category_id %>"><%= cat.name %></option>
                   <% }) %>
                 </select>
               </div>
-
-              <div class="col-12">
-                <label class="form-label">Service</label>
-                <select  id="signup-service"  name="service_id"  class="form-select"  disabled
-                  required
-                      >
-                  <option value="">
-                 -- Choisissez d’abord une catégorie --
-                      </option>
-                  </select>
-              </div>
-
-              <div class="col-12">
-                <label class="form-label">
-                  <i class="fa-solid fa-user"></i> Username
-                </label>
-                <input type="text" name="username" class="form-control" required>
-              </div>
-
-              <div class="col-12">
-                <label class="form-label">
-                  <i class="fa-brands fa-whatsapp text-success"></i>
-                  Numéro WhatsApp
-                </label>
-                <input
-                  type="tel"
-                  name="whatsapp"
-                  class="form-control"
-                  placeholder="+243 812 345 678"
-                  required
-                >
-              </div>
-
-              <div class="col-12">
-                <label class="form-label">
-                  <i class="fa-solid fa-envelope"></i> Email
-                </label>
-                <input type="email" name="email" class="form-control" required>
-              </div>
-
               <div class="col-md-6">
-                <label class="form-label">Mot de passe</label>
-                <input type="password" name="password" class="form-control" required minlength="8">
+                <label class="form-label small fw-bold text-body">Service</label>
+                <select id="signup-service" name="service_id" class="form-select bg-transparent" disabled required>
+                  <option value="">Sélectionnez d'abord...</option>
+                </select>
               </div>
 
-              <div class="col-md-6">
-                <label class="form-label">Confirmer mot de passe</label>
-                <input type="password" name="confirm_password" class="form-control" required minlength="8">
+              <div class="col-12 form-floating mt-3">
+                <input type="text" name="username" class="form-control bg-transparent" placeholder="Pseudo" required>
+                <label class="ms-2 text-body">Username</label>
+                <div class="invalid-feedback" id="err-signup-username"></div>
+              </div>
+              <div class="col-12 form-floating">
+                <input type="tel" name="whatsapp" class="form-control bg-transparent" placeholder="+243..." required>
+                <label class="ms-2 text-body"><i class="fa-brands fa-whatsapp text-success me-1"></i>WhatsApp</label>
+              </div>
+              <div class="col-12 form-floating">
+                <input type="email" name="email" class="form-control bg-transparent" placeholder="email@exemple.com" required>
+                <label class="ms-2 text-body">Email</label>
+                <div class="invalid-feedback" id="err-email"></div>
+              </div>
+              <div class="col-md-6 form-floating">
+                <input type="password" name="password" class="form-control bg-transparent" placeholder="Password" required minlength="6">
+                <label class="ms-2 text-body">Mot de passe</label>
+              </div>
+              <div class="col-md-6 form-floating">
+                <input type="password" name="confirm_password" class="form-control bg-transparent" placeholder="Confirm" required minlength="6">
+                <label class="ms-2 text-body">Confirmer</label>
+                <div class="invalid-feedback" id="err-confirm_password"></div>
               </div>
             </div>
 
-            <button type="submit" class="btn btn-success w-100 mt-4 py-2">
-              <i class="fa-solid fa-user-plus me-1"></i>
-              Créer un compte
+            <button type="submit" class="btn btn-success btn-lg w-100 rounded-3 py-2 shadow-sm mt-4">
+              Créer mon compte <i class="fa-solid fa-check-circle ms-2"></i>
             </button>
           </form>
 
-          <!-- ================= SOCIAL ================= -->
-          <div class="social-login text-center mt-4">
-            <p class="text-muted">Ou continuer avec</p>
-            <div class="d-flex justify-content-center gap-3">
-              <button class="btn btn-outline-primary">
-                <i class="fab fa-facebook-f"></i>
-              </button>
-              <button class="btn btn-outline-info">
-                <i class="fab fa-twitter"></i>
-              </button>
-              <button class="btn btn-outline-danger">
-                <i class="fab fa-google"></i>
-              </button>
-            </div>
+          <!-- Séparateur -->
+          <div class="position-relative my-5">
+            <hr class="text-muted">
+            <span class="position-absolute top-50 start-50 translate-middle theme-bg-fix px-3 text-muted small fw-bold">OU</span>
           </div>
 
-          <!-- ================= TOGGLE ================= -->
-          <div class="text-center mt-4">
-            <span id="toggle-text">Pas encore de compte ?</span>
-            <button
-              type="button"
-              id="toggle-btn"
-              class="btn btn-link fw-bold"
-            >
+          <!-- Social -->
+          <div class="d-flex justify-content-center gap-3 mb-4">
+            <button type="button" class="btn btn-outline-secondary btn-social bg-body text-body shadow-sm px-4 py-2">
+              Google
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-social bg-body text-body shadow-sm px-4 py-2">
+              <i class="fab fa-facebook-f text-primary me-2"></i> Facebook
+            </button>
+          </div>
+
+          <!-- Bouton de bascule -->
+          <div class="text-center">
+            <span id="toggle-text" class="text-muted small">Pas encore de compte ?</span>
+            <button type="button" id="toggle-btn" class="btn btn-link text-decoration-none fw-bold small">
               Créer un compte
             </button>
           </div>
 
         </div>
       </div>
-
     </div>
   </div>
 </div>
+
+<style>
+  .form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+  }
+  .btn-social:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+  }
+  .auth-form {
+    animation: slideIn 0.3s ease-out;
+  }
+  .theme-bg-fix {
+    background-color: var(--bs-card-bg, #ffffff);
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<script>
+  // --- 1. Bascule Connexion / Inscription ---
+  document.getElementById('toggle-btn').addEventListener('click', function() {
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const title = document.getElementById('form-title');
+    const subtitle = document.getElementById('form-subtitle');
+    const progress = document.getElementById('auth-progress');
+    const toggleText = document.getElementById('toggle-text');
+    
+    // Clear alerts
+    document.getElementById('auth-alert').classList.add('d-none');
+    document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+    if (loginForm.classList.contains('d-none')) {
+      loginForm.classList.remove('d-none');
+      signupForm.classList.add('d-none');
+      title.innerText = "Connexion";
+      subtitle.innerText = "Heureux de vous revoir !";
+      this.innerText = "Créer un compte";
+      toggleText.innerText = "Pas encore de compte ?";
+      progress.style.width = "50%";
+      progress.className = "progress-bar bg-primary";
+    } else {
+      loginForm.classList.add('d-none');
+      signupForm.classList.remove('d-none');
+      title.innerText = "Inscription";
+      subtitle.innerText = "Rejoignez notre plateforme dès aujourd'hui";
+      this.innerText = "Se connecter";
+      toggleText.innerText = "Déjà inscrit ?";
+      progress.style.width = "100%";
+      progress.className = "progress-bar bg-success";
+    }
+  });
+
+  // --- 2. Affichage dynamique des services ---
+  document.getElementById('signup-category').addEventListener('change', async function() {
+    const categoryId = this.value;
+    const serviceSelect = document.getElementById('signup-service');
+    serviceSelect.innerHTML = '<option value="">Chargement...</option>';
+    serviceSelect.disabled = true;
+
+    try {
+      const response = await fetch(`/auth/services-by-category/${categoryId}`);
+      const services = await response.json();
+      serviceSelect.innerHTML = '<option value="" selected disabled>Choisir un service</option>';
+      services.forEach(s => {
+        const option = document.createElement('option');
+        option.value = s.service_id;
+        option.textContent = s.name;
+        serviceSelect.appendChild(option);
+      });
+      serviceSelect.disabled = false;
+    } catch (err) {
+      serviceSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+    }
+  });
+
+  // --- 3. Afficher/Masquer Mot de passe ---
+  document.querySelectorAll('.toggle-password').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const input = this.closest('.input-group').querySelector('input');
+      const icon = this.querySelector('i');
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        input.type = "password";
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    });
+  });
+
+  // --- 4. Traitement AJAX Asynchrone des formulaires (Connexion & Inscription) ---
+  const handleFormSubmission = async (formElement, endpoint) => {
+    formElement.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const alertBox = document.getElementById('auth-alert');
+      alertBox.classList.add('d-none');
+      
+      // Nettoyage des états d'erreur précédents
+      document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+      const formData = new FormData(formElement);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          if (result.field) {
+            // Liaison de l'erreur avec le champ exact
+            const inputField = formElement.querySelector(`[name="${result.field}"]`) || document.getElementById(`login-${result.field}`);
+            if (inputField) {
+              inputField.classList.add('is-invalid');
+              const feedbackContainer = document.getElementById(`err-${result.field}`) || inputField.nextElementSibling;
+              if (feedbackContainer) feedbackContainer.innerText = result.message;
+            }
+          } else {
+            // Alerte globale si aucun champ ciblé n'est renvoyé
+            alertBox.innerText = result.message;
+            alertBox.classList.remove('d-none');
+          }
+          return;
+        }
+
+        // Redirection vers le dashboard en cas de succès complet
+        if (result.redirect) {
+          window.location.href = result.redirect;
+        }
+
+      } catch (err) {
+        alertBox.innerText = "❌ Connexion au serveur impossible.";
+        alertBox.classList.remove('d-none');
+      }
+    });
+  };
+
+  handleFormSubmission(document.getElementById('login-form'), '/auth/login');
+  handleFormSubmission(document.getElementById('signup-form'), '/auth/signup');
+</script>
+{% endblock %}

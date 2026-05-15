@@ -1,118 +1,50 @@
-/*==================================  footer style ============================================= */
-footer {
-  background-color: #004080;
-  color: #fff;
-  padding: 40px 20px;
-  margin-top: 30px;
-}
-.footer-top{  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;}
-
-footer .footer-section {
-  flex: 1 1 200px;
-  margin: 10px;
+/* Style du Footer */
+.footer {
+    /* On garde le bg-primary du HTML, mais on assure un texte clair */
+    color: #ffffff;
+    border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
-footer h4 {
-  margin-bottom: 10px;
-  font-size: 16px;
-  text-align: start;
-  border-bottom: 1px solid #fff;
-  padding-bottom: 5px;
-}
-footer p{
-  color: #fff;
+.letter-spacing-1 {
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
-footer a {
-  color: #ffcc00;
-  text-decoration: none;
-  transition: color 0.3s ease;
+/* Liens du footer */
+.footer-link {
+    color: rgba(255, 255, 255, 0.8); /* Blanc cassé pour le repos visuel */
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-footer a:hover {
-  color: #fff;
-  text-decoration: underline;
+.footer-link:hover {
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-footer .social-links a {
-  margin: 0 8px;
-  font-size: 22px;
+/* Icônes sociales */
+.social-icons a {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
 }
 
-footer .newsletter input {
-  padding: 8px;
-  border: none;
-  border-radius: 4px;
-  margin-right: 5px;
-  width: 70%;
+.social-icons a:hover {
+    color: #ffffff !important;
+    transform: translateY(-3px);
 }
 
-footer .newsletter button {
-  padding: 8px 12px;
-  background-color: #ffcc00;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #004080;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-  margin-top: 10px;
+/* Textes et paragraphes */
+.footer p {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+    color: rgba(255, 255, 255, 0.9);
 }
 
-footer .newsletter button:hover {
-  background-color: #fff;
-}
-
-/* Logo animation */
-.footer-logo svg {
-  transition: transform 0.3s ease;
-}
-
-.footer-logo svg:hover {
-  transform: scale(1.1) rotate(5deg);
-}
-/*  footer bottom  */
-
-.rules {
-  color: #ccc;
-  text-align: center;
-  font-size: 13px;
-  padding: 15px 10px;
-  border-top: 1px solid #444;
-}
-
-.rules a {
-  color: #ffcc00;
-  text-decoration: none;
-  margin: 0 5px;
-  transition: color 0.3s ease;
-}
-
-.rules a:hover {
-  color: #fff;
-  text-decoration: underline;
-}
-
-.rules p {
-  margin: 5px 0;
-}
-
-/* Responsive mobile */
-@media (max-width: 768px) {
-  footer {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  footer .footer-section {
-    margin: 20px 0;
-  }
-  footer .newsletter input,
-  footer .newsletter button {
-    width: 50%;
-    margin-bottom: 10px;
-  }
+/* Petit ajustement pour le séparateur "|" */
+.footer span.text-secondary {
+    color: rgba(255, 255, 255, 0.4) !important;
 }

@@ -1,8 +1,5 @@
 import { auth, supabase } from "../config/database.js";
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword 
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { createUserProfile } from "../models/userModel.js";
 
 const ROLE_MAP = {
@@ -12,177 +9,154 @@ const ROLE_MAP = {
   4: "super-admin"
 };
 
-// Fonction utilitaire pour formater les erreurs Firebase
+/**
+ * Formate proprement les codes d'erreur natifs de Firebase Authentication.
+ */
 function formatFirebaseError(error) {
   switch (error.code) {
     case "auth/email-already-in-use":
-      return {
-        field: "email",
-        message: "🚫 Cette adresse e‑mail est déjà utilisée. Veuillez en choisir une autre."
-      };
+      return { field: "email", message: "🚫 Cette adresse e-mail est déjà utilisée." };
     case "auth/invalid-email":
-      return {
-        field: "email",
-        message: "⚠️ L'adresse e‑mail saisie est invalide."
-      };
+      return { field: "email", message: "⚠️ L'adresse e-mail saisie est invalide." };
     case "auth/weak-password":
-      return {
-        field: "password",
-        message: "🔒 Votre mot de passe est trop faible. Utilisez au moins 6 caractères."
-      };
+      return { field: "password", message: "🔒 Votre mot de passe doit contenir au moins 6 caractères." };
     case "auth/user-not-found":
-      return {
-        field: "usernameOrEmail",
-        message: "❌ Aucun compte trouvé avec ces identifiants."
-      };
     case "auth/wrong-password":
-      return {
-        field: "password",
-        message: "🔑 Mot de passe incorrect. Veuillez réessayer."
-      };
+    case "auth/invalid-credential":
+      return { field: "usernameOrEmail", message: "❌ Identifiants ou mot de passe incorrects." };
     default:
-      return {
-        field: null,
-        message: "❌ Une erreur inattendue est survenue : " + error.message
-      };
+      return { field: null, message: `❌ Erreur d'authentification : ${error.message}` };
   }
 }
 
-/* =========================
-   SIGNUP avec session + rôle
-========================= */
+/* ==========================================================================
+   SIGNUP
+   ========================================================================== */
 const signup = async (req, res) => {
-  const {
-    firstname,
-    lastname,
-    birthday,
-    category_id,
-    service_id,
-    username,
-    whatsapp,
-    email,
-    password,
-    confirm_password
+  const { 
+    firstname, lastname, birthday, category_id, service_id, 
+    username, whatsapp, email, password, confirm_password 
   } = req.body;
 
   try {
+    // 1. Validations initiales
+    if (!email || !password || !username) {
+      return res.status(400).json({ success: false, message: "⚠️ Les champs obligatoires sont manquants." });
+    }
     if (password !== confirm_password) {
-      return res.status(400).json({
-        success: false,
-        field: "confirm_password",
-        message: "⚠️ Les mots de passe ne correspondent pas."
-      });
+      return res.status(400).json({ success: false, field: "confirm_password", message: "⚠️ Les mots de passe ne correspondent pas." });
     }
 
-    // Création compte Firebase
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    // 2. Création du compte dans Firebase Auth
+    const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
     const firebaseUser = userCredential.user;
 
-    // Création profil Supabase avec rôle par défaut (ex: 1)
+    // 3. Persistance du profil étendu dans Supabase
+    const defaultRoleId = 1;
     const result = await createUserProfile({
       uid: firebaseUser.uid,
       email: firebaseUser.email,
-      firstname,
-      lastname,
+      firstname: firstname?.trim(),
+      lastname: lastname?.trim(),
       birthday,
       whatsapp,
       category_id,
       service_id,
-      username,
-      role_id: 1, // rôle par défaut
+      username: username.trim(),
+      role_id: defaultRoleId,
       created_at: new Date()
     });
 
-    if (result && result.error) {
-      return res.status(400).json({
-        success: false,
-        message: "❌ Erreur lors de la création du profil Supabase : " + result.error.message
-      });
+    if (result?.error) {
+      throw new Error(`[Supabase Error] ${result.error.message}`);
     }
 
-    // ✅ Stocker l’utilisateur en session avec rôle
+    // 4. Initialisation de la session utilisateur
     req.session.user = {
       uid: firebaseUser.uid,
-      username,
+      username: username.trim(),
       email: firebaseUser.email,
-      role_id: 1,
-      role: ROLE_MAP[1]
+      role_id: defaultRoleId,
+      role: ROLE_MAP[defaultRoleId]
     };
 
-    return res.redirect("/dashboard");
+    // 5. Réponse JSON (Pratique moderne pour les requêtes Fetch/Axios sur le front-end)
+    return res.status(201).json({ success: true, redirect: "/dashboard" });
 
   } catch (error) {
+    console.error("[Signup Exception]:", error);
     const formatted = formatFirebaseError(error);
-    return res.status(400).json({
-      success: false,
-      field: formatted.field,
-      message: formatted.message
-    });
+    return res.status(400).json({ success: false, field: formatted.field, message: formatted.message });
   }
 };
 
-/* =========================
-   LOGIN avec session + rôle
-========================= */
+/* ==========================================================================
+   LOGIN
+   ========================================================================== */
 const login = async (req, res) => {
   const { usernameOrEmail, password } = req.body;
 
   try {
+    // 1. Validation de présence
     if (!usernameOrEmail || !password) {
-      return res.status(400).json({
-        success: false,
-        field: !usernameOrEmail ? "usernameOrEmail" : "password",
-        message: "⚠️ Identifiant et mot de passe requis."
+      return res.status(400).json({ 
+        success: false, 
+        field: !usernameOrEmail ? "usernameOrEmail" : "password", 
+        message: "⚠️ Identifiant et mot de passe requis." 
       });
     }
 
-    const userCredential = await signInWithEmailAndPassword(auth, usernameOrEmail, password);
+    // 2. Connexion Firebase
+    const userCredential = await signInWithEmailAndPassword(auth, usernameOrEmail.trim(), password);
     const firebaseUser = userCredential.user;
 
-    // Récupérer le profil Supabase (incluant role_id)
-    const { data: userProfile, error } = await supabase
+    // 3. Récupération des rôles et métadonnées dans Supabase
+    const { data: userProfile, error: supabaseError } = await supabase
       .from("user_profiles")
       .select("*")
       .eq("uid", firebaseUser.uid)
-      .single();
+      .maybeSingle(); // Préféré à .single() pour éviter de lever une exception si vide
 
-    if (error || !userProfile) {
-      return res.status(404).json({
-        success: false,
-        message: "❌ Profil utilisateur introuvable."
-      });
+    if (supabaseError || !userProfile) {
+      return res.status(404).json({ success: false, message: "❌ Profil applicatif introuvable." });
     }
 
-    // ✅ Stocker l’utilisateur en session avec rôle
+    // 4. Stockage des données critiques en session
     req.session.user = {
       uid: firebaseUser.uid,
       username: userProfile.username,
       email: firebaseUser.email,
       role_id: userProfile.role_id,
-      role: userProfile.role_id ? ROLE_MAP[userProfile.role_id] : "user",
+      role: ROLE_MAP[userProfile.role_id] || "user",
       firstname: userProfile.firstname,
       lastname: userProfile.lastname,
     };
 
-    return res.redirect("/dashboard");
+    return res.status(200).json({ success: true, redirect: "/dashboard" });
 
   } catch (error) {
+    console.error("[Login Exception]:", error);
     const formatted = formatFirebaseError(error);
-    return res.status(401).json({
-      success: false,
-      field: formatted.field,
-      message: formatted.message
-    });
+    return res.status(401).json({ success: false, field: formatted.field, message: formatted.message });
   }
 };
 
-/* =========================
+/* ==========================================================================
    LOGOUT
-========================= */
+   ========================================================================== */
 const logout = (req, res) => {
-  req.session.destroy(() => {
+  if (!req.session) {
+    return res.redirect("/auth");
+  }
+
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("[Logout Error]: Échec de la destruction de la session", err);
+      return res.status(500).json({ success: false, message: "Impossible de fermer la session." });
+    }
+    
     res.clearCookie("mvc_auth_session");
-    res.redirect("/auth");
+    return res.redirect("/auth");
   });
 };
 

@@ -10,6 +10,11 @@ import router from "./src/routes/routes.js";
 import dashboardRoutes from "./src/routes/dashboardRoutes.js";
 import searchRouter from "./src/models/search.js";
 
+
+import "dotenv/config";
+
+console.log("RESEND KEY ?", process.env.RESEND_API_KEY);
+
 dotenv.config();
 
 const app = express();
@@ -222,6 +227,6 @@ app.use((req, res) => {
    Start Server
 ========================= */
 app.listen(PORT, () => {
-  console.log(`✅ Server running at http://127.0.0.1:${PORT}`);
+  console.log(`✅ Server running at http://localhost:${PORT}`);
   console.log(`🌱 Environment: ${NODE_ENV}`);
 });
