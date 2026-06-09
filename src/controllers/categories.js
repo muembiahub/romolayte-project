@@ -10,7 +10,7 @@ const showCategories = async (req, res, next) => {
 
     // Rendu avec layout
     res.render("categories", {
-      layout: "partials/layoute",   // ⚠️ Vérifie que ton layout existe bien
+      layout: "partials/layoute",   
       title,
       categories,
     });

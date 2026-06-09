@@ -106,8 +106,23 @@ const login = async (req, res) => {
       });
     }
 
-    // 2. Connexion Firebase
-    const userCredential = await signInWithEmailAndPassword(auth, usernameOrEmail.trim(), password);
+    // 2. Détermine l'email à utiliser pour Firebase
+    let emailForAuth = usernameOrEmail.trim();
+    if (!emailForAuth.includes("@")) {
+      const { data: userProfileByUsername, error: usernameError } = await supabase
+        .from("user_profiles")
+        .select("email")
+        .ilike("username", usernameOrEmail.trim())
+        .maybeSingle();
+
+      if (usernameError || !userProfileByUsername) {
+        return res.status(404).json({ success: false, message: "❌ Identifiants ou mot de passe incorrects." });
+      }
+
+      emailForAuth = userProfileByUsername.email;
+    }
+
+    const userCredential = await signInWithEmailAndPassword(auth, emailForAuth, password);
     const firebaseUser = userCredential.user;
 
     // 3. Récupération des rôles et métadonnées dans Supabase
@@ -160,4 +175,12 @@ const logout = (req, res) => {
   });
 };
 
-export { signup, login, logout };
+const getAuthStatus = (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ success: false, message: "Authentification requise." });
+  }
+
+  return res.json({ success: true, user: req.session.user });
+};
+
+export { signup, login, logout, getAuthStatus };

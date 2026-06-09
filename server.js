@@ -6,10 +6,8 @@ import helmet from "helmet";
 import session from "express-session";
 
 // Routes
-import router from "./src/routes/routes.js";
-import dashboardRoutes from "./src/routes/dashboardRoutes.js";
+import apiRoutes from "./src/routes/apiRoutes.js";
 import searchRouter from "./src/models/search.js";
-
 
 import "dotenv/config";
 
@@ -32,6 +30,7 @@ app.set("views", path.join(process.cwd(), "src/views"));
    Static Files
 ========================= */
 app.use(express.static(path.join(process.cwd(), "src/public")));
+app.use(express.static(path.join(process.cwd(), "client/dist")));
 
 // Activer express-ejs-layouts
 app.use(expressLayouts);
@@ -165,11 +164,22 @@ function requireAuth(req, res, next) {
 }
 
 /* =========================
-   Routes (MVC)
+   Routes
 ========================= */
-app.use("/", router);                 
-app.use("/dashboard", requireAuth, dashboardRoutes); // ⚠️ protégé
+app.use("/api", apiRoutes);
 app.use("/search", searchRouter);
+
+/* =========================
+   SPA fallback for React frontend
+========================= */
+app.get("/*", (req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/search")) {
+    return next();
+  }
+
+  return res.sendFile(path.join(process.cwd(), "client/dist", "index.html"));
+});
+
 /* =========================
    404 Handler
 ========================= */

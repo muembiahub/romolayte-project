@@ -174,6 +174,87 @@ const showDemandeRecusPage = async (req, res, next) => {
 };
 
 /* ==========================================================================
+   STATISTIQUES ADMIN
+   ========================================================================== */
+const showStatisticPage = async (req, res, next) => {
+  try {
+    if (req.session?.user?.role_id < 3) {
+      const err = new Error("Accès refusé. Statistiques réservées aux administrateurs.");
+      err.status = 403;
+      return next(err);
+    }
+
+    const body = await ejs.renderFile(
+      getViewPath("dashboard/statistique.ejs"),
+      { user: req.session.user }
+    );
+
+    return res.render("dashboard/dashboard-layout", {
+      title: "Statistique",
+      user: req.session.user,
+      body
+    });
+
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/* ==========================================================================
+   GESTION DES RÔLES & PERMISSIONS
+   ========================================================================== */
+const showChangeRolesPage = async (req, res, next) => {
+  try {
+    if (req.session?.user?.role_id < 4) {
+      const err = new Error("Accès refusé. Cette section est réservée aux super-administrateurs.");
+      err.status = 403;
+      return next(err);
+    }
+
+    const body = await ejs.renderFile(
+      getViewPath("dashboard/changeroles.ejs"),
+      { user: req.session.user }
+    );
+
+    return res.render("dashboard/dashboard-layout", {
+      title: "Rôles & Permissions",
+      user: req.session.user,
+      body
+    });
+
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/* ==========================================================================
+   PARAMÈTRES SYSTÈME
+   ========================================================================== */
+const showChangeSystemPage = async (req, res, next) => {
+  try {
+    if (req.session?.user?.role_id < 4) {
+      const err = new Error("Accès refusé. Cette section est réservée aux super-administrateurs.");
+      err.status = 403;
+      return next(err);
+    }
+
+    const body = await ejs.renderFile(
+      getViewPath("dashboard/changesystem.ejs"),
+      { user: req.session.user }
+    );
+
+    return res.render("dashboard/dashboard-layout", {
+      title: "Paramètres Système",
+      user: req.session.user,
+      body
+    });
+
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/* ==========================================================================
    MISSIONS (PRESTATAIRES & ADMINS)
    ========================================================================== */
 async function showMissions(req, res, next) {
@@ -241,5 +322,8 @@ export {
   showProfilePage, 
   showAllUserProfile, 
   showDemandeRecusPage, 
-  showMissions 
+  showMissions, 
+  showStatisticPage, 
+  showChangeRolesPage, 
+  showChangeSystemPage 
 };
