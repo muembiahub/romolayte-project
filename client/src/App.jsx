@@ -31,7 +31,7 @@ function App() {
               element={<CategoryDetails />}
             />
             <Route
-                path="/services/:id/order"
+                path="/categories/:id/services/:serviceId/order"
                 element={<OrderService />}
             />
 

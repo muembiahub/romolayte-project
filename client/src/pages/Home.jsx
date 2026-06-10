@@ -1,6 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import DashboardLoading from "react-loading-skeleton";
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
@@ -35,7 +35,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 relative min-h-screen">
 
       {/* HERO */}
       <section className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 px-8 py-16 text-white shadow-xl sm:px-12">
@@ -47,11 +47,11 @@ export default function Home() {
           </span>
 
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            Trouvez et proposez des services en quelques clics.
+            Vos projets avancent plus vite avec l'équipe Romolayte.
           </h1>
 
           <p className="text-slate-300 text-lg">
-            Une plateforme moderne pour connecter clients et prestataires de manière simple, rapide et sécurisée.
+            Accédez à un espace unique et sécurisé pour collaborer en direct avec notre équipe, en toute simplicité.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -63,10 +63,10 @@ export default function Home() {
             </Link>
 
             <Link
-              to="/dashboard"
+              to="/contact"
               className="rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition"
             >
-              Dashboard
+               Contacter l'équipe
             </Link>
           </div>
         </div>
@@ -77,7 +77,11 @@ export default function Home() {
         {[
           { title: "Services", value: "120+", desc: "Offres disponibles" },
           { title: "Réponse", value: "24h", desc: "Temps moyen" },
-          { title: "Tech", value: "React", desc: "Stack moderne" },
+          { title: "Satisfaction", value: "99%", desc: "Clients heureux" },
+          { title: "Projets", value: "50+", desc: "Réalisés avec succès" },
+          { title: "Entreprises", value: "100+", desc: "Projets en cours" },
+          { title: "Équipe", value: "20+", desc: "Professionnels expérimentés" },
+
         ].map((item, i) => (
           <div
             key={i}
@@ -90,34 +94,6 @@ export default function Home() {
               {item.value}
             </p>
             <p className="text-sm text-slate-500">{item.desc}</p>
-          </div>
-        ))}
-      </section>
-
-      {/* FEATURES */}
-      <section className="grid gap-6 lg:grid-cols-3">
-        {[
-          {
-            title: "Interface moderne",
-            desc: "Expérience utilisateur fluide et intuitive.",
-          },
-          {
-            title: "Données en temps réel",
-            desc: "API connectée et dynamique.",
-          },
-          {
-            title: "Sécurité",
-            desc: "Accès protégé et authentification.",
-          },
-        ].map((f, i) => (
-          <div
-            key={i}
-            className="rounded-3xl bg-white p-6 shadow-sm hover:-translate-y-1 transition"
-          >
-            <h3 className="text-lg font-semibold text-slate-900">
-              {f.title}
-            </h3>
-            <p className="mt-2 text-sm text-slate-600">{f.desc}</p>
           </div>
         ))}
       </section>
@@ -142,7 +118,9 @@ export default function Home() {
         {/* GRID */}
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {loading ? (
-            <p className="text-slate-500">Chargement des catégories...</p>
+            <p className="text-slate-500">
+                <DashboardLoading />
+            </p>
           ) : categories.length === 0 ? (
             <p className="text-slate-500">Aucune catégorie trouvée.</p>
           ) : (
@@ -182,6 +160,30 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* CONTENEUR DU BOUTON FLOTTANT (BF) WHATSAPP + INFOBULLE */}
+      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 group">
+        
+        {/* INFOBULLE TEXTUELLE */}
+        <div className="hidden sm:block opacity-0 scale-95 translate-x-2 bg-slate-900 text-white text-xs font-medium px-4 py-2 rounded-2xl shadow-xl transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-x-0 whitespace-nowrap border border-slate-800">
+          Besoin d'aide ? Échangeons sur WhatsApp !
+          {/* Petite flèche pointant vers le bouton */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 rotate-44 h-2 w-2 bg-slate-900 border-t border-r border-slate-800" />
+        </div>
+
+        {/* LE BOUTON FLOTTANT */}
+        <a
+          href="https://wa.me/+243971211539"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-2xl transition-all duration-300 hover:scale-110 hover:bg-emerald-400 active:scale-95"
+          title="Discuter sur WhatsApp"
+        >
+          <svg className="h-7 w-7 fill-current" viewBox="0 0 24 24">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.413 9.863-9.847.001-2.633-1.019-5.101-2.872-6.957C16.548 1.995 14.086.978 11.46.978c-5.443 0-9.866 4.414-9.869 9.851-.001 1.77.475 3.499 1.38 5.03l-.997 3.644 3.734-.979zm12.064-4.815c-.328-.164-1.94-.957-2.242-1.067-.302-.11-.522-.164-.742.164-.22.328-.85 1.067-1.041 1.286-.192.219-.384.246-.712.082-1.39-.699-2.399-1.222-3.344-2.845-.249-.427.249-.396.711-1.317.077-.154.038-.287-.019-.396-.058-.11-.522-1.258-.716-1.723-.188-.454-.38-.392-.523-.399-.135-.006-.29-.008-.445-.008-.154 0-.406.058-.619.288-.214.23-.814.795-.814 1.938 0 1.143.832 2.246.948 2.401.115.154 1.637 2.498 3.965 3.505.553.24 1.01.383 1.347.491.555.177 1.06.152 1.459.093.445-.066 1.94-.793 2.213-1.52.274-.726.274-1.35.192-1.48-.082-.13-.302-.213-.63-.377z" />
+          </svg>
+        </a>
+      </div>
 
     </div>
   );

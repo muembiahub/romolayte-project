@@ -103,11 +103,21 @@ export default function Contact() {
         <div className="mt-8 space-y-4 rounded-3xl bg-slate-900/80 p-6">
           <div>
             <p className="text-sm text-slate-400">Email</p>
-            <p className="mt-2 font-semibold text-white">support@romolayte.com</p>
+            <a 
+              href="mailto:support@romolayte.space" 
+              className="mt-2 inline-block font-semibold text-white transition hover:text-indigo-400"
+            >
+              support@romolayte.space
+            </a>
           </div>
           <div>
             <p className="text-sm text-slate-400">Téléphone</p>
-            <p className="mt-2 font-semibold text-white">+33 1 23 45 67 89</p>
+            <a 
+              href="tel:+243971211539" 
+              className="mt-2 inline-block font-semibold text-white transition hover:text-indigo-400"
+            >
+              +243 971 211 539
+            </a>
           </div>
         </div>
       </aside>
