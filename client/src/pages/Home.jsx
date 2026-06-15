@@ -149,7 +149,7 @@ export default function Home() {
                   </p>
 
                   <Link
-                    to={`/categories/${category.category_id}`}
+                    to={`/categories/${category.category_id}/services`}
                     className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition"
                   >
                     Voir plus

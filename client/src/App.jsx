@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import Home from "./pages/Home.jsx";
 import Services from "./pages/Services.jsx";
+import  CreateService from "./pages/CreateService.jsx";
 import About from "./pages/About.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Contact from "./pages/Contact.jsx";
@@ -24,14 +25,15 @@ function App() {
             <Route path="/" element={<Home />} />
 
             <Route path="/services" element={<Services />} />
+            <Route path="/service/create" element={<CreateService/>} />
 
             {/* Nouvelle route */}
             <Route
-              path="/categories/:id"
+              path="/categories/:id/services"
               element={<CategoryDetails />}
             />
             <Route
-                path="/categories/:id/services/:serviceId/order"
+                path="/services/:id/order"
                 element={<OrderService />}
             />
 

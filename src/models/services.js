@@ -53,4 +53,31 @@ const getServicesByCategory = async (categoryId) => {
   return data || [];
 };
 
-export { getAllServices, getServiceById, getServicesByCategory };
+const getServicesByCategoryDetails = async (serviceId) => {
+  const { data, error } = await supabase
+    .from("services")
+    .select("*, categories(category_id, name)") 
+    .eq("category_id", serviceId);
+
+  if (error) {
+    console.error("❌ Erreur Supabase (getServicesByCategoryDetails):", error.message);
+    throw error;
+  }
+
+  return data || [];
+};
+
+//  ajouter service par category selectionner 
+const addServiceByCategory = async (serviceId) => {
+  const { data, error } = await supabase
+    .from("services")
+    .select("*, categories(category_id, name)") 
+    .eq("category_id", serviceId);
+
+  if (error) {
+    console.error("❌ Erreur Supabase (getServicesByCategoryDetails):", error.message);
+    throw error;
+  }
+}
+
+export { getAllServices, getServiceById, getServicesByCategory, getServicesByCategoryDetails, addServiceByCategory };

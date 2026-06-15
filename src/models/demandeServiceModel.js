@@ -1,21 +1,35 @@
 // src/models/demandeServiceModel.js
+
 import { supabase } from "../config/database.js";
 
 /**
- * Insertion d'une demande de service
+ * Créer une nouvelle demande de service
  */
-const insertDemandeService = async (demande) => {
+export const insertDemandeService = async ({
+  service_id,
+  customer_name,
+  email,
+  phone,
+  description,
+}) => {
   const { data, error } = await supabase
     .from("demande_service")
-    .insert([demande])
-    .select(); // renvoie la ligne insérée
+    .insert([
+      {
+        service_id,
+        customer_name,
+        email,
+        phone,
+        description,
+      },
+    ])
+    .select()
+    .single();
 
   if (error) {
-    throw error; // on laisse le contrôleur gérer l'erreur
+    console.error("Erreur insertion demande_service :", error);
+    throw new Error(error.message);
   }
 
-  // retourne directement l'objet inséré (première ligne)
-  return data[0];
+  return data;
 };
-
-export { insertDemandeService };

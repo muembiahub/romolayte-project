@@ -13,4 +13,17 @@ const getCategories = async () => {
 
   return data || [];
 };
-export { getCategories };
+//  
+const getServicesByCategory = async (categoryId) => {
+  const { data, error } = await supabase
+    .from("services")
+    .select("*")
+    .eq("category_id", categoryId)
+    .order("service_id", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching services:", error.message);
+    throw new Error("Failed to fetch services");
+  }
+}
+export { getCategories, getServicesByCategory };

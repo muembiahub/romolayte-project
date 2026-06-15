@@ -1,9 +1,14 @@
-import { getCategories } from "../models/categories.js";
-import { getAllServices, getServiceById, getServicesByCategory } from "../models/services.js";
+import { getCategories ,} from "../models/categories.js";
+import { getAllServices, getServiceById, getServicesByCategory, addServiceByCategory} from "../models/services.js";
 import { insertContact } from "../models/contactModel.js";
 import { insertDemandeService } from "../models/demandeServiceModel.js";
+
 import { supabase } from "../config/database.js";
 import { sendConfirmationEmail } from "../services/email.js";
+
+import { getAllAboutPages } from "../models/about.js";
+
+
 
 // Les fonctions simples profitent du try/catch pour le transfert sécurisé au asyncHandler de la route
 const getPublicCategories = async (req, res, next) => {
@@ -13,12 +18,22 @@ const getPublicCategories = async (req, res, next) => {
   } catch (error) { next(error); }
 };
 
+const getPublicServicesByCategoryId = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const services = await getServicesByCategory(id);
+    res.json({ success: true, services });
+  } catch (error) { next(error); }
+};
+
 const getPublicServices = async (req, res, next) => {
   try {
     const services = await getAllServices();
     res.json({ success: true, services });
   } catch (error) { next(error); }
 };
+
+
 
 const getPublicServiceDetail = async (req, res, next) => {
   try {
@@ -31,13 +46,16 @@ const getPublicServiceDetail = async (req, res, next) => {
   } catch (error) { next(error); }
 };
 
-const getServicesByCategoryApi = async (req, res, next) => {
+
+// 
+const createService = async (req, res, next) => {
   try {
-    const { categoryId } = req.params;
-    const services = await getServicesByCategory(categoryId);
-    res.json({ success: true, services });
+    const { category_id, title, description, price, image } = req.body;
+    const service = await addServiceByCategory(category_id, title, description, price, image);
+    res.status(201).json({ success: true, service });
   } catch (error) { next(error); }
-};
+}
+
 
 const submitContactApi = async (req, res, next) => {
   try {
@@ -100,146 +118,139 @@ const getCityFromCoordinates = async (req, res) => {
 /* =====================================================
    SUBMIT SERVICE REQUEST API
 ===================================================== */
-const submitServiceRequestApi = async (req, res) => {
-  try {
-    console.log("📥 RECEIVED BODY PAYLOAD:", req.body);
 
+export const createDemandeService = async (req, res) => {
+  try {
     const {
-      category_name,
-      service_name,
-      price,
-      name,
-      gender,
-      phone,
+      service_id,
+      customer_name,
       email,
-      city,
-      location
+      phone,
+      description,
     } = req.body;
 
-    const hasName = name && name.trim() !== "";
-    const hasEmail = email && email.trim() !== "";
-    const hasLocation = location && location.trim() !== "";
-    const hasCategory = category_name && category_name.trim() !== "";
-    const hasService = service_name && service_name.trim() !== "";
-
-    if (!hasName || !hasEmail || !hasLocation || !hasCategory || !hasService) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "missing_fields", 
-        message: `Champs requis manquants ou vides. Validations -> Nom: ${!!hasName}, Email: ${!!hasEmail}, Localisation (GPS): ${!!hasLocation}, Catégorie: ${!!hasCategory}, Service: ${!!hasService}` 
+    if (
+      !service_id ||
+      !customer_name ||
+      !email ||
+      !phone ||
+      !description
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Tous les champs sont obligatoires.",
       });
     }
 
-    const safeCoordinates = String(location).replace(/[\[\]]/g, "").trim();
-
-    if (!safeCoordinates.includes(",")) {
-      return res.status(400).json({ success: false, message: "Le format des coordonnées GPS doit être: latitude,longitude" });
-    }
-
-    /* ================= CATEGORY LOOKUP ================= */
-    const { data: category, error: categoryError } = await supabase
-      .from("categories")
-      .select("category_id")
-      .eq("name", category_name.trim())
-      .single();
-
-    if (categoryError || !category) {
-      console.error("❌ Catégorie introuvable dans Supabase:", category_name);
-      return res.status(400).json({ success: false, message: `La catégorie '${category_name}' n'existe pas dans le système.` });
-    }
-
-    /* ================= SERVICE LOOKUP ================= */
-    const { data: service, error: serviceError } = await supabase
-      .from("services")
-      .select("service_id")
-      .eq("name", service_name.trim())
-      .single();
-
-    if (serviceError || !service) {
-      console.error("❌ Service introuvable dans Supabase:", service_name);
-      return res.status(400).json({ success: false, message: `Le service '${service_name}' n'existe pas dans le système.` });
-    }
-
-    /* ================= DUPLICATE CHECK ================= */
-    const { data: existing } = await supabase
-      .from("demande_service")
-      .select("demande_id")
-      .eq("service_id", service.service_id)
-      .eq("email", email.trim())
-      .maybeSingle();
-
-    if (existing) {
-      return res.status(409).json({ 
-        success: false, 
-        error: "already_requested",
-        message: "Vous avez déjà envoyé une demande active pour ce service.",
-        redirectUrl: `/services-details/${service.service_id}`
-      });
-    }
-
-    /* ================= PRICE PROCESSING ================= */
-    const parsedPrice = price && price !== "Sur devis"
-      ? Number(String(price).replace(/[^\d.]/g, ""))
-      : null;
-
-    /* ================= MODEL EXECUTION ================= */
     const demande = await insertDemandeService({
-      category_id: category.category_id,
-      service_id: service.service_id,
-      category_name: category_name.trim(),
-      service_name: service_name.trim(),
-      price: parsedPrice,
-      name: name.trim(),
-      gender: gender || null,
-      phone: phone ? phone.trim() : null,
-      email: email.trim(),
-      coordinates: safeCoordinates,
-      location: city ? city.trim() : null,
-      status: "Reçus"
+      service_id,
+      customer_name,
+      email,
+      phone,
+      description,
     });
 
-    try {
-      await sendConfirmationEmail(demande);
-    } catch (emailError) {
-      console.error("❌ Notification email échec:", emailError.message);
-    }
-
-    return res.status(201).json({ 
-      success: true, 
+    return res.status(201).json({
+      success: true,
+      message: "Demande envoyée avec succès.",
       demande,
-      redirectUrl: `/demande-success/${demande.demande_id}`
     });
-
   } catch (error) {
-    console.error("❌ Crashing failure inside submitServiceRequestApi:", error);
-    return res.status(500).json({ success: false, message: `Erreur critique serveur: ${error.message || error}` });
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur serveur.",
+    });
   }
 };
 
 const getDashboardStats = async (req, res, next) => {
   try {
-    const [{ count: usersCount }, { count: demandesCount }] = await Promise.all([
-      supabase.from("user_profiles").select("*", { count: "exact", head: true }),
-      supabase.from("demande_service").select("*", { count: "exact", head: true })
+    const [
+      { count: usersCount },
+      { count: demandesCount },
+      { count: categoriesCount },
+      { count: servicesCount },
+      { data: recentOrders }
+    ] = await Promise.all([
+      supabase
+        .from("user_profiles")
+        .select("*", { count: "exact", head: true }),
+
+      supabase
+        .from("demande_service")
+        .select("*", { count: "exact", head: true }),
+
+      supabase
+        .from("categories")
+        .select("*", { count: "exact", head: true }),
+
+      supabase
+        .from("services")
+        .select("*", { count: "exact", head: true }),
+
+      supabase
+        .from("demande_service")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(5)
     ]);
 
     res.json({
       success: true,
       stats: {
         usersCount: usersCount || 0,
-        demandesCount: demandesCount || 0
-      }
+        demandesCount: demandesCount || 0,
+        categoriesCount: categoriesCount || 0,
+        servicesCount: servicesCount || 0,
+      },
+      recentOrders: recentOrders || [],
     });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+
+
+const PostOrderService = {
+  getorder: async (req, res) => {
+    try {
+      const order = await insertDemandeService();
+      res.status(200).json(order);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+}
+
+ const getaboutpages = async (req, res) => {
+  try {
+    const about = await getAllAboutPages();
+
+    res.status(200).json({
+      success: true,
+      data: about,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
 };
 
 export {
   getPublicCategories,
+  getPublicServicesByCategoryId,
   getPublicServices,
   getPublicServiceDetail,
-  getServicesByCategoryApi,
+  createService,
   submitContactApi,
-  submitServiceRequestApi,
   getCityFromCoordinates,
-  getDashboardStats
+  getDashboardStats,
+  PostOrderService,
+  getaboutpages
 };

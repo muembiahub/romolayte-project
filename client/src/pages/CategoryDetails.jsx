@@ -160,7 +160,7 @@ export default function CategoryDetails() {
 
                 {/* CORRECTION DE LA ROUTE : Prend désormais en compte le paramètre de catégorie :id */}
                 <Link
-                  to={`/categories/${id}/services/${service.service_id}/order`}
+                  to={`/services/${service.service_id}/order`}
                   className="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 block text-center shadow-sm"
                 >
                   Commander
