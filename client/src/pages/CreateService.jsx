@@ -1,111 +1,245 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+
+const initialForm = {
+  category_id: "",
+  name: "",
+  description: "",
+  price: "",
+  logo: "",
+};
 
 const ServiceForm = () => {
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [serviceName, setServiceName] = useState("");
-  const [serviceDescription, setServiceDescription] = useState("");
-  const [servicePrice, setServicePrice] = useState("");
+  const [formData, setFormData] = useState(initialForm);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  // Charger les catégories depuis ton backend
+  // Charger les catégories
   useEffect(() => {
-    const fetchCategories = async () => {
+    const loadCategories = async () => {
       try {
-        const response = await fetch("/api/categories"); // ton endpoint backend
-        const data = await response.json();
-        setCategories(data);
-      } catch (error) {
-        console.error("❌ Erreur chargement catégories:", error);
+        const res = await fetch("/api/categories");
+        if (!res.ok) throw new Error();
+
+        const data = await res.json();
+        setCategories(Array.isArray(data?.categories) ? data.categories : []);
+      } catch (err) {
+        console.error(err);
+        setMessage("❌ Erreur lors du chargement des catégories");
       }
     };
-    fetchCategories();
+
+    loadCategories();
   }, []);
 
-  // Ajouter un service via ton backend
+  // Gestion des inputs
+  const handleChange = ({ target: { name, value } }) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Validation simple
+  const isValid = () =>
+    formData.category_id &&
+    formData.name.trim() &&
+    formData.description.trim();
+
+  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
 
-    if (!selectedCategory) {
-      alert("⚠️ Choisis une catégorie avant d’ajouter un service.");
+    if (!isValid()) {
+      setMessage("⚠️ Veuillez remplir tous les champs obligatoires");
       return;
     }
 
+    setLoading(true);
+
     try {
-      const response = await fetch("/api/services/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: serviceName,
-          description: serviceDescription,
-          price: servicePrice,
-          category_id: selectedCategory,
-        }),
-      });
+  const response = await fetch(
+    "/api/services/create",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        category_id: Number(
+          formData.category_id
+        ),
 
-      if (!response.ok) {
-        throw new Error("Erreur lors de l’ajout du service");
-      }
+        name: formData.name.trim(),
 
-      const result = await response.json();
-      alert("✅ Service ajouté avec succès !");
-      console.log("Service ajouté:", result);
+        description:
+          formData.description.trim(),
 
-      // Reset form
-      setServiceName("");
-      setServiceDescription("");
-      setServicePrice("");
-      setSelectedCategory("");
-    } catch (error) {
-      console.error("❌ Erreur ajout service:", error);
-      alert("Erreur lors de l’ajout du service.");
+        price: formData.price
+          ? Number(formData.price)
+          : null,
+
+        logo: formData.logo || null,
+      }),
     }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message ||
+      result.error ||
+      "Erreur serveur"
+    );
+  }
+
+  console.log(
+    "Service créé:",
+    result
+  );
+
+  setMessage(
+    "✅ Service ajouté avec succès"
+  );
+
+  setFormData({
+    category_id: "",
+    name: "",
+    description: "",
+    price: "",
+    logo: "",
+  });
+
+} catch (error) {
+  console.error(
+    "Erreur complète:",
+    error
+  );
+
+  setMessage(
+    `❌ ${error.message}`
+  );
+
+} finally {
+  setLoading(false);
+}
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Ajouter un Service</h2>
-
-      <label>Catégorie :</label>
-      <select
-        value={selectedCategory}
-        onChange={(e) => setSelectedCategory(e.target.value)}
-        required
+    <div className="w-full px-4 py-6">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-2xl mx-auto bg-white shadow-lg rounded-2xl p-8 space-y-5"
       >
-        <option value="">-- Sélectionne une catégorie --</option>
-        {categories.map((cat) => (
-          <option key={cat.category_id} value={cat.category_id}>
-            {cat.name}
-          </option>
-        ))}
-      </select>
+        <h2 className="text-2xl font-bold text-gray-800">
+          Ajouter un Service
+        </h2>
 
-      <label>Nom du service :</label>
-      <input
-        type="text"
-        value={serviceName}
-        onChange={(e) => setServiceName(e.target.value)}
-        required
-      />
+        {message && (
+          <div
+            className={`p-3 rounded-lg text-sm ${
+              message.includes("✅")
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {message}
+          </div>
+        )}
 
-      <label>Description :</label>
-      <textarea
-        value={serviceDescription}
-        onChange={(e) => setServiceDescription(e.target.value)}
-        required
-      />
+        {/* Catégorie */}
+        <div>
+          <label className="block mb-2 text-sm font-medium">
+            Catégorie *
+          </label>
 
-      <label>Prix :</label>
-      <input
-        type="number"
-        value={servicePrice}
-        onChange={(e) => setServicePrice(e.target.value)}
-        required
-      />
+          <select
+            name="category_id"
+            value={formData.category_id}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+          >
+            <option value="">Choisir une catégorie</option>
+            {categories.map((cat) => (
+              <option key={cat.category_id} value={cat.category_id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      <button type="submit">Ajouter</button>
-    </form>
+        {/* Nom */}
+        <div>
+          <label className="block mb-2 text-sm font-medium">
+            Nom du service *
+          </label>
+
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Ex : Développement Web"
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="block mb-2 text-sm font-medium">
+            Description *
+          </label>
+
+          <textarea
+            rows={4}
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            placeholder="Décris ton service..."
+            className="w-full px-4 py-3 border rounded-xl resize-none focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+        </div>
+
+        {/* Prix */}
+        <div>
+          <label className="block mb-2 text-sm font-medium">Prix</label>
+
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            name="price"
+            value={formData.price}
+            onChange={handleChange}
+            placeholder="Ex : 50"
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+        </div>
+
+        {/* Logo */}
+        <div>
+          <label className="block mb-2 text-sm font-medium">
+            URL Logo
+          </label>
+
+          <input
+            type="text"
+            name="logo"
+            value={formData.logo}
+            onChange={handleChange}
+            placeholder="https://..."
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-indigo-600 text-white py-3 rounded-xl font-medium hover:bg-indigo-700 transition disabled:opacity-50"
+        >
+          {loading ? "Ajout..." : "Ajouter le service"}
+        </button>
+      </form>
+    </div>
   );
 };
 

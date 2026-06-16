@@ -25,5 +25,8 @@ const getServicesByCategory = async (categoryId) => {
     console.error("Error fetching services:", error.message);
     throw new Error("Failed to fetch services");
   }
-}
+
+  return data || []; // ✅ toujours retourner un tableau
+};
+
 export { getCategories, getServicesByCategory };

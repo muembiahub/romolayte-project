@@ -34,7 +34,7 @@ router.get("/categories", asyncHandler(getPublicCategories));
 router.get("/categories/:id/services", asyncHandler(getPublicServicesByCategoryId));
 router.get("/services", asyncHandler(getPublicServices));
 router.get("/services/:id", asyncHandler(getPublicServiceDetail));
-router.post("/services/create", asyncHandler(createService));
+router.post("/service/create", createService);
 router.post("/services/:id/order", asyncHandler(PostOrderService));
 
 router.get("/get-city", asyncHandler(getCityFromCoordinates)); 

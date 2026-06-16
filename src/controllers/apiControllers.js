@@ -48,13 +48,37 @@ const getPublicServiceDetail = async (req, res, next) => {
 
 
 // 
-const createService = async (req, res, next) => {
+const createService = async (req, res) => {
   try {
-    const { category_id, title, description, price, image } = req.body;
-    const service = await addServiceByCategory(category_id, title, description, price, image);
-    res.status(201).json({ success: true, service });
-  } catch (error) { next(error); }
-}
+    const {
+      category_id,
+      name,
+      description,
+      price,
+      logo,
+    } = req.body;
+
+    const service =
+      await addServiceByCategory(
+        category_id,
+        name,
+        description,
+        price,
+        logo
+      );
+
+    res.status(201).json({
+      success: true,
+      service,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 
 const submitContactApi = async (req, res, next) => {
