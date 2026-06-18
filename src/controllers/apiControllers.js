@@ -1,41 +1,55 @@
-import { getCategories ,} from "../models/categories.js";
-import { getAllServices, getServiceById, getServicesByCategory, addServiceByCategory} from "../models/services.js";
-import { insertContact } from "../models/contactModel.js";
+import { getCategories } from "../models/categories.js";
+import {
+  getAllServices,
+  getServiceById,
+  getServicesByCategory,
+  addServiceByCategory
+} from "../models/services.js";
 import { insertDemandeService } from "../models/demandeServiceModel.js";
-
 import { supabase } from "../config/database.js";
-import { sendConfirmationEmail } from "../services/email.js";
-
 import { getAllAboutPages } from "../models/about.js";
 
+import {
+  getAllContacts,
+  insertContactmessage,
+  updateContactStatus,
+  deleteContact
+} from "../models/contactModel.js";
 
+import { sendConfirmationEmail } from "../authomationServices/sendConfirmationEmail.js";
 
-// Les fonctions simples profitent du try/catch pour le transfert sécurisé au asyncHandler de la route
-const getPublicCategories = async (req, res, next) => {
+/* =====================================================
+   CATEGORIES & SERVICES
+===================================================== */
+export const getPublicCategories = async (req, res, next) => {
   try {
     const categories = await getCategories();
     res.json({ success: true, categories });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 };
 
-const getPublicServicesByCategoryId = async (req, res, next) => {
+export const getPublicServicesByCategoryId = async (req, res, next) => {
   try {
     const { id } = req.params;
     const services = await getServicesByCategory(id);
     res.json({ success: true, services });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 };
 
-const getPublicServices = async (req, res, next) => {
+export const getPublicServices = async (req, res, next) => {
   try {
     const services = await getAllServices();
     res.json({ success: true, services });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 };
 
-
-
-const getPublicServiceDetail = async (req, res, next) => {
+export const getPublicServiceDetail = async (req, res, next) => {
   try {
     const { id } = req.params;
     const service = await getServiceById(id);
@@ -43,45 +57,29 @@ const getPublicServiceDetail = async (req, res, next) => {
       return res.status(404).json({ success: false, message: "Service introuvable." });
     }
     res.json({ success: true, service });
-  } catch (error) { next(error); }
-};
-
-
-// 
-const createService = async (req, res) => {
-  try {
-    const {
-      category_id,
-      name,
-      description,
-      price,
-      logo,
-    } = req.body;
-
-    const service =
-      await addServiceByCategory(
-        category_id,
-        name,
-        description,
-        price,
-        logo
-      );
-
-    res.status(201).json({
-      success: true,
-      service,
-    });
-
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
+export const createService = async (req, res) => {
+  try {
+    const { category_id, name, description, price, logo } = req.body;
+    if (!category_id || !name || !description || !price) {
+      return res.status(400).json({ success: false, message: "Champs obligatoires manquants." });
+    }
 
-const submitContactApi = async (req, res, next) => {
+    const service = await addServiceByCategory(category_id, name, description, price, logo);
+    res.status(201).json({ success: true, service });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/* =====================================================
+   CONTACT
+===================================================== */
+export const submitContactMessage = async (req, res, next) => {
   try {
     const { name, email, message } = req.body;
     if (!name || !email || !message) {
@@ -90,23 +88,23 @@ const submitContactApi = async (req, res, next) => {
 
     const contact = await insertContact(name, email, message);
     res.status(201).json({ success: true, contact });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 };
 
 /* =====================================================
-   REVERSE GEOCODING (CORRIGÉ & VALIDE)
+   REVERSE GEOCODING
 ===================================================== */
-const getCityFromCoordinates = async (req, res) => {
+export const getCityFromCoordinates = async (req, res) => {
   try {
     const { lat, lon } = req.query;
-
     if (!lat || !lon) {
       return res.status(400).json({ success: false, message: "Latitude et longitude requises." });
     }
 
-    // CORRECTION : URL officielle Nominatim avec formats & variables configurés
     const response = await fetch(
-      `https://openstreetmap.org{lat}&lon=${lon}&format=json&zoom=12&addressdetails=1`,
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=12&addressdetails=1`,
       {
         headers: {
           "Accept-Language": "fr",
@@ -120,7 +118,6 @@ const getCityFromCoordinates = async (req, res) => {
     }
 
     const data = await response.json();
-
     const detectedCity =
       data.address?.city ||
       data.address?.town ||
@@ -131,65 +128,118 @@ const getCityFromCoordinates = async (req, res) => {
       data.address?.suburb ||
       "";
 
-    return res.status(200).json({ success: true, city: detectedCity.trim() });
-
+    res.status(200).json({ success: true, city: detectedCity.trim() });
   } catch (error) {
-    console.error("❌ Erreur reverse geocoding backend :", error);
-    return res.status(500).json({ success: false, message: "Erreur lors de la détection de la ville." });
+    console.error("❌ Erreur reverse geocoding :", error);
+    res.status(500).json({ success: false, message: "Erreur lors de la détection de la ville." });
   }
 };
 
-/* =====================================================
-   SUBMIT SERVICE REQUEST API
-===================================================== */
 
-export const createDemandeService = async (req, res) => {
+/* =====================================================
+   CONTROLLER : DEMANDE DE SERVICE
+===================================================== */
+export const submitDemandeService = async (req, res) => {
   try {
     const {
       service_id,
-      customer_name,
+      name,
       email,
       phone,
-      description,
+      coordinates,
+      location,
+      gender,
+      other_info
     } = req.body;
 
-    if (
-      !service_id ||
-      !customer_name ||
-      !email ||
-      !phone ||
-      !description
-    ) {
+    if (!service_id || !name || !email || !phone || !coordinates || !location || !gender) {
       return res.status(400).json({
         success: false,
-        message: "Tous les champs sont obligatoires.",
+        message: "Tous les champs obligatoires doivent être remplis."
       });
     }
 
-    const demande = await insertDemandeService({
-      service_id,
-      customer_name,
+    const service = await getServiceById(service_id);
+
+    console.log("SERVICE DB:", service);
+
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        message: "Service introuvable"
+      });
+    }
+
+    const payload = {
+      category_id: service.category_id,
+
+      service_id: service.service_id ?? service.id,
+
+      category_name:
+        service.categories?.name ??
+        service.category_name ??
+        null,
+
+      service_name: service.name,
+      price: service.price,
+
+      name,
       email,
       phone,
-      description,
-    });
+      coordinates,
+      location,
+      gender,
+      other_info,
 
-    return res.status(201).json({
-      success: true,
-      message: "Demande envoyée avec succès.",
-      demande,
-    });
+      status: "pending"
+    };
+
+   const demande = await insertDemandeService(payload);
+
+try {
+  await sendConfirmationEmail({
+    email: payload.email,
+    name: payload.name,
+    service_name: payload.service_name,
+    location: payload.location,
+    status: payload.status
+  });
+} catch (e) {
+  console.error("Email non envoyé mais demande OK", e);
+}
+
+return res.status(201).json({
+  success: true,
+  message: "Demande envoyée avec succès",
+  demande
+});
+
   } catch (error) {
-    console.error(error);
+    console.error("❌ Erreur insertion demande :", error);
+
+    if (
+      error.code === "23505" &&
+      error.message.includes("unique_service_per_user")
+    ) {
+      return res.status(409).json({
+        success: false,
+        message:
+          "Vous avez déjà envoyé une demande pour ce service avec cet email."
+      });
+    }
 
     return res.status(500).json({
       success: false,
-      message: "Erreur serveur.",
+      message: "Erreur serveur. Impossible de traiter la demande."
     });
   }
 };
 
-const getDashboardStats = async (req, res, next) => {
+
+/* =====================================================
+   DASHBOARD STATS
+===================================================== */
+export const getDashboardStats = async (req, res, next) => {
   try {
     const [
       { count: usersCount },
@@ -198,27 +248,11 @@ const getDashboardStats = async (req, res, next) => {
       { count: servicesCount },
       { data: recentOrders }
     ] = await Promise.all([
-      supabase
-        .from("user_profiles")
-        .select("*", { count: "exact", head: true }),
-
-      supabase
-        .from("demande_service")
-        .select("*", { count: "exact", head: true }),
-
-      supabase
-        .from("categories")
-        .select("*", { count: "exact", head: true }),
-
-      supabase
-        .from("services")
-        .select("*", { count: "exact", head: true }),
-
-      supabase
-        .from("demande_service")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(5)
+      supabase.from("user_profiles").select("*", { count: "exact", head: true }),
+      supabase.from("demande_service").select("*", { count: "exact", head: true }),
+      supabase.from("categories").select("*", { count: "exact", head: true }),
+      supabase.from("services").select("*", { count: "exact", head: true }),
+      supabase.from("demande_service").select("*").order("created_at", { ascending: false }).limit(5)
     ]);
 
     res.json({
@@ -236,45 +270,57 @@ const getDashboardStats = async (req, res, next) => {
   }
 };
 
-
-
-
-const PostOrderService = {
-  getorder: async (req, res) => {
-    try {
-      const order = await insertDemandeService();
-      res.status(200).json(order);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
-}
-
- const getaboutpages = async (req, res) => {
+/* =====================================================
+   ABOUT PAGES
+===================================================== */
+export const getaboutpages = async (req, res) => {
   try {
     const about = await getAllAboutPages();
-
-    res.status(200).json({
-      success: true,
-      data: about,
-    });
+    res.status(200).json({ success: true, data: about });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
-export {
-  getPublicCategories,
-  getPublicServicesByCategoryId,
-  getPublicServices,
-  getPublicServiceDetail,
-  createService,
-  submitContactApi,
-  getCityFromCoordinates,
-  getDashboardStats,
-  PostOrderService,
-  getaboutpages
+
+
+
+export const showMessageContact = async (req, res, next) => {
+  try {
+    const contacts = await getAllContacts();
+    res.render("dashboard/messages", { contacts, user: req.session.user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createContact = async (req, res, next) => {
+  try {
+    const { name, email, message } = req.body;
+    const contact = await insertContactmessage(name, email, message);
+    res.status(201).json({ success: true, contact });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changeContactStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const updated = await updateContactStatus(id, status);
+    res.json({ success: true, contact: updated });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeContact = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await deleteContact(id);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
 };

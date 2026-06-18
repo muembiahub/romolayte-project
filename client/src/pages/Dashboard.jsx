@@ -53,6 +53,8 @@ export default function Dashboard() {
 
     fetchDashboardData();
   }, []);
+  // fetch user
+
 
   const widgets = [
     {
@@ -98,7 +100,9 @@ export default function Dashboard() {
             <p className="mt-4 max-w-2xl text-slate-600">
               Consultez rapidement les statistiques de votre plateforme,
               gérez vos catégories et suivez les dernières demandes.
+              Role:{user?.role}
             </p>
+            
           </div>
 
           <button

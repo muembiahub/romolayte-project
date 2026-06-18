@@ -1,108 +1,213 @@
+
 import { supabase } from "../config/database.js";
 
-/**
- * Récupère tous les services, avec le nom de la catégorie.
- */
-const getAllServices = async () => {
-  const { data, error } = await supabase
-    .from("services")
-    .select("*, categories(name)") // 🔹 jointure sur la table categories
-    .order("name", { ascending: true });
+/* =====================================================
+   SERVICES CRUD
+===================================================== */
 
-  if (error) {
-    console.error("❌ Erreur Supabase (getAllServices):", error.message);
-    throw error;
+// 🔹 Lire tous les services
+export const getAllServices = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("services")
+      .select(`
+        *,
+        categories (
+          name
+        )
+      `)
+      .order("service_id", {
+        ascending: true,
+      });
+
+    if (error) throw error;
+
+    return (
+      data?.map((service) => ({
+        ...service,
+        name:
+          service.categories?.name || null,
+      })) || []
+    );
+
+  } catch (err) {
+    throw new Error(
+      `getAllServices failed: ${err.message}`
+    );
   }
-
-  return data || [];
 };
 
-/**
- * Récupère un service par son ID (détail), avec le nom de la catégorie.
- */
-const getServiceById = async (serviceId) => {
-  const { data, error } = await supabase
-    .from("services")
-    .select("*, categories(name)") // 🔹 inclut le nom de la catégorie
-    .eq("service_id", serviceId)
-    .limit(1);
 
-  if (error) {
-    console.error("❌ Erreur Supabase (getServiceById):", error.message);
-    throw error;
+// 🔹 Lire un service par ID
+export const getServiceById = async (service_id) => {
+  try {
+    const { data, error } = await supabase
+      .from("services")
+      .select(`
+        *,
+        categories (
+          category_id,
+          name
+        )
+      `)
+      .eq("service_id", service_id)
+      .maybeSingle();
+    if (error) throw error;
+
+    return data
+      ? {
+          ...data,
+          categoryId:
+            data.categories?.category_id ||
+            null,
+          category_name:
+            data.categories?.name ||
+            null,
+        }
+      : null;
+
+  } catch (err) {
+    throw new Error(
+      `getServiceById failed: ${err.message}`
+    );
   }
-
-  return data && data.length > 0 ? data[0] : null;
 };
 
-/**
- * Récupère tous les services liés à une catégorie donnée, avec le nom de la catégorie.
- */
-const getServicesByCategory = async (categoryId) => {
-  const { data, error } = await supabase
-    .from("services")
-    .select("*, categories(name)") // 🔹 inclut le nom de la catégorie
-    .eq("category_id", categoryId)
-    .order("name", { ascending: true });
 
-  if (error) {
-    console.error("❌ Erreur Supabase (getServicesByCategory):", error.message);
-    throw error;
+// 🔹 Lire les services par catégorie
+export const getServicesByCategory = async (
+  categoryId
+) => {
+  try {
+    const { data, error } =
+      await supabase
+        .from("services")
+        .select(`
+          *,
+          categories (
+            name
+          )
+        `)
+        .eq(
+          "category_id",
+          categoryId
+        )
+        .order(
+          "service_id",
+          {
+            ascending: true,
+          }
+        );
+
+    if (error) throw error;
+
+    return (
+      data?.map((service) => ({
+        ...service,
+        name:
+          service.categories?.name ||
+          null,
+      })) || []
+    );
+
+  } catch (err) {
+    throw new Error(
+      `getServicesByCategory failed: ${err.message}`
+    );
   }
-
-  return data || [];
 };
 
-const getServicesByCategoryDetails = async (serviceId) => {
-  const { data, error } = await supabase
-    .from("services")
-    .select("*, categories(category_id, name)") 
-    .eq("category_id", serviceId);
 
-  if (error) {
-    console.error("❌ Erreur Supabase (getServicesByCategoryDetails):", error.message);
-    throw error;
-  }
-
-  return data || [];
-};
-
-//  ajouter service par category selectionner 
-const addServiceByCategory = async (
+// 🔹 Créer un service
+export const addServiceByCategory = async (
   category_id,
   name,
   description,
   price,
   logo
 ) => {
-  const { data, error } =
-    await supabase
-      .from("services")
-      .insert([
-        {
-          category_id,
-          name,
-          description,
-          price,
-          logo,
-        },
-      ])
-      .select()
-      .single();
+  try {
+    const { data, error } =
+      await supabase
+        .from("services")
+        .insert([
+          {
+            category_id,
+            name,
+            description,
+            price,
+            logo,
+          },
+        ])
+        .select()
+        .maybeSingle();
 
-  if (error) {
-    console.error(
-      "Supabase error:",
-      error
-    );
+    if (error) throw error;
 
+    return data;
+
+  } catch (err) {
     throw new Error(
-      error.message
+      `addServiceByCategory failed: ${err.message}`
     );
   }
-
-  return data;
 };
 
 
-export { getAllServices, getServiceById, getServicesByCategory, getServicesByCategoryDetails, addServiceByCategory };
+// 🔹 Modifier un service
+export const updateService = async (
+  id,
+  updates
+) => {
+  try {
+    const { data, error } =
+      await supabase
+        .from("services")
+        .update(updates)
+        .eq(
+          "service_id",
+          id
+        )
+        .select()
+        .maybeSingle();
+
+    if (error) throw error;
+
+    return data;
+
+  } catch (err) {
+    throw new Error(
+      `updateService failed: ${err.message}`
+    );
+  }
+};
+
+
+// 🔹 Supprimer un service
+export const deleteService = async (
+  id
+) => {
+  try {
+    const { error } =
+      await supabase
+        .from("services")
+        .delete()
+        .eq(
+          "service_id",
+          id
+        );
+
+    if (error) throw error;
+
+    return {
+      success: true,
+      message:
+        "Service supprimé avec succès.",
+    };
+
+  } catch (err) {
+    throw new Error(
+      `deleteService failed: ${err.message}`
+    );
+  }
+};

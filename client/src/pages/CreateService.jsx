@@ -64,21 +64,19 @@ const ServiceForm = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        category_id: Number(
-          formData.category_id
-        ),
-
-        name: formData.name.trim(),
-
-        description:
-          formData.description.trim(),
-
-        price: formData.price
-          ? Number(formData.price)
-          : null,
-
-        logo: formData.logo || null,
-      }),
+  category_id: Number(
+    formData.category_id
+  ),
+  name: formData.name,
+  description:
+    formData.description,
+  price: formData.price
+    ? Number(
+        formData.price
+      )
+    : null,
+  logo: formData.logo || null
+})
     }
   );
 

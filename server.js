@@ -5,7 +5,7 @@ import helmet from "helmet";
 import session from "express-session";
 import cors from "cors";
 
-import apiRoutes from "./src/routes/apiRoutes.js";
+import apiRoutes from "./src/routes/api.js";
 import searchRouter from "./src/models/search.js";
 
 import "dotenv/config";

@@ -1,32 +1,19 @@
 import { supabase } from "../config/database.js";
 
-const getCategories = async () => {
-  const { data, error } = await supabase
-    .from("categories")
-    .select("*")
-    .order("category_id", { ascending: true });
+/* =====================================================
+   CATEGORIES
+===================================================== */
+export const getCategories = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .order("category_id", { ascending: true });
 
-  if (error) {
-    console.error("Error fetching categories:", error.message);
-    throw new Error("Failed to fetch categories");
+    if (error) throw new Error(error.message);
+    return data || [];
+  } catch (err) {
+    throw new Error(`getCategories failed: ${err.message}`);
   }
-
-  return data || [];
-};
-//  
-const getServicesByCategory = async (categoryId) => {
-  const { data, error } = await supabase
-    .from("services")
-    .select("*")
-    .eq("category_id", categoryId)
-    .order("service_id", { ascending: true });
-
-  if (error) {
-    console.error("Error fetching services:", error.message);
-    throw new Error("Failed to fetch services");
-  }
-
-  return data || []; // ✅ toujours retourner un tableau
 };
 
-export { getCategories, getServicesByCategory };
