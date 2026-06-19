@@ -5,43 +5,82 @@ import  {buildConfirmationEmail} from "./emailTemplate.js";
    TRANSPORT ZOHO
 ========================= */
 
-export const transporter =
-  nodemailer.createTransport({
+async function createTransporter() {
 
-    host: "smtppro.zoho.com",
+  // Essai SSL (465)
+  try {
 
-    port: 465,
+    const transporter465 =
+      nodemailer.createTransport({
 
-    secure: true,
+        host: "smtppro.zoho.com",
+        port: 465,
+        secure: true,
 
-    auth: {
-      user: process.env.ZOHO_EMAIL,
-      pass: process.env.ZOHO_PASSWORD
-    },
+        auth: {
+          user: process.env.ZOHO_EMAIL,
+          pass: process.env.ZOHO_PASSWORD
+        },
 
-    connectionTimeout: 60000,
-    greetingTimeout: 60000,
-    socketTimeout: 60000
-});
+        connectionTimeout: 15000
+      });
 
-transporter.verify((error, success)=>{
-
-  if(error){
-
-    console.error(
-      "❌ SMTP Error:",
-      error
-    );
-
-  }else{
+    await transporter465.verify();
 
     console.log(
-      "✅ SMTP connecté à Zoho"
+      "✅ Connecté via port 465"
+    );
+
+    return transporter465;
+
+  } catch(error){
+
+    console.log(
+      "⚠ 465 échoué → tentative 587"
     );
 
   }
 
-});
+  // Fallback TLS (587)
+  try {
+
+    const transporter587 =
+      nodemailer.createTransport({
+
+        host: "smtppro.zoho.com",
+        port: 587,
+        secure: false,
+        requireTLS: true,
+
+        auth: {
+          user: process.env.ZOHO_EMAIL,
+          pass: process.env.ZOHO_PASSWORD
+        },
+
+        connectionTimeout: 15000
+      });
+
+    await transporter587.verify();
+
+    console.log(
+      "✅ Connecté via port 587"
+    );
+
+    return transporter587;
+
+  } catch(error){
+
+    console.error(
+      "❌ SMTP totalement inaccessible:",
+      error
+    );
+
+    throw error;
+  }
+}
+
+export const transporter =
+  await createTransporter();
 
 /* =========================
    SEND EMAIL
