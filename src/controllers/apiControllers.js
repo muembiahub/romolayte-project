@@ -214,29 +214,41 @@ export const submitDemandeService = async (req, res) => {
 
     // Réponse immédiate au client
     res.status(201).json({
-      success:true,
-      message:
-        "Demande envoyée avec succès",
-      demande
-    });
+  success: true,
+  message: "Demande envoyée avec succès",
+  demande
+});
 
-    // Email en arrière-plan
-    sendConfirmationEmail({
+// Exécute après la réponse sans bloquer
+setImmediate(async () => {
+  try {
+
+    console.log(
+      "📨 Envoi email:",
+      payload.email
+    );
+
+    await sendConfirmationEmail({
       email: payload.email,
       name: payload.name,
-      service_name:
-        payload.service_name,
-      location:
-        payload.location,
-      status:
-        payload.status
-    }).catch(err=>{
-      console.error(
-        "❌ Email non envoyé :",
-        err
-      );
+      service_name: payload.service_name,
+      location: payload.location,
+      status: payload.status
     });
 
+    console.log(
+      "✅ Email envoyé"
+    );
+
+  } catch (error) {
+
+    console.error(
+      "❌ Erreur email:",
+      error
+    );
+
+  }
+});
   } catch(error){
 
     console.error(
