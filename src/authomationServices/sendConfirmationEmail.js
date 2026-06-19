@@ -5,82 +5,87 @@ import  {buildConfirmationEmail} from "./emailTemplate.js";
    TRANSPORT ZOHO
 ========================= */
 
-async function createTransporter() {
 
-  // Essai SSL (465)
+
+let transporter = null;
+
+export async function createTransporter() {
+  const baseConfig = {
+    host: "smtppro.zoho.com",
+    auth: {
+      user: process.env.ZOHO_EMAIL,
+      pass: process.env.ZOHO_PASSWORD,
+    },
+    connectionTimeout: 30000,
+    greetingTimeout: 30000,
+    socketTimeout: 30000,
+  };
+
+  // -------------------------
+  // TRY PORT 465 (SSL)
+  // -------------------------
   try {
-
-    const transporter465 =
-      nodemailer.createTransport({
-
-        host: "smtppro.zoho.com",
-        port: 465,
-        secure: true,
-
-        auth: {
-          user: process.env.ZOHO_EMAIL,
-          pass: process.env.ZOHO_PASSWORD
-        },
-
-        connectionTimeout: 15000
-      });
+    const transporter465 = nodemailer.createTransport({
+      ...baseConfig,
+      port: 465,
+      secure: true,
+    });
 
     await transporter465.verify();
 
-    console.log(
-      "✅ Connecté via port 465"
-    );
+    console.log("✅ SMTP connecté via port 465");
 
     return transporter465;
-
-  } catch(error){
-
-    console.log(
-      "⚠ 465 échoué → tentative 587"
-    );
-
+  } catch (err) {
+    console.log("⚠ Port 465 échoué, fallback vers 587...");
   }
 
-  // Fallback TLS (587)
+  // -------------------------
+  // TRY PORT 587 (TLS)
+  // -------------------------
   try {
-
-    const transporter587 =
-      nodemailer.createTransport({
-
-        host: "smtppro.zoho.com",
-        port: 587,
-        secure: false,
-        requireTLS: true,
-
-        auth: {
-          user: process.env.ZOHO_EMAIL,
-          pass: process.env.ZOHO_PASSWORD
-        },
-
-        connectionTimeout: 15000
-      });
+    const transporter587 = nodemailer.createTransport({
+      ...baseConfig,
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
 
     await transporter587.verify();
 
-    console.log(
-      "✅ Connecté via port 587"
-    );
+    console.log("✅ SMTP connecté via port 587");
 
     return transporter587;
+  } catch (err) {
+    console.error("❌ SMTP totalement inaccessible:", err.message);
 
-  } catch(error){
-
-    console.error(
-      "❌ SMTP totalement inaccessible:",
-      error
-    );
-
-    throw error;
+    return null; // IMPORTANT: ne pas crash l’app
   }
 }
 
-export const transporter =
-  await createTransporter();
+// Initialisation SAFE (non bloquante)
+export async function initMailer() {
+  transporter = await createTransporter();
+}
+
+// Envoi email SAFE
+export async function sendMail(mailOptions) {
+  if (!transporter) {
+    console.warn("⚠ Email ignoré: SMTP non disponible");
+    return;
+  }
+
+  try {
+    return await transporter.sendMail(mailOptions);
+  } catch (err) {
+    console.error("❌ Échec envoi email:", err.message);
+  }
+}
+
+
 
 /* =========================
    SEND EMAIL
@@ -106,3 +111,5 @@ export async function sendConfirmationEmail(data) {
     throw error;
   }
 }
+
+export { transporter };
