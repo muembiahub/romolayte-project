@@ -25,8 +25,6 @@ export const getAllServices = async () => {
     return (
       data?.map((service) => ({
         ...service,
-        name:
-          service.categories?.name || null,
       })) || []
     );
 
@@ -54,17 +52,7 @@ export const getServiceById = async (service_id) => {
       .maybeSingle();
     if (error) throw error;
 
-    return data
-      ? {
-          ...data,
-          categoryId:
-            data.categories?.category_id ||
-            null,
-          category_name:
-            data.categories?.name ||
-            null,
-        }
-      : null;
+    return data;
 
   } catch (err) {
     throw new Error(
@@ -104,9 +92,6 @@ export const getServicesByCategory = async (
     return (
       data?.map((service) => ({
         ...service,
-        name:
-          service.categories?.name ||
-          null,
       })) || []
     );
 

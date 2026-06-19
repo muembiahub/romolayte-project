@@ -131,7 +131,7 @@ export default function CategoryDetails() {
                 {service.logo ? (
                   <img
                     src={service.logo}
-                    alt={service.name || service.service_name}
+                    alt={service.name}
                     className="mb-4 h-48 w-full rounded-lg object-cover"
                   />
                 ) : (
@@ -141,7 +141,7 @@ export default function CategoryDetails() {
                 )}
 
                 <h3 className="text-xl font-bold text-slate-900">
-                  {service.name || service.service_name}
+                  {service.name}
                 </h3>
 
                 <p className="mt-2 text-sm text-slate-600 line-clamp-3 leading-relaxed">

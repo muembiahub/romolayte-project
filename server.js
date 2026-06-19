@@ -42,20 +42,20 @@ app.set("trust proxy", 1);
 /* =========================================================
    SESSION CONFIG (FIXED FOR LOCALHOST + VITE)
 ========================================================= */
-app.use(
-  session({
-    name: "mvc_auth_session",
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: NODE_ENV === "production", // false in dev
-      sameSite: NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 1000 * 60 * 30, // 30 min
-    },
-  })
-);
+// app.use(
+//   session({
+//     name: "mvc_auth_session",
+//     secret: process.env.SESSION_SECRET || '',
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       httpOnly: true,
+//       secure: NODE_ENV === "production", // false in dev
+//       sameSite: NODE_ENV === "production" ? "none" : "lax",
+//       maxAge: 1000 * 60 * 30, // 30 min
+//     },
+//   })
+// );
 
 /* =========================================================
    HELMET SECURITY
