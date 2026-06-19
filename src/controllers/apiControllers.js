@@ -152,36 +152,49 @@ export const submitDemandeService = async (req, res) => {
       other_info
     } = req.body;
 
-    if (!service_id || !name || !email || !phone || !coordinates || !location || !gender) {
+    if (
+      !service_id ||
+      !name ||
+      !email ||
+      !phone ||
+      !coordinates ||
+      !location ||
+      !gender
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Tous les champs obligatoires doivent être remplis."
+        message:
+          "Tous les champs obligatoires doivent être remplis."
       });
     }
 
-    const service = await getServiceById(service_id);
-
-    console.log("SERVICE DB:", service);
+    const service =
+      await getServiceById(service_id);
 
     if (!service) {
       return res.status(404).json({
-        success: false,
-        message: "Service introuvable"
+        success:false,
+        message:"Service introuvable"
       });
     }
 
     const payload = {
-      category_id: service.category_id,
+      category_id:
+        service.category_id,
 
-      service_id: service.service_id ?? service.id,
+      service_id:
+        service.service_id ?? service.id,
 
       category_name:
         service.categories?.name ??
         service.category_name ??
         null,
 
-      service_name: service.name,
-      price: service.price,
+      service_name:
+        service.name,
+
+      price:
+        service.price,
 
       name,
       email,
@@ -191,46 +204,63 @@ export const submitDemandeService = async (req, res) => {
       gender,
       other_info,
 
-      status: "pending"
+      status:"pending"
     };
 
-   const demande = await insertDemandeService(payload);
+    const demande =
+      await insertDemandeService(
+        payload
+      );
 
-try {
-  await sendConfirmationEmail({
-    email: payload.email,
-    name: payload.name,
-    service_name: payload.service_name,
-    location: payload.location,
-    status: payload.status
-  });
-} catch (e) {
-  console.error("Email non envoyé mais demande OK", e);
-}
+    // Réponse immédiate au client
+    res.status(201).json({
+      success:true,
+      message:
+        "Demande envoyée avec succès",
+      demande
+    });
 
-return res.status(201).json({
-  success: true,
-  message: "Demande envoyée avec succès",
-  demande
-});
+    // Email en arrière-plan
+    sendConfirmationEmail({
+      email: payload.email,
+      name: payload.name,
+      service_name:
+        payload.service_name,
+      location:
+        payload.location,
+      status:
+        payload.status
+    }).catch(err=>{
+      console.error(
+        "❌ Email non envoyé :",
+        err
+      );
+    });
 
-  } catch (error) {
-    console.error("❌ Erreur insertion demande :", error);
+  } catch(error){
+
+    console.error(
+      "❌ Erreur insertion :",
+      error
+    );
 
     if (
-      error.code === "23505" &&
-      error.message.includes("unique_service_per_user")
-    ) {
+      error.code==="23505" &&
+      error.message.includes(
+        "unique_service_per_user"
+      )
+    ){
       return res.status(409).json({
-        success: false,
+        success:false,
         message:
-          "Vous avez déjà envoyé une demande pour ce service avec cet email."
+        "Vous avez déjà envoyé une demande pour ce service avec cet email."
       });
     }
 
     return res.status(500).json({
-      success: false,
-      message: "Erreur serveur. Impossible de traiter la demande."
+      success:false,
+      message:
+      "Erreur serveur. Impossible de traiter la demande."
     });
   }
 };
