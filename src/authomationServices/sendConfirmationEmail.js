@@ -5,14 +5,42 @@ import  {buildConfirmationEmail} from "./emailTemplate.js";
    TRANSPORT ZOHO
 ========================= */
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.zoho.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.ZOHO_EMAIL,
-    pass: process.env.ZOHO_PASSWORD,
-  },
+export const transporter =
+  nodemailer.createTransport({
+
+    host: "smtppro.zoho.com",
+
+    port: 465,
+
+    secure: true,
+
+    auth: {
+      user: process.env.ZOHO_EMAIL,
+      pass: process.env.ZOHO_PASSWORD
+    },
+
+    connectionTimeout: 60000,
+    greetingTimeout: 60000,
+    socketTimeout: 60000
+});
+
+transporter.verify((error, success)=>{
+
+  if(error){
+
+    console.error(
+      "❌ SMTP Error:",
+      error
+    );
+
+  }else{
+
+    console.log(
+      "✅ SMTP connecté à Zoho"
+    );
+
+  }
+
 });
 
 /* =========================
