@@ -7,7 +7,6 @@ import cors from "cors";
 
 import apiRoutes from "./src/routes/api.js";
 import searchRouter from "./src/models/search.js";
-import { initMailer } from "./src/authomationServices/sendConfirmationEmail.js";
 
 /* =========================================================
    ENV
@@ -159,17 +158,4 @@ app.listen(PORT, () => {
   );
 });
 
-/* =========================================================
-   SMTP INIT (NON-BLOCKING)
-   IMPORTANT: ne doit JAMAIS bloquer Render
-========================================================= */
-initMailer()
-  .then(() => {
-    console.log("📧 Mailer initialized");
-  })
-  .catch((err) => {
-    console.warn(
-      "⚠ Mailer failed (app continues):",
-      err.message
-    );
-  });
+/* ========================================================= */
