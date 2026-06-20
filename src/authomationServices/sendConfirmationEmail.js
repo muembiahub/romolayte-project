@@ -1,115 +1,194 @@
 import nodemailer from "nodemailer";
-import  {buildConfirmationEmail} from "./emailTemplate.js";
+import { buildConfirmationEmail } from "./emailTemplate.js";
 
 /* =========================
    TRANSPORT ZOHO
 ========================= */
 
-
-
 let transporter = null;
 
-export async function createTransporter() {
+async function createTransporter() {
   const baseConfig = {
     host: "smtppro.zoho.com",
+
     auth: {
       user: process.env.ZOHO_EMAIL,
       pass: process.env.ZOHO_PASSWORD,
     },
+
     connectionTimeout: 30000,
     greetingTimeout: 30000,
     socketTimeout: 30000,
   };
 
-  // -------------------------
-  // TRY PORT 465 (SSL)
-  // -------------------------
+  // ===== Essai SSL (465) =====
+
   try {
-    const transporter465 = nodemailer.createTransport({
+    const smtp465 = nodemailer.createTransport({
       ...baseConfig,
       port: 465,
       secure: true,
     });
 
-    await transporter465.verify();
+    await smtp465.verify();
 
-    console.log("✅ SMTP connecté via port 465");
+    console.log(
+      "✅ SMTP connecté via port 465"
+    );
 
-    return transporter465;
+    return smtp465;
+
   } catch (err) {
-    console.log("⚠ Port 465 échoué, fallback vers 587...");
+
+    console.log(
+      "⚠ Port 465 échoué → tentative 587"
+    );
   }
 
-  // -------------------------
-  // TRY PORT 587 (TLS)
-  // -------------------------
-  try {
-    const transporter587 = nodemailer.createTransport({
-      ...baseConfig,
-      port: 587,
-      secure: false,
-      requireTLS: true,
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-
-    await transporter587.verify();
-
-    console.log("✅ SMTP connecté via port 587");
-
-    return transporter587;
-  } catch (err) {
-    console.error("❌ SMTP totalement inaccessible:", err.message);
-
-    return null; // IMPORTANT: ne pas crash l’app
-  }
-}
-
-// Initialisation SAFE (non bloquante)
-export async function initMailer() {
-  transporter = await createTransporter();
-}
-
-// Envoi email SAFE
-export async function sendMail(mailOptions) {
-  if (!transporter) {
-    console.warn("⚠ Email ignoré: SMTP non disponible");
-    return;
-  }
+  // ===== Essai TLS (587) =====
 
   try {
-    return await transporter.sendMail(mailOptions);
+
+    const smtp587 =
+      nodemailer.createTransport({
+
+        ...baseConfig,
+
+        port: 587,
+        secure: false,
+        requireTLS: true,
+
+        tls: {
+          rejectUnauthorized: false,
+        }
+      });
+
+    await smtp587.verify();
+
+    console.log(
+      "✅ SMTP connecté via port 587"
+    );
+
+    return smtp587;
+
   } catch (err) {
-    console.error("❌ Échec envoi email:", err.message);
+
+    console.error(
+      "❌ SMTP inaccessible:",
+      err.message
+    );
+
+    return null;
   }
 }
-
-
 
 /* =========================
-   SEND EMAIL
+   INITIALISATION
+========================= */
+
+export async function initMailer() {
+  transporter =
+    await createTransporter();
+}
+
+/* =========================
+   ENVOI SAFE
+========================= */
+
+export async function sendMail(mailOptions) {
+
+  if (!transporter) {
+
+    console.warn(
+      "⚠ Email ignoré : SMTP indisponible"
+    );
+
+    return {
+      success: false,
+      message: "SMTP indisponible"
+    };
+  }
+
+  try {
+
+    const info =
+      await transporter.sendMail(
+        mailOptions
+      );
+
+    return {
+      success: true,
+      info
+    };
+
+  } catch (error) {
+
+    console.error(
+      "❌ Erreur envoi email:",
+      error.message
+    );
+
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/* =========================
+   EMAIL CONFIRMATION
 ========================= */
 
 export async function sendConfirmationEmail(data) {
+
   try {
-    const email = buildConfirmationEmail(data);
 
-    const info = await transporter.sendMail({
-      from: `Romolayte <${process.env.ZOHO_EMAIL}>`,
-      to: data.email,
-      subject: email.subject,
-      text: email.text,
-      html: email.html,
-    });
+    const email =
+      buildConfirmationEmail(
+        data
+      );
 
-    console.log("✅ Email envoyé:", info.messageId);
+    const result =
+      await sendMail({
 
-    return info;
-  } catch (error) {
-    console.error("❌ Email error:", error);
-    throw error;
+        from:
+          `Romolayte <${process.env.ZOHO_EMAIL}>`,
+
+        to: data.email,
+
+        subject: email.subject,
+
+        text: email.text,
+
+        html: email.html,
+      });
+
+    if (!result.success) {
+
+      console.warn(
+        "⚠ Confirmation non envoyée"
+      );
+
+      return result;
+    }
+
+    console.log(
+      "✅ Email envoyé:",
+      result.info.messageId
+    );
+
+    return result;
+
+  } catch(error){
+
+    console.error(
+      "❌ Email error:",
+      error
+    );
+
+    return {
+      success:false,
+      error:error.message
+    };
   }
 }
-
-export { transporter };

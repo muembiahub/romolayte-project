@@ -7,6 +7,9 @@ import cors from "cors";
 
 import apiRoutes from "./src/routes/api.js";
 import searchRouter from "./src/models/search.js";
+import { initMailer } from "./src/authomationServices/sendConfirmationEmail.js";
+
+await initMailer();
 
 import "dotenv/config";
 
