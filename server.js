@@ -9,21 +9,30 @@ import apiRoutes from "./src/routes/api.js";
 import searchRouter from "./src/models/search.js";
 import { initMailer } from "./src/authomationServices/sendConfirmationEmail.js";
 
-await initMailer();
-
-import "dotenv/config";
-
+/* =========================================================
+   ENV
+========================================================= */
 dotenv.config();
 
+/* =========================================================
+   APP
+========================================================= */
 const app = express();
 
-const NODE_ENV = (process.env.NODE_ENV || "development").trim();
-const PORT = Number(process.env.PORT) || 3000;
-const SUPABASE_URL = (process.env.SUPABASE_URL || "").trim();
+const NODE_ENV =
+  (process.env.NODE_ENV || "development").trim();
+
+const PORT =
+  process.env.PORT || 3000;
+
+const SUPABASE_URL =
+  (process.env.SUPABASE_URL || "").trim();
 
 /* =========================================================
-   CORS (VITE FIX - MUST FOR SESSION AUTH)
+   MIDDLEWARE
 ========================================================= */
+
+// CORS
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -31,63 +40,52 @@ app.use(
   })
 );
 
-/* =========================================================
-   BODY PARSERS
-========================================================= */
+// BODY PARSER
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* =========================================================
-   TRUST PROXY (important for cookies + sessions)
-========================================================= */
+// TRUST PROXY (Render)
 app.set("trust proxy", 1);
 
 /* =========================================================
-   SESSION CONFIG (FIXED FOR LOCALHOST + VITE)
-========================================================= */
-// app.use(
-//   session({
-//     name: "mvc_auth_session",
-//     secret: process.env.SESSION_SECRET || '',
-//     resave: false,
-//     saveUninitialized: false,
-//     cookie: {
-//       httpOnly: true,
-//       secure: NODE_ENV === "production", // false in dev
-//       sameSite: NODE_ENV === "production" ? "none" : "lax",
-//       maxAge: 1000 * 60 * 30, // 30 min
-//     },
-//   })
-// );
-
-/* =========================================================
-   HELMET SECURITY
+   SECURITY
 ========================================================= */
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
+        scriptSrc: [
+          "'self'",
+          "https://cdn.jsdelivr.net",
+          "'unsafe-inline'"
+        ],
         styleSrc: [
           "'self'",
           "https://cdn.jsdelivr.net",
           "https://cdnjs.cloudflare.com",
-          "'unsafe-inline'",
+          "'unsafe-inline'"
         ],
-        imgSrc: ["'self'", "data:", SUPABASE_URL].filter(Boolean),
+        imgSrc: [
+          "'self'",
+          "data:",
+          SUPABASE_URL
+        ].filter(Boolean),
+
         connectSrc: [
           "'self'",
           SUPABASE_URL,
           "https://nominatim.openstreetmap.org",
-          "https://cdn.jsdelivr.net",
+          "https://cdn.jsdelivr.net"
         ].filter(Boolean),
+
         fontSrc: [
           "'self'",
           "https://cdnjs.cloudflare.com",
           "https://cdn.jsdelivr.net",
-          "data:",
+          "data:"
         ],
+
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         frameAncestors: ["'self'"],
@@ -97,7 +95,7 @@ app.use(
 );
 
 /* =========================================================
-   LOGGER (DEV ONLY)
+   LOGGER DEV
 ========================================================= */
 if (NODE_ENV === "development") {
   app.use((req, res, next) => {
@@ -107,23 +105,23 @@ if (NODE_ENV === "development") {
 }
 
 /* =========================================================
-   API ROUTES
+   ROUTES
 ========================================================= */
 app.use("/api", apiRoutes);
 app.use("/search", searchRouter);
 
 /* =========================================================
-   REACT BUILD STATIC FILES
+   STATIC FRONTEND
 ========================================================= */
-const clientPath = path.join(process.cwd(), "client/dist");
+const clientPath =
+  path.join(process.cwd(), "client/dist");
 
 app.use(express.static(clientPath));
 
-/* =========================================================
-   SPA FALLBACK (React Router support)
-========================================================= */
 app.get("*", (req, res) => {
-  res.sendFile(path.join(clientPath, "index.html"));
+  res.sendFile(
+    path.join(clientPath, "index.html")
+  );
 });
 
 /* =========================================================
@@ -138,14 +136,40 @@ app.use((err, req, res, next) => {
 
   res.status(err.status || 500).json({
     success: false,
-    error: err.message || "Une erreur inattendue s’est produite.",
+    error:
+      err.message ||
+      "Une erreur inattendue s’est produite.",
   });
 });
 
 /* =========================================================
-   START SERVER
+   START SERVER (IMPORTANT FOR RENDER)
 ========================================================= */
 app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
-  console.log(`🌱 Environment: ${NODE_ENV}`);
+  console.log(
+    `✅ Server running at port ${PORT}`
+  );
+
+  console.log(
+    `🌱 Environment: ${NODE_ENV}`
+  );
+
+  console.log(
+    `🚀 App ready on Render`
+  );
 });
+
+/* =========================================================
+   SMTP INIT (NON-BLOCKING)
+   IMPORTANT: ne doit JAMAIS bloquer Render
+========================================================= */
+initMailer()
+  .then(() => {
+    console.log("📧 Mailer initialized");
+  })
+  .catch((err) => {
+    console.warn(
+      "⚠ Mailer failed (app continues):",
+      err.message
+    );
+  });
