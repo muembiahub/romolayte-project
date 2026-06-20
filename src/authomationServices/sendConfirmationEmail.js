@@ -1,29 +1,34 @@
 import nodemailer from "nodemailer";
 import { buildConfirmationEmail } from "./emailTemplate.js";
 
-/* =========================
-   TRANSPORT ZOHO
-========================= */
+/* =========================================================
+   TRANSPORT
+========================================================= */
 
 let transporter = null;
 
+/* =========================================================
+   CREATE TRANSPORTER
+========================================================= */
+
 async function createTransporter() {
+
   const baseConfig = {
     host: "smtppro.zoho.com",
-
     auth: {
       user: process.env.ZOHO_EMAIL,
       pass: process.env.ZOHO_PASSWORD,
     },
-
-    connectionTimeout: 30000,
-    greetingTimeout: 30000,
-    socketTimeout: 30000,
+    connectionTimeout: 20000,
+    greetingTimeout: 20000,
+    socketTimeout: 20000,
   };
 
-  // ===== Essai SSL (465) =====
-
+  // =========================
+  // PORT 465 (SSL)
+  // =========================
   try {
+
     const smtp465 = nodemailer.createTransport({
       ...baseConfig,
       port: 465,
@@ -32,49 +37,39 @@ async function createTransporter() {
 
     await smtp465.verify();
 
-    console.log(
-      "✅ SMTP connecté via port 465"
-    );
+    console.log("✅ SMTP OK (465)");
 
     return smtp465;
 
   } catch (err) {
-
-    console.log(
-      "⚠ Port 465 échoué → tentative 587"
-    );
+    console.log("⚠ 465 failed → trying 587");
   }
 
-  // ===== Essai TLS (587) =====
-
+  // =========================
+  // PORT 587 (TLS)
+  // =========================
   try {
 
-    const smtp587 =
-      nodemailer.createTransport({
-
-        ...baseConfig,
-
-        port: 587,
-        secure: false,
-        requireTLS: true,
-
-        tls: {
-          rejectUnauthorized: false,
-        }
-      });
+    const smtp587 = nodemailer.createTransport({
+      ...baseConfig,
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
 
     await smtp587.verify();
 
-    console.log(
-      "✅ SMTP connecté via port 587"
-    );
+    console.log("✅ SMTP OK (587)");
 
     return smtp587;
 
   } catch (err) {
 
     console.error(
-      "❌ SMTP inaccessible:",
+      "❌ SMTP unavailable:",
       err.message
     );
 
@@ -82,76 +77,78 @@ async function createTransporter() {
   }
 }
 
-/* =========================
-   INITIALISATION
-========================= */
+/* =========================================================
+   INIT MAILER (NON-BLOQUANT)
+========================================================= */
 
 export async function initMailer() {
-  transporter =
-    await createTransporter();
+
+  createTransporter()
+    .then((t) => {
+      transporter = t;
+
+      if (t) {
+        console.log("📧 Mailer ready");
+      } else {
+        console.warn("⚠ Mailer disabled (no SMTP)");
+      }
+    })
+    .catch((err) => {
+      console.warn(
+        "⚠ Mailer init failed:",
+        err.message
+      );
+    });
 }
 
-/* =========================
-   ENVOI SAFE
-========================= */
+/* =========================================================
+   SEND MAIL SAFE
+========================================================= */
 
 export async function sendMail(mailOptions) {
 
   if (!transporter) {
 
-    console.warn(
-      "⚠ Email ignoré : SMTP indisponible"
-    );
-
     return {
       success: false,
-      message: "SMTP indisponible"
+      message: "SMTP not available"
     };
   }
 
   try {
 
     const info =
-      await transporter.sendMail(
-        mailOptions
-      );
+      await transporter.sendMail(mailOptions);
 
     return {
       success: true,
       info
     };
 
-  } catch (error) {
-
-    console.error(
-      "❌ Erreur envoi email:",
-      error.message
-    );
+  } catch (err) {
 
     return {
       success: false,
-      error: error.message
+      error: err.message
     };
   }
 }
 
-/* =========================
-   EMAIL CONFIRMATION
-========================= */
+/* =========================================================
+   CONFIRMATION EMAIL
+========================================================= */
 
 export async function sendConfirmationEmail(data) {
 
+  console.log(
+    "📨 Sending email:",
+    data.email
+  );
+
   try {
 
-    console.log(
-      "📨 Envoi email:",
-      data.email
-    );
-
     const email =
-      buildConfirmationEmail(
-        data
-      );
+      buildConfirmationEmail(data);
 
     const result =
       await sendMail({
@@ -162,41 +159,37 @@ export async function sendConfirmationEmail(data) {
         to: data.email,
 
         subject: email.subject,
-
         text: email.text,
-
         html: email.html,
       });
 
-    if (!result?.success) {
+    if (!result.success) {
 
       console.warn(
-        "⚠ Confirmation non envoyée:",
-        result?.message ||
-        result?.error ||
-        "Erreur inconnue"
+        "⚠ Email not sent:",
+        result.message || result.error
       );
 
       return result;
     }
 
     console.log(
-      "✅ Email envoyé:",
+      "✅ Email sent:",
       result.info.messageId
     );
 
     return result;
 
-  } catch (error) {
+  } catch (err) {
 
     console.error(
-      "❌ Email error:",
-      error.message
+      "❌ Email crash:",
+      err.message
     );
 
     return {
       success: false,
-      error: error.message
+      error: err.message
     };
   }
 }
