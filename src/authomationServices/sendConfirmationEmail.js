@@ -143,6 +143,11 @@ export async function sendConfirmationEmail(data) {
 
   try {
 
+    console.log(
+      "📨 Envoi email:",
+      data.email
+    );
+
     const email =
       buildConfirmationEmail(
         data
@@ -163,10 +168,13 @@ export async function sendConfirmationEmail(data) {
         html: email.html,
       });
 
-    if (!result.success) {
+    if (!result?.success) {
 
       console.warn(
-        "⚠ Confirmation non envoyée"
+        "⚠ Confirmation non envoyée:",
+        result?.message ||
+        result?.error ||
+        "Erreur inconnue"
       );
 
       return result;
@@ -179,16 +187,16 @@ export async function sendConfirmationEmail(data) {
 
     return result;
 
-  } catch(error){
+  } catch (error) {
 
     console.error(
       "❌ Email error:",
-      error
+      error.message
     );
 
     return {
-      success:false,
-      error:error.message
+      success: false,
+      error: error.message
     };
   }
 }
