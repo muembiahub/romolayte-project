@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import {
   Users,
   ClipboardList,
@@ -7,7 +8,8 @@ import {
   Briefcase,
   Plus,
 } from "lucide-react";
- import OrderCard from "../components/OrderCard";
+
+import OrderCard from "../../components/OrderCard";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -22,14 +24,28 @@ export default function Dashboard() {
   const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch("/api/dashboard/stats", {
+        setLoading(true);
+        setError("");
+
+        const res = await fetch("/dashboard/stats", {
           credentials: "include",
         });
+
+       if (!res.ok) {
+  const data = await res.json();
+
+  if (res.status === 401) {
+    toast.error(data.message || "Non authentifié");
+    navigate("/auth");
+    return;
+  }
+
+  throw new Error(data.message);
+}
 
         const data = await response.json();
 
@@ -39,13 +55,20 @@ export default function Dashboard() {
           );
         }
 
-        setStats(data.stats);
+        setStats(
+          data.stats || {
+            usersCount: 0,
+            demandesCount: 0,
+            categoriesCount: 0,
+            servicesCount: 0,
+          }
+        );
 
-        if (data.recentOrders) {
-          setRecentOrders(data.recentOrders);
-        }
+        setRecentOrders(data.recentOrders || []);
       } catch (err) {
-        setError(err.message);
+        setError(
+          err.message || "Une erreur est survenue lors du chargement."
+        );
       } finally {
         setLoading(false);
       }
@@ -53,8 +76,6 @@ export default function Dashboard() {
 
     fetchDashboardData();
   }, []);
-  // fetch user
-
 
   const widgets = [
     {
@@ -85,9 +106,11 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
+
       {/* Header */}
       <section className="rounded-3xl bg-white p-8 shadow-lg">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          
           <div>
             <span className="text-sm font-bold uppercase tracking-[0.25em] text-indigo-600">
               Tableau de bord
@@ -100,9 +123,7 @@ export default function Dashboard() {
             <p className="mt-4 max-w-2xl text-slate-600">
               Consultez rapidement les statistiques de votre plateforme,
               gérez vos catégories et suivez les dernières demandes.
-              Role:{user?.role}
             </p>
-            
           </div>
 
           <button
@@ -112,6 +133,7 @@ export default function Dashboard() {
             <Plus size={18} />
             Ajouter service
           </button>
+
         </div>
       </section>
 
@@ -122,7 +144,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Stats */}
+      {/* Loading */}
       {loading ? (
         <div className="rounded-3xl bg-white p-10 text-center shadow-lg">
           <div className="flex justify-center">
@@ -134,65 +156,67 @@ export default function Dashboard() {
           </p>
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {widgets.map((widget) => {
-            const Icon = widget.icon;
+        <>
+          {/* Widgets */}
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {widgets.map((widget) => {
+              const Icon = widget.icon;
 
-            return (
-              <div
-                key={widget.title}
-                className={`bg-gradient-to-br ${widget.gradient} rounded-3xl p-6 text-white shadow-xl transition duration-300 hover:-translate-y-1 hover:shadow-2xl`}
+              return (
+                <div
+                  key={widget.title}
+                  className={`bg-gradient-to-br ${widget.gradient} rounded-3xl p-6 text-white shadow-xl transition duration-300 hover:-translate-y-1 hover:shadow-2xl`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm uppercase tracking-wider text-white/80">
+                      {widget.title}
+                    </span>
+
+                    <Icon size={26} />
+                  </div>
+
+                  <div className="mt-8 text-4xl font-bold">
+                    {widget.value}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Dernières demandes */}
+          <section className="rounded-3xl bg-white p-8 shadow-lg">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-slate-900">
+                Dernières demandes
+              </h2>
+             
+
+              <button
+                onClick={() => navigate("/dashboard/orders")}
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm uppercase tracking-wider text-white/80">
-                    {widget.title}
-                  </span>
+                Voir tout →
+              </button>
+            </div>
 
-                  <Icon size={26} />
-                </div>
-
-                <div className="mt-8 text-4xl font-bold">
-                  {widget.value}
-                </div>
+            {recentOrders.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-300 py-10 text-center text-slate-500">
+                Aucune demande récente.
               </div>
-            );
-          })}
-        </div>
+            ) : (
+              <div className="space-y-4">
+                {recentOrders.map((order) => (
+                  <OrderCard
+                    key={order.demande_id}
+                    order={order}
+                    onView={(o) => console.log("Voir :", o)}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        </>
       )}
-
-    
-
-{/* Dernières demandes */}
-<section className="rounded-3xl bg-white p-8 shadow-lg">
-  <div className="mb-6 flex items-center justify-between">
-    <h2 className="text-2xl font-bold text-slate-900">
-      Dernières demandes
-    </h2>
-
-    <button
-      onClick={() => navigate("/orders")}
-      className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
-    >
-      Voir tout →
-    </button>
-  </div>
-
-  {recentOrders.length === 0 ? (
-    <div className="rounded-2xl border border-dashed border-slate-300 py-10 text-center text-slate-500">
-      Aucune demande récente.
-    </div>
-  ) : (
-    <div className="space-y-4">
-      {recentOrders.map((order) => (
-        <OrderCard
-          key={order.id}
-          order={order}
-          onView={(o) => console.log("view order", o)}
-        />
-      ))}
-    </div>
-  )}
-</section>
     </div>
   );
-}
+};

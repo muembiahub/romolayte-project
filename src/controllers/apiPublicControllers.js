@@ -1,3 +1,6 @@
+
+import { supabase } from "../config/database.js";
+
 import { getCategories } from "../models/categories.js";
 import {
   getAllServices,
@@ -6,7 +9,6 @@ import {
   addServiceByCategory
 } from "../models/services.js";
 import { insertDemandeService } from "../models/demandeServiceModel.js";
-import { supabase } from "../config/database.js";
 import { getAllAboutPages } from "../models/about.js";
 
 import {
@@ -278,39 +280,6 @@ setImmediate(async () => {
 };
 
 
-/* =====================================================
-   DASHBOARD STATS
-===================================================== */
-export const getDashboardStats = async (req, res, next) => {
-  try {
-    const [
-      { count: usersCount },
-      { count: demandesCount },
-      { count: categoriesCount },
-      { count: servicesCount },
-      { data: recentOrders }
-    ] = await Promise.all([
-      supabase.from("user_profiles").select("*", { count: "exact", head: true }),
-      supabase.from("demande_service").select("*", { count: "exact", head: true }),
-      supabase.from("categories").select("*", { count: "exact", head: true }),
-      supabase.from("services").select("*", { count: "exact", head: true }),
-      supabase.from("demande_service").select("*").order("created_at", { ascending: false }).limit(5)
-    ]);
-
-    res.json({
-      success: true,
-      stats: {
-        usersCount: usersCount || 0,
-        demandesCount: demandesCount || 0,
-        categoriesCount: categoriesCount || 0,
-        servicesCount: servicesCount || 0,
-      },
-      recentOrders: recentOrders || [],
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 /* =====================================================
    ABOUT PAGES

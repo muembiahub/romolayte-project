@@ -4,11 +4,11 @@ import {
   MapPin,
   Globe,
   MessageCircle,
-  Eye,
 } from "lucide-react";
 
 export default function OrderCard({ order, onView }) {
-  const phoneRaw = order.phone?.replace(/\D/g, "");
+  const phoneRaw = order.phone ? order.phone.replace(/\D/g, "") : "";
+  const status = order.status || "pending";
 
   const statusColors = {
     received: "bg-blue-100 text-blue-700",
@@ -31,25 +31,29 @@ export default function OrderCard({ order, onView }) {
           </p>
         </div>
 
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-            statusColors[order.status] || "bg-blue-100 text-blue-700"
-          }`}
-        >
-          {order.status}
-        </span>
-        {/*  get  status list  from order and udpated with button */}
-        <button
-          className="rounded-full bg-indigo-500 px-3 py-1 text-xs font-semibold text-white hover:bg-indigo-600"
-          onClick={onView}
-        >
-          Update Status
-        </button>
+        <div className="flex items-center gap-2">
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+              statusColors[status]
+            }`}
+          >
+            {status}
+          </span>
+
+          <button
+            className="rounded-full bg-indigo-500 px-3 py-1 text-xs font-semibold text-white hover:bg-indigo-600"
+            onClick={() => onView?.(order)}
+          >
+            Update
+          </button>
+        </div>
       </div>
 
       {/* CLIENT */}
       <div className="mt-4 space-y-2 text-sm text-slate-600">
-        <p className="font-semibold text-slate-900">👤 {order.name}</p>
+        <p className="font-semibold text-slate-900">
+          👤 {order.name}
+        </p>
 
         <a href={`mailto:${order.email}`} className="flex items-center gap-2 text-indigo-600 hover:underline">
           <Mail size={16} />
@@ -103,15 +107,17 @@ export default function OrderCard({ order, onView }) {
       {/* ACTIONS */}
       <div className="mt-5 flex flex-wrap gap-2">
 
-        <a
-          href={`https://wa.me/${phoneRaw}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white hover:bg-green-600"
-        >
-          <MessageCircle size={16} />
-          WhatsApp
-        </a>
+        {phoneRaw && (
+          <a
+            href={`https://wa.me/${phoneRaw}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white hover:bg-green-600"
+          >
+            <MessageCircle size={16} />
+            WhatsApp
+          </a>
+        )}
 
         <a
           href={`tel:${order.phone}`}

@@ -7,6 +7,8 @@ import cors from "cors";
 
 import apiRoutes from "./src/routes/api.js";
 import searchRouter from "./src/models/search.js";
+import authRouter from "./src/routes/apiAuthRoutes.js";
+import  dashboardRouter from "./src/routes/apiDashboardRoutes.js";
 
 /* =========================================================
    ENV
@@ -108,6 +110,8 @@ if (NODE_ENV === "development") {
 ========================================================= */
 app.use("/api", apiRoutes);
 app.use("/search", searchRouter);
+app.use('/auth', authRouter);
+app.use("/", dashboardRouter);
 
 /* =========================================================
    STATIC FRONTEND
