@@ -1,37 +1,45 @@
-import { Resend } from "resend";
+import { BrevoClient } from "@getbrevo/brevo";
 import { buildConfirmationEmail } from "./emailTemplate.js";
 
 /* =========================================================
-   INIT RESEND
+   INIT BREVO CLIENT (Syntaxe moderne v3/v4+)
 ========================================================= */
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+const brevo = new BrevoClient({ 
+  apiKey: process.env.BREVO_API_KEY 
+});
 
 /* =========================================================
    SEND MAIL SAFE
 ========================================================= */
-
 export async function sendMail(mailOptions) {
   try {
-    const info = await resend.emails.send(mailOptions);
-    return { success: true, info };
+    // Utilisation de la méthode unifiée par API HTTP
+    const data = await brevo.transactionalEmails.sendTransacEmail({
+      sender: { name: "Romolayte", email: process.env.BREVO_SENDER_EMAIL },
+      to: [{ email: mailOptions.to }],
+      subject: mailOptions.subject,
+      htmlContent: mailOptions.html,
+      ...(mailOptions.text && { textContent: mailOptions.text }) // Optionnel
+    });
+
+    return { success: true, info: data };
   } catch (err) {
-    return { success: false, error: err.message };
+    // Récupération de l'erreur propre renvoyée par l'API
+    const errorMessage = err.response?.body?.message || err.message;
+    return { success: false, error: errorMessage };
   }
 }
 
 /* =========================================================
    CONFIRMATION EMAIL
 ========================================================= */
-
 export async function sendConfirmationEmail(data) {
-  console.log("📨 Sending email:", data.email);
+  console.log("📨 Sending email via Brevo API:", data.email);
 
   try {
     const email = buildConfirmationEmail(data);
 
     const result = await sendMail({
-      from: `Romolayte <${process.env.ZOHO_EMAIL}>`, // tu gardes ton domaine
       to: data.email,
       subject: email.subject,
       text: email.text,
@@ -43,11 +51,11 @@ export async function sendConfirmationEmail(data) {
       return result;
     }
 
-    console.log("✅ Email sent:", result.info.id);
+    // Le résultat contient directement la réponse de l'API
+    console.log("✅ Email sent via Brevo API. Response:", result.info);
     return result;
   } catch (err) {
     console.error("❌ Email crash:", err.message);
     return { success: false, error: err.message };
   }
 }
-

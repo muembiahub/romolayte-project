@@ -1,104 +1,124 @@
 import { supabase } from "../config/database.js";
 
 /**
- * Signup
+ * Inscription de l'utilisateur
+ * Le profil est créé de manière atomique en BDD via le Trigger SQL
  */
-const signUpWithProfile = async (
-  email,
-  password,
-  profileData
-) => {
-
-  const { data, error } =
-    await supabase.auth.signUp({
+const signUpWithProfile = async (email, password, profileData) => {
+  try {
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo:
-          "http://localhost:5173/auth/callback"
+        emailRedirectTo: "http://localhost:5173/auth/callback",
+        // Les métadonnées sont transmises à la base de données
+        data: {
+          full_name: profileData.full_name,
+          phone: profileData.phone,
+          birthday: profileData.birthday,
+          role_id: profileData.role_id,
+          category_id: profileData.category_id,
+          service_id: profileData.service_id
+        }
       }
     });
 
-  if (error) {
-    throw new Error(error.message);
+    if (error) {
+      return { success: false, message: error.message, data: null };
+    }
+
+    return { 
+      success: true, 
+      message: "Inscription validée. Veuillez vérifier vos e-mails si la confirmation est activée.", 
+      data: { user: data.user } 
+    };
+  } catch (err) {
+    return { success: false, message: err.message, data: null };
   }
-
-  // utilisateur créé mais email pas confirmé
-  // on stocke seulement les infos nécessaires
-  // le profil pourra être créé après confirmation
-
-  return {
-    user: data.user
-  };
 };
 
-
 /**
- * Login + récupération profil
+ * Connexion de l'utilisateur
  */
-const signInWithProfile = async (
-  email,
-  password
-) => {
+/**
+ * Connexion (Login) - Retourne l'utilisateur et sa session (contenant le token JWT)
+ */
+const signInWithProfile = async (email, password) => {
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-  const { data, error } =
-    await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    if (error) {
+      return { success: false, message: error.message, data: null };
+    }
 
-  if (error) {
-    throw new Error(error.message);
+    // On retourne à la fois user et session pour fournir le token d'accès au contrôleur
+    return { 
+      success: true, 
+      message: "Connexion réussie", 
+      data: { 
+        user: data.user, 
+        session: data.session 
+      } 
+    };
+  } catch (err) {
+    return { success: false, message: err.message, data: null };
   }
-
-  const uid = data.user.id;
-  console.log("uid :" ,uid);
-
-  const {
-    data: profile,
-    error: profileError
-  } = await supabase
-    .from("user_profiles")
-    .select('*')
-    .eq("uid", uid)
-    .maybeSingle();
-    console.log("PROFILE:", profile);
-console.log("ERROR:", error);
-
-  if (profileError) {
-    throw new Error(profileError.message);
-  }
-
-  if (!profile) {
-    throw new Error(
-      "Profil utilisateur introuvable"
-    );
-  }
-
-  return {
-    user: data.user,
-    profile
-  };
 };
 
 
 /**
- * Logout
+ * Récupération du profil complet
+ */
+const getCurrentUser = async (uid) => {
+  try {
+    const { data: profile, error } = await supabase
+      .from("user_profiles")
+      .select(`
+        uid,
+        full_name,
+        email,
+        phone,
+        birthday,
+        role_id,
+        category_id,
+        service_id,
+        roles!user_profiles_role_id_fkey(
+          id,
+          name
+        )
+      `)
+      .eq("uid", uid)
+      .maybeSingle(); // Évite un crash si le profil n'est pas encore synchronisé
+
+    if (error) {
+      return { success: false, message: error.message, data: null };
+    }
+
+    if (!profile) {
+      return { success: false, message: "Profil utilisateur introuvable", data: null };
+    }
+
+    return { success: true, message: "Profil récupéré", data: profile };
+  } catch (err) {
+    return { success: false, message: err.message, data: null };
+  }
+};
+
+/**
+ * Déconnexion de l'utilisateur
  */
 const signOut = async () => {
+  try {
+    const { error } = await supabase.auth.signOut();
 
-  const { error } =
-    await supabase.auth.signOut();
+    if (error) {
+      return { success: false, message: error.message, data: null };
+    }
 
-  if (error) {
-    throw new Error(error.message);
+    return { success: true, message: "Déconnexion réussie", data: null };
+  } catch (err) {
+    return { success: false, message: err.message, data: null };
   }
-
-  return true;
 };
 
-export {
-  signUpWithProfile,
-  signInWithProfile,
-  signOut
-};
+export { signUpWithProfile, signInWithProfile, getCurrentUser, signOut };

@@ -41,6 +41,20 @@ app.use(
   })
 );
 
+// SESSION
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000
+    }
+  })
+);
+
 // BODY PARSER
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -110,7 +124,7 @@ if (NODE_ENV === "development") {
 ========================================================= */
 app.use("/api", apiRoutes);
 app.use("/search", searchRouter);
-app.use('/auth', authRouter);
+app.use('/', authRouter);
 app.use("/", dashboardRouter);
 
 /* =========================================================

@@ -1,0 +1,19 @@
+root = true
+
+[*]
+# Use spaces for indentation
+indent_style = space
+indent_size = 2
+
+# File formatting
+end_of_line = lf
+charset = utf-8
+insert_final_newline = true
+
+# Remove unnecessary spaces
+trim_trailing_whitespace = true
+
+[*.md]
+# Keep trailing spaces in Markdown
+# because they can create line breaks
+trim_trailing_whitespace = false

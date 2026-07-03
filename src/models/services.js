@@ -12,28 +12,23 @@ export const getAllServices = async () => {
       .from("services")
       .select(`
         *,
-        categories (
+        category:categories (
           name
         )
       `)
-      .order("service_id", {
-        ascending: true,
-      });
+      // Tri croissant (A-Z ou ID de 1 à X)
+      .order("service_id", { ascending: false });
 
     if (error) throw error;
 
-    return (
-      data?.map((service) => ({
-        ...service,
-      })) || []
-    );
+    // Retourne directement le tableau nettoyé
+    return data || [];
 
   } catch (err) {
-    throw new Error(
-      `getAllServices failed: ${err.message}`
-    );
+    throw new Error(`getAllServices failed: ${err.message}`);
   }
 };
+
 
 
 // 🔹 Lire un service par ID
@@ -102,97 +97,3 @@ export const getServicesByCategory = async (
   }
 };
 
-
-// 🔹 Créer un service
-export const addServiceByCategory = async (
-  category_id,
-  name,
-  description,
-  price,
-  logo
-) => {
-  try {
-    const { data, error } =
-      await supabase
-        .from("services")
-        .insert([
-          {
-            category_id,
-            name,
-            description,
-            price,
-            logo,
-          },
-        ])
-        .select()
-        .maybeSingle();
-
-    if (error) throw error;
-
-    return data;
-
-  } catch (err) {
-    throw new Error(
-      `addServiceByCategory failed: ${err.message}`
-    );
-  }
-};
-
-
-// 🔹 Modifier un service
-export const updateService = async (
-  id,
-  updates
-) => {
-  try {
-    const { data, error } =
-      await supabase
-        .from("services")
-        .update(updates)
-        .eq(
-          "service_id",
-          id
-        )
-        .select()
-        .maybeSingle();
-
-    if (error) throw error;
-
-    return data;
-
-  } catch (err) {
-    throw new Error(
-      `updateService failed: ${err.message}`
-    );
-  }
-};
-
-
-// 🔹 Supprimer un service
-export const deleteService = async (
-  id
-) => {
-  try {
-    const { error } =
-      await supabase
-        .from("services")
-        .delete()
-        .eq(
-          "service_id",
-          id
-        );
-
-    if (error) throw error;
-
-    return {
-      success: true,
-      message:
-        "Service supprimé avec succès.",
-    };
-
-  } catch (err) {
-    throw new Error(
-      `deleteService failed: ${err.message}`
-    );
-  }
-};

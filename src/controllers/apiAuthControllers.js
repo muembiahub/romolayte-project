@@ -1,44 +1,39 @@
 import { supabase } from "../config/database.js";
-import { signUpWithProfile, signInWithProfile, signOut } from "../models/auth.js";
+import {
+  signUpWithProfile,
+  signInWithProfile,
+  getCurrentUser,
+  signOut
+} from "../models/auth.js";
+
+/* =====================================================
+   AUTH CONTROLLERS
+===================================================== */
 
 /**
- * Controller pour inscription
+ * Inscription (Register)
  */
-export const register = async (
-  req,
-  res
-) => {
+export const register = async (req, res) => {
   try {
-    const {
-      email,
-      password,
-      firstname,
-      lastname,
-      phone,
-      birthday,
-      category_id,
-      service_id
-    } = req.body;
+    const { email, password, firstname, lastname, phone, birthday, category_id, service_id } = req.body;
 
-    // Find default role dynamically
-    const { data: role, error } =
-      await supabase
-        .from("roles")
-        .select("id")
-        .eq("name", "client")
-        .single();
-
-    if (error || !role) {
-      throw new Error(
-        "Role client introuvable"
-      );
+    if (!email || !password || !firstname || !lastname) {
+      return res.status(400).json({ success: false, message: "Champs obligatoires manquants" });
     }
 
-    const full_name =
-      `${firstname} ${lastname}`;
+    // Récupérer le rôle par défaut 'client'
+    const { data: role, error: roleError } = await supabase
+      .from("roles")
+      .select("id")
+      .eq("name", "client")
+      .maybeSingle();
+
+    if (roleError || !role) {
+      return res.status(404).json({ success: false, message: "Rôle client introuvable en base de données" });
+    }
 
     const profileData = {
-      full_name,
+      full_name: `${firstname.trim()} ${lastname.trim()}`,
       phone,
       birthday,
       role_id: role.id,
@@ -46,88 +41,96 @@ export const register = async (
       service_id
     };
 
-    const result =
-      await signUpWithProfile(
-        email,
-        password,
-        profileData
-      );
+    const result = await signUpWithProfile(email, password, profileData);
 
-    res.status(201).json({
-      success: true,
-      message:
-        "Utilisateur inscrit avec succès",
-      user: result.user,
-      profile: result.profile
-    });
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
 
+    return res.status(201).json(result);
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
+    return res.status(500).json({ success: false, message: "Erreur interne du serveur lors de l'inscription" });
   }
 };
 
 /**
- * Controller pour connexion
+ * Connexion (Login)
  */
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Validation simple
     if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Email et mot de passe requis",
-      });
+      return res.status(400).json({ success: false, message: "Email et mot de passe requis" });
     }
 
-    // 2. Auth service
     const result = await signInWithProfile(email, password);
+
+    if (!result.success) {
+      if (result.message.includes("Invalid login credentials")) {
+        return res.status(401).json({ success: false, message: "Email ou mot de passe incorrect" });
+      }
+      return res.status(400).json(result);
+    }
+
+    const { session, user } = result.data;
+
+    // 🔥 CORRECTIF : Récupérer le profil complet (avec le rôle) directement lors du login
+    const profileResult = await getCurrentUser(user.id);
+    
+    if (!profileResult.success) {
+      return res.status(400).json({ success: false, message: "Impossible de charger le profil lié" });
+    }
 
     return res.status(200).json({
       success: true,
       message: "Connexion réussie",
-      user: result.user,
-      profile: result.profile,
+      token: session?.access_token || null,
+      user: profileResult.data // 🔥 On renvoie le profil complet avec les rôles !
     });
-
   } catch (error) {
-    console.error("LOGIN ERROR:", error);
+    return res.status(500).json({ success: false, message: "Erreur interne du serveur lors de la connexion" });
+  }
+};
 
-    // 3. Gestion erreurs propres
-    if (error.message.includes("Invalid login credentials")) {
-      return res.status(401).json({
-        success: false,
-        message: "Email ou mot de passe incorrect",
-      });
+
+/**
+ * Déconnexion (Logout)
+ */
+export const logout = async (req, res) => {
+  try {
+    const result = await signOut();
+
+    if (!result.success) {
+      return res.status(400).json(result);
     }
 
-    if (error.message.includes("Profil utilisateur introuvable")) {
-      return res.status(404).json({
-        success: false,
-        message: "Profil utilisateur introuvable",
-      });
-    }
-
-    // 4. fallback serveur
-    return res.status(500).json({
-      success: false,
-      message: "Erreur serveur, veuillez réessayer plus tard",
-    });
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Erreur interne du serveur lors de la déconnexion" });
   }
 };
 
 /**
- * Controller pour déconnexion
+ * Utilisateur connecté (Current user)
  */
-export const logout = async (req, res) => {
+export const currentUser = async (req, res) => {
   try {
-    await signOut();
-    res.status(200).json({ success: true, message: "Déconnexion réussie" });
+    // S'assure de récupérer l'identifiant unique injecté par votre middleware d'authentification
+    const uid = req.user?.uid || req.user?.id;
+
+    if (!uid) {
+      return res.status(401).json({ success: false, message: "Non autorisé, jeton utilisateur manquant" });
+    }
+
+    const result = await getCurrentUser(uid);
+
+    if (!result.success) {
+      return res.status(404).json(result);
+    }
+
+    return res.status(200).json(result);
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: "Erreur interne lors de la récupération de l'utilisateur" });
   }
 };

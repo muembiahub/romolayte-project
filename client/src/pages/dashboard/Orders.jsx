@@ -25,7 +25,7 @@ export default function Orders() {
 
   if (res.status === 401) {
     toast.error(data.message || "Non authentifié");
-    navigate("/auth");
+    navigate("/login");
     return;
   }
 

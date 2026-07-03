@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
- import { toast } from "react-toastify";
+import { toast } from "react-toastify";
+import {useAuth} from "../hooks/useAuth"
 
 const initialLoginForm = {
   usernameOrEmail: "",
@@ -23,6 +24,7 @@ const initialSignupForm = {
 
 export default function Auth() {
   const [mode, setMode] = useState("login");
+  const { login } = useAuth();
  const [selectedCategory, setSelectedCategory] =
     useState("");
 
@@ -126,30 +128,45 @@ useEffect(() => {
 
 }, [selectedCategory]);
 
- const handleSubmit = async (event) => {
+const handleSubmit = async (event) => {
   event.preventDefault();
 
   if (isSubmitting) return;
 
   setError(null);
+
+  // Validation de sécurité initiale pour l'inscription
+  if (mode === "signup" && form.password !== form.confirmPassword) {
+    const errorMsg = "Les mots de passe ne rencontrent pas la validation de correspondance.";
+    setError(errorMsg);
+    toast.error(errorMsg);
+    return;
+  }
+
   setIsSubmitting(true);
 
-  const endpoint =
-    mode === "login" ? "/auth/login" : "/auth/signup";
+  // Alignement sur vos routes de contrôleur Express (/auth/login et /auth/register)
+  const endpoint = mode === "login" ? "/login" : "/register";
 
-  const payload =
-    mode === "login"
-      ? {
-          email: form.usernameOrEmail,
-          password: form.password,
-        }
-      : form;
+  // Préparation des données d'envoi
+  let payload;
+  if (mode === "login") {
+    payload = {
+      email: form.usernameOrEmail,
+      password: form.password,
+    };
+  } else {
+    // On extrait confirmPassword pour ne pas l'envoyer inutilement à l'API
+    const { confirmPassword, ...restOfForm } = form;
+    payload = restOfForm;
+  }
 
   try {
     const response = await fetch(endpoint, {
       method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(payload),
     });
 
@@ -173,10 +190,18 @@ useEffect(() => {
         : "Compte créé avec succès 🎉"
     );
 
-   navigate(data?.redirect || "/dashboard");
+    if (mode === "login") {
+      // data.token correspond à session.access_token et data.user à l'objet utilisateur
+      login(data.token, data.user);
+      navigate("/dashboard");
+    } else {
+      // Après une inscription réussie, on bascule l'utilisateur sur l'écran de connexion
+      setMode("login");
+      setForm(initialLoginForm);
+    }
 
   } catch (err) {
-    const message = "Impossible de contacter le serveur.";
+    const message = "Impossible de contacter le serveur de service.";
     setError(message);
     toast.error(message);
     console.error(err);

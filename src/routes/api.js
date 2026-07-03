@@ -5,7 +5,6 @@ import {
   getPublicServicesByCategoryId,
   getPublicServices,
   getPublicServiceDetail,
-  createService,
   submitContactMessage,
   submitDemandeService,
   getaboutpages
@@ -13,9 +12,6 @@ import {
 
 
 /* ===================================================== */
-import { showMessageContact } from "../controllers/apiPublicControllers.js";
-import { deleteContact, updateContactStatus } from "../models/contactModel.js";
-
 const router = express.Router();
 
 
@@ -26,7 +22,6 @@ router.get("/categories", getPublicCategories);
 router.get("/categories/:id/services", getPublicServicesByCategoryId);
 router.get("/services", getPublicServices);
 router.get("/services/:id", getPublicServiceDetail);
-router.post("/services", createService);
 
 router.post("/demandes", submitDemandeService);
 
