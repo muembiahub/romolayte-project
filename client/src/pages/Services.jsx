@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Edit, Trash2, ShoppingCart } from "lucide-react";
 import DashboardSkeleton from "../components/DashboardSkeleton";
-import { useAuth } from "../hooks/useAuth"; // Importation de votre hook d'authentification
+import { useAuth } from "../hooks/UseAuth";
 
 export default function Services() {
   const [services, setServices] = useState([]);

@@ -12,7 +12,7 @@ import {
 
 import OrderCard from "../../components/OrderCard";
 import DashboardSkeleton from "../../components/DashboardSkeleton";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../hooks/UseAuth";
 
 export default function Dashboard() {
   const navigate = useNavigate();
