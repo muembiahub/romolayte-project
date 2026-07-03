@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-
 import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { useAuth } from "./hooks/useAuth.jsx";
+import { useAuth } from "./hooks/UseAuth.jsx";
 
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
