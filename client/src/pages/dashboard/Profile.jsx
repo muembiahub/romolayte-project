@@ -125,7 +125,7 @@ export default function Profile() {
             </p>
             <h1 className="mt-3 text-3xl font-bold text-slate-900">{displayName}</h1>
             <p className="mt-2 text-sm text-slate-500">
-              Rôle : {roleName === "superadmin" ? "Super administrateur" : roleName === "admin" ? "Administrateur" : "Utilisateur"}
+              Rôle : {roleName === "superadmin" ? "Super administrateur" : roleName === "admin" ? "Administrateur" : {roleName}}
             </p>
           </div>
 
