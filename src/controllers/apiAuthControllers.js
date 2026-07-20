@@ -156,7 +156,7 @@ export const authCallback = async (req, res) => {
     const { code } = req.query;
 
     if (!code) {
-      return res.status(400).send("Code de confirmation manquant.");
+      return res.status(400).send("Code de confirmation verifier.");
     }
 
     const response = await fetch(
