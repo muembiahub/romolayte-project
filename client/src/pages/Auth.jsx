@@ -208,18 +208,17 @@ const handleSubmit = async (event) => {
     // ===========================
     // INSCRIPTION
     // ===========================
-    toast.success(
-      "🎉 Compte créé avec succès !\n\n" +
-      "📧 Un e-mail de confirmation vient d'être envoyé à votre adresse e-mail.\n\n" +
-      "Veuillez consulter votre boîte de réception (ainsi que vos courriers indésirables si nécessaire), puis cliquez sur le lien de confirmation avant de vous connecter."
-    );
+    toast.success("🎉 Compte créé avec succès !");
 
-    // Retour à la connexion
-    setMode("login");
-    setForm(initialLoginForm);
-    setSelectedCategory("");
-    setSelectedService("");
-    setError(null);
+setSuccessMessage(
+  "🎉 Votre compte a été créé avec succès. Un e-mail de confirmation vient d'être envoyé à votre adresse. Veuillez consulter votre boîte de réception (et vos courriers indésirables si nécessaire), puis cliquez sur le lien de confirmation avant de vous connecter."
+);
+
+setMode("login");
+setForm(initialLoginForm);
+setSelectedCategory("");
+setSelectedService("");
+setError(null);
 
   } catch (err) {
     const message =
@@ -272,28 +271,23 @@ const handleSubmit = async (event) => {
           </div>
         )}
 
-        {mode === "login" && confirmed === "true" && (
-  <div className="mb-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-    <div className="flex items-start gap-4">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-        <span className="text-2xl">✅</span>
-      </div>
+       {mode === "login" && successMessage && (
+  <div className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
+    <div className="flex items-start gap-3">
+      <div className="text-2xl">📧</div>
 
       <div>
-        <h3 className="text-lg font-semibold text-emerald-800">
-          Adresse e-mail confirmée
+        <h3 className="font-semibold text-blue-800">
+          Inscription réussie
         </h3>
 
-        <p className="mt-2 text-sm leading-6 text-emerald-700">
-          Votre compte a été confirmé avec succès.
-          <br />
-          Vous pouvez maintenant vous connecter et accéder à votre espace Romolayte.
+        <p className="mt-2 text-sm leading-6 text-blue-700">
+          {successMessage}
         </p>
       </div>
     </div>
   </div>
 )}
-
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           {mode === "signup" && (
             <div className="grid gap-4 sm:grid-cols-2">
