@@ -39,6 +39,7 @@ export default function Auth() {
 
   const [form, setForm] = useState(initialLoginForm);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -199,19 +200,20 @@ const handleSubmit = async (event) => {
     }
 
     // ===========================
-    // INSCRIPTION
-    // ===========================
-    toast.success(
-      data.message ||
-        "Votre compte a été créé avec succès. Consultez votre boîte e-mail pour confirmer votre adresse."
-    );
+// INSCRIPTION
+// ===========================
+setSuccessMessage(
+  "Votre compte a été créé avec succès. Un e-mail de confirmation a été envoyé à votre adresse. Veuillez consulter votre boîte de réception (et vos courriers indésirables si nécessaire), puis cliquez sur le lien de confirmation avant de vous connecter."
+);
 
-    // Retour au formulaire de connexion
-    setMode("login");
-    setForm(initialLoginForm);
-    setSelectedCategory("");
-    setSelectedService("");
-    setError(null);
+toast.success("Compte créé avec succès !");
+
+// Retour au formulaire de connexion
+setMode("login");
+setForm(initialLoginForm);
+setSelectedCategory("");
+setSelectedService("");
+setError(null);
 
   } catch (err) {
     console.error(err);
@@ -263,19 +265,27 @@ const handleSubmit = async (event) => {
             {error}
           </div>
         )}
+         {mode === "login" && successMessage && (
+  <div className="relative mb-6 rounded-2xl border border-sky-200 bg-sky-50 p-5 shadow-sm">
+    <button
+      type="button"
+      onClick={() => setSuccessMessage("")}
+      className="absolute right-4 top-4 text-sky-600 hover:text-sky-800"
+    >
+      ✕
+    </button>
 
-       {mode === "login" && successMessage && (
-  <div className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
-    <div className="flex items-start gap-3">
-      <div className="text-2xl">📧</div>
+    <div className="flex items-start gap-4">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-100 text-2xl">
+        📧
+      </div>
 
       <div>
-        <h3 className="font-semibold text-blue-800">
+        <h3 className="text-lg font-semibold text-sky-800">
           Inscription réussie
         </h3>
-        
 
-        <p className="mt-2 text-sm leading-6 text-blue-700">
+        <p className="mt-2 text-sm leading-6 text-sky-700">
           {successMessage}
         </p>
       </div>
