@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import {useAuth} from "../hooks/UseAuth"
 
@@ -41,6 +41,10 @@ export default function Auth() {
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+
+  const confirmed = searchParams.get("confirmed");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -135,9 +139,11 @@ const handleSubmit = async (event) => {
 
   setError(null);
 
-  // Validation de sécurité initiale pour l'inscription
+  // Validation de l'inscription
   if (mode === "signup" && form.password !== form.confirmPassword) {
-    const errorMsg = "Les mots de passe ne rencontrent pas la validation de correspondance.";
+    const errorMsg =
+      "Les mots de passe ne correspondent pas.";
+
     setError(errorMsg);
     toast.error(errorMsg);
     return;
@@ -145,20 +151,19 @@ const handleSubmit = async (event) => {
 
   setIsSubmitting(true);
 
-  // Alignement sur vos routes de contrôleur Express (/auth/login et /auth/register)
-  const endpoint = mode === "login"
-    ? "/login"
-    : "/signup";
+  const endpoint =
+    mode === "login"
+      ? "/login"
+      : "/signup";
 
-  // Préparation des données d'envoi
   let payload;
+
   if (mode === "login") {
     payload = {
       email: form.usernameOrEmail,
       password: form.password,
     };
   } else {
-    // On extrait confirmPassword pour ne pas l'envoyer inutilement à l'API
     const { confirmPassword, ...restOfForm } = form;
     payload = restOfForm;
   }
@@ -179,33 +184,50 @@ const handleSubmit = async (event) => {
         data.message ||
         (mode === "login"
           ? "Erreur de connexion."
-          : "Erreur d'inscription.");
+          : "Erreur lors de l'inscription.");
 
       setError(message);
       toast.error(message);
       return;
     }
 
-    toast.success(
-      mode === "login"
-        ? "Connexion réussie 🎉"
-        : "Compte créé avec succès 🎉"
-    );
-
+    // ===========================
+    // CONNEXION
+    // ===========================
     if (mode === "login") {
-      // data.token correspond à session.access_token et data.user à l'objet utilisateur
+      toast.success(
+        data.message || "🎉 Connexion réussie !"
+      );
+
       login(data.token, data.user);
+
       navigate("/dashboard");
-    } else {
-      // Après une inscription réussie, on bascule l'utilisateur sur l'écran de connexion
-      setMode("login");
-      setForm(initialLoginForm);
+      return;
     }
 
+    // ===========================
+    // INSCRIPTION
+    // ===========================
+    toast.success(
+      "🎉 Compte créé avec succès !\n\n" +
+      "📧 Un e-mail de confirmation vient d'être envoyé à votre adresse e-mail.\n\n" +
+      "Veuillez consulter votre boîte de réception (ainsi que vos courriers indésirables si nécessaire), puis cliquez sur le lien de confirmation avant de vous connecter."
+    );
+
+    // Retour à la connexion
+    setMode("login");
+    setForm(initialLoginForm);
+    setSelectedCategory("");
+    setSelectedService("");
+    setError(null);
+
   } catch (err) {
-    const message = "Impossible de contacter le serveur de service.";
+    const message =
+      "Impossible de contacter le serveur. Veuillez réessayer.";
+
     setError(message);
     toast.error(message);
+
     console.error(err);
   } finally {
     setIsSubmitting(false);
@@ -249,6 +271,28 @@ const handleSubmit = async (event) => {
             {error}
           </div>
         )}
+
+        {mode === "login" && confirmed === "true" && (
+  <div className="mb-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
+    <div className="flex items-start gap-4">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
+        <span className="text-2xl">✅</span>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold text-emerald-800">
+          Adresse e-mail confirmée
+        </h3>
+
+        <p className="mt-2 text-sm leading-6 text-emerald-700">
+          Votre compte a été confirmé avec succès.
+          <br />
+          Vous pouvez maintenant vous connecter et accéder à votre espace Romolayte.
+        </p>
+      </div>
+    </div>
+  </div>
+)}
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           {mode === "signup" && (
