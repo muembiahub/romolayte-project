@@ -22,26 +22,34 @@ export const register = async (req, res) => {
     }
 
     // Récupérer le rôle par défaut 'client'
-    const { data: role, error: roleError } = await supabase
-      .from("roles")
-      .select("id")
-      .eq("name", "client")
-      .maybeSingle();
+   // Récupérer le rôle par défaut 'client'
+const { data: role, error } = await supabase
+  .from("roles")
+  .select("id")
+  .eq("name", "client")
+  .single();
 
-    if (roleError || !role) {
-      return res.status(404).json({ success: false, message: "Rôle client introuvable en base de données" });
-    }
+console.log("ROLE =", role);
+console.log("ERROR =", error);
 
-    const profileData = {
-      full_name: `${firstname.trim()} ${lastname.trim()}`,
-      phone,
-      birthday,
-      role_id: role.id,
-      category_id,
-      service_id
-    };
+// Vérifier si le rôle a été trouvé
+if (error || !role) {
+  return res.status(404).json({
+    success: false,
+    message: "Rôle client introuvable en base de données"
+  });
+}
 
-    const result = await signUpWithProfile(email, password, profileData);
+const profileData = {
+  full_name: `${firstname.trim()} ${lastname.trim()}`,
+  phone,
+  birthday,
+  role_id: role.id,
+  category_id,
+  service_id
+};
+
+const result = await signUpWithProfile(email, password, profileData);
 
     if (!result.success) {
       return res.status(400).json(result);
@@ -49,8 +57,16 @@ export const register = async (req, res) => {
 
     return res.status(201).json(result);
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Erreur interne du serveur lors de l'inscription" });
-  }
+  console.error("REGISTER ERROR ==================");
+  console.error(error);
+  console.error("==================================");
+
+  return res.status(500).json({
+    success: false,
+    message: error.message,
+    error
+  });
+}
 };
 
 /**
@@ -132,5 +148,51 @@ export const currentUser = async (req, res) => {
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ success: false, message: "Erreur interne lors de la récupération de l'utilisateur" });
+  }
+};
+
+export const authCallback = async (req, res) => {
+  try {
+    const { code } = req.query;
+
+    if (!code) {
+      return res.status(400).send("Code de confirmation manquant.");
+    }
+
+    const response = await fetch(
+      `${process.env.SUPABASE_URL}/auth/v1/token?grant_type=pkce`,
+      {
+        method: "POST",
+        headers: {
+          apikey: process.env.SUPABASE_ANON_KEY,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          auth_code: code,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("SUPABASE CALLBACK ERROR:", data);
+
+      return res.redirect(
+        "https://romolayte.space/login?confirmed=false"
+      );
+    }
+
+    // L'utilisateur est maintenant confirmé.
+
+    return res.redirect(
+      "https://romolayte.space/login?confirmed=true"
+    );
+  } catch (error) {
+    console.error(error);
+
+    return res.redirect(
+      "https://romolayte.space/login?confirmed=false"
+    );
   }
 };

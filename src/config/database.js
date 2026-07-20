@@ -17,6 +17,11 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
+console.log("SUPABASE_URL =", process.env.SUPABASE_URL);
+console.log(
+  "SERVICE KEY =",
+  process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 25) + "..."
+);
 
 
 // ✅ Exporter les deux

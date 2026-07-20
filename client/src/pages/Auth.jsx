@@ -146,7 +146,9 @@ const handleSubmit = async (event) => {
   setIsSubmitting(true);
 
   // Alignement sur vos routes de contrôleur Express (/auth/login et /auth/register)
-  const endpoint = mode === "login" ? "/login" : "/register";
+  const endpoint = mode === "login"
+    ? "/login"
+    : "/signup";
 
   // Préparation des données d'envoi
   let payload;

@@ -5,10 +5,12 @@ import helmet from "helmet";
 import session from "express-session";
 import cors from "cors";
 
+import { supabase } from "./src/config/database.js";
+
 import apiRoutes from "./src/routes/api.js";
 import searchRouter from "./src/models/search.js";
 import authRouter from "./src/routes/apiAuthRoutes.js";
-import  dashboardRouter from "./src/routes/apiDashboardRoutes.js";
+import dashboardRouter from "./src/routes/apiDashboardRoutes.js";
 
 /* =========================================================
    ENV
@@ -20,20 +22,41 @@ dotenv.config();
 ========================================================= */
 const app = express();
 
-const NODE_ENV =
-  (process.env.NODE_ENV || "development").trim();
+const NODE_ENV = (process.env.NODE_ENV || "development").trim();
+const PORT = process.env.PORT || 3000;
+const SUPABASE_URL = (process.env.SUPABASE_URL || "").trim();
 
-const PORT =
-  process.env.PORT || 3000;
+/* =========================================================
+   TEST CONNEXION SUPABASE
+========================================================= */
+async function testSupabaseConnection() {
+  console.log("\n========== TEST SUPABASE ==========");
 
-const SUPABASE_URL =
-  (process.env.SUPABASE_URL || "").trim();
+  try {
+    const { data, error } = await supabase
+      .from("roles")
+      .select("*");
+
+    if (error) {
+      console.error("❌ SUPABASE ERROR");
+      console.error(error);
+    } else {
+      console.log("✅ Connexion Supabase réussie");
+      console.log("📋 Nombre de rôles :", data.length);
+      console.table(data);
+    }
+  } catch (err) {
+    console.error("❌ EXCEPTION SUPABASE");
+    console.error(err);
+  }
+
+  console.log("==================================\n");
+}
 
 /* =========================================================
    MIDDLEWARE
 ========================================================= */
 
-// CORS
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -41,7 +64,6 @@ app.use(
   })
 );
 
-// SESSION
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -49,22 +71,21 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 24 * 60 * 60 * 1000
-    }
+      secure: NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
+    },
   })
 );
 
-// BODY PARSER
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// TRUST PROXY (Render)
 app.set("trust proxy", 1);
 
 /* =========================================================
    SECURITY
 ========================================================= */
+
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -73,32 +94,32 @@ app.use(
         scriptSrc: [
           "'self'",
           "https://cdn.jsdelivr.net",
-          "'unsafe-inline'"
+          "'unsafe-inline'",
         ],
         styleSrc: [
           "'self'",
           "https://cdn.jsdelivr.net",
           "https://cdnjs.cloudflare.com",
-          "'unsafe-inline'"
+          "'unsafe-inline'",
         ],
         imgSrc: [
           "'self'",
           "data:",
-          SUPABASE_URL
+          SUPABASE_URL,
         ].filter(Boolean),
 
         connectSrc: [
           "'self'",
           SUPABASE_URL,
           "https://nominatim.openstreetmap.org",
-          "https://cdn.jsdelivr.net"
+          "https://cdn.jsdelivr.net",
         ].filter(Boolean),
 
         fontSrc: [
           "'self'",
           "https://cdnjs.cloudflare.com",
           "https://cdn.jsdelivr.net",
-          "data:"
+          "data:",
         ],
 
         objectSrc: ["'none'"],
@@ -110,11 +131,12 @@ app.use(
 );
 
 /* =========================================================
-   LOGGER DEV
+   LOGGER
 ========================================================= */
+
 if (NODE_ENV === "development") {
   app.use((req, res, next) => {
-    console.log(`➡️ ${req.method} ${req.url}`);
+    console.log(`➡️ ${req.method} ${req.originalUrl}`);
     next();
   });
 }
@@ -122,58 +144,47 @@ if (NODE_ENV === "development") {
 /* =========================================================
    ROUTES
 ========================================================= */
+
 app.use("/api", apiRoutes);
 app.use("/search", searchRouter);
-app.use('/', authRouter);
+app.use("/", authRouter);
 app.use("/", dashboardRouter);
 
 /* =========================================================
    STATIC FRONTEND
 ========================================================= */
-const clientPath =
-  path.join(process.cwd(), "client/dist");
+
+const clientPath = path.join(process.cwd(), "client/dist");
 
 app.use(express.static(clientPath));
 
 app.get("*", (req, res) => {
-  res.sendFile(
-    path.join(clientPath, "index.html")
-  );
+  res.sendFile(path.join(clientPath, "index.html"));
 });
 
 /* =========================================================
    ERROR HANDLER
 ========================================================= */
-app.use((err, req, res, next) => {
-  console.error("❌ Error:", err.message);
 
-  if (NODE_ENV !== "production") {
-    console.error(err.stack);
-  }
+app.use((err, req, res, next) => {
+  console.error("❌ Error :", err);
 
   res.status(err.status || 500).json({
     success: false,
-    error:
-      err.message ||
-      "Une erreur inattendue s’est produite.",
+    message: err.message || "Erreur serveur",
   });
 });
 
 /* =========================================================
-   START SERVER (IMPORTANT FOR RENDER)
+   START SERVER
 ========================================================= */
-app.listen(PORT, () => {
-  console.log(
-    `✅ Server running at port ${PORT}`
-  );
 
-  console.log(
-    `🌱 Environment: ${NODE_ENV}`
-  );
+(async () => {
+  await testSupabaseConnection();
 
-  console.log(
-    `🚀 App ready on Render`
-  );
-});
-
-/* ========================================================= */
+  app.listen(PORT, () => {
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`🌱 Environment : ${NODE_ENV}`);
+    console.log(`🚀 Ready`);
+  });
+})();
