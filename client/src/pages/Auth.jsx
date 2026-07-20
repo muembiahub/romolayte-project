@@ -139,10 +139,9 @@ const handleSubmit = async (event) => {
 
   setError(null);
 
-  // Validation de l'inscription
+  // Vérification des mots de passe
   if (mode === "signup" && form.password !== form.confirmPassword) {
-    const errorMsg =
-      "Les mots de passe ne correspondent pas.";
+    const errorMsg = "Les mots de passe ne correspondent pas.";
 
     setError(errorMsg);
     toast.error(errorMsg);
@@ -151,22 +150,18 @@ const handleSubmit = async (event) => {
 
   setIsSubmitting(true);
 
-  const endpoint =
+  const endpoint = mode === "login" ? "/login" : "/signup";
+
+  const payload =
     mode === "login"
-      ? "/login"
-      : "/signup";
-
-  let payload;
-
-  if (mode === "login") {
-    payload = {
-      email: form.usernameOrEmail,
-      password: form.password,
-    };
-  } else {
-    const { confirmPassword, ...restOfForm } = form;
-    payload = restOfForm;
-  }
+      ? {
+          email: form.usernameOrEmail,
+          password: form.password,
+        }
+      : (() => {
+          const { confirmPassword, ...rest } = form;
+          return rest;
+        })();
 
   try {
     const response = await fetch(endpoint, {
@@ -195,9 +190,7 @@ const handleSubmit = async (event) => {
     // CONNEXION
     // ===========================
     if (mode === "login") {
-      toast.success(
-        data.message || "🎉 Connexion réussie !"
-      );
+      toast.success(data.message || "Connexion réussie.");
 
       login(data.token, data.user);
 
@@ -208,26 +201,26 @@ const handleSubmit = async (event) => {
     // ===========================
     // INSCRIPTION
     // ===========================
-    toast.success("🎉 Compte créé avec succès !");
+    toast.success(
+      data.message ||
+        "Votre compte a été créé avec succès. Consultez votre boîte e-mail pour confirmer votre adresse."
+    );
 
-setSuccessMessage(
-  "🎉 Votre compte a été créé avec succès. Un e-mail de confirmation vient d'être envoyé à votre adresse. Veuillez consulter votre boîte de réception (et vos courriers indésirables si nécessaire), puis cliquez sur le lien de confirmation avant de vous connecter."
-);
-
-setMode("login");
-setForm(initialLoginForm);
-setSelectedCategory("");
-setSelectedService("");
-setError(null);
+    // Retour au formulaire de connexion
+    setMode("login");
+    setForm(initialLoginForm);
+    setSelectedCategory("");
+    setSelectedService("");
+    setError(null);
 
   } catch (err) {
+    console.error(err);
+
     const message =
       "Impossible de contacter le serveur. Veuillez réessayer.";
 
     setError(message);
     toast.error(message);
-
-    console.error(err);
   } finally {
     setIsSubmitting(false);
   }
@@ -280,7 +273,7 @@ setError(null);
         <h3 className="font-semibold text-blue-800">
           Inscription réussie
         </h3>
-
+        
 
         <p className="mt-2 text-sm leading-6 text-blue-700">
           {successMessage}
