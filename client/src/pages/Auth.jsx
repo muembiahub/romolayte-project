@@ -280,6 +280,7 @@ setError(null);
         <h3 className="font-semibold text-blue-800">
           Inscription réussie
         </h3>
+        
 
         <p className="mt-2 text-sm leading-6 text-blue-700">
           {successMessage}
