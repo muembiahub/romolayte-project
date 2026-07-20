@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import {useAuth} from "../hooks/UseAuth"
 
 const initialLoginForm = {
@@ -280,7 +280,7 @@ setError(null);
         <h3 className="font-semibold text-blue-800">
           Inscription réussie
         </h3>
-        
+
 
         <p className="mt-2 text-sm leading-6 text-blue-700">
           {successMessage}
