@@ -7,9 +7,20 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [scrollY, setScrollY] = useState(0);
 
+  // Optimized scroll listener using requestAnimationFrame for smooth 60fps performance
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll);
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -42,62 +53,49 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="space-y-8 md:space-y-12 relative min-h-screen bg-slate-50" style={{ fontFamily: "'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif" }}>
+    <div className="space-y-8 md:space-y-12 relative min-h-screen bg-gradient-to-b from-slate-50 via-slate-100/70 to-indigo-50/40" style={{ fontFamily: "'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif" }}>
 
-      {/* HERO SECTION WITH DEPTH EFFECT */}
-      <section className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] min-h-[500px] overflow-hidden rounded-2xl sm:rounded-3xl md:rounded-[3rem] mx-3 sm:mx-4 md:mx-8 mt-4 sm:mt-6 shadow-xl md:shadow-2xl group">
+      {/* HERO SECTION COMPACTE SANS IMAGE */}
+      <section className="relative py-12 sm:py-16 md:py-20 overflow-hidden rounded-2xl sm:rounded-3xl md:rounded-[3rem] mx-3 sm:mx-4 md:mx-8 mt-4 sm:mt-6 bg-slate-950 shadow-xl md:shadow-2xl group">
         
-        {/* BACKGROUND LAYER (Parallax) */}
-        <div 
-          className="absolute inset-0 z-0 transition-transform duration-300 ease-out scale-110"
-          style={{
-            backgroundImage: `url('https://ofhmwjzxakhgbafywxwp.supabase.co/storage/v1/object/public/profile/romolayte_hero_bg.jpg')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            transform: `translateY(${scrollY * 0.2}px) scale(1.1)`,
-          }}
-        />
-
-        {/* OVERLAY LAYERS FOR DEPTH */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-r from-slate-950/85 via-slate-950/50 to-slate-950/20" />
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+        {/* FOND DÉGRADÉ & ÉLÉMENTS DÉCORATIFS LUMINEUX */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-950 to-indigo-950 z-0" />
         
-        {/* DECORATIVE ELEMENTS (Floating) */}
         <div 
-          className="absolute top-1/4 right-1/4 w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 bg-indigo-500/20 rounded-full blur-[80px] sm:blur-[100px] z-10 animate-pulse"
-          style={{ transform: `translateY(${scrollY * -0.1}px)` }}
+          className="absolute top-0 right-10 w-40 h-40 sm:w-56 sm:h-56 bg-indigo-500/20 rounded-full blur-[80px] z-10 animate-pulse"
+          style={{ transform: `translateY(${scrollY * -0.05}px)` }}
         />
         <div 
-          className="absolute bottom-1/4 left-1/3 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-blue-500/10 rounded-full blur-[100px] sm:blur-[120px] z-10"
-          style={{ transform: `translateY(${scrollY * 0.15}px)` }}
+          className="absolute bottom-0 left-10 w-48 h-48 sm:w-72 sm:h-72 bg-blue-500/10 rounded-full blur-[100px] z-10"
+          style={{ transform: `translateY(${scrollY * 0.05}px)` }}
         />
 
-        {/* CONTENT LAYER */}
-        <div className="relative z-20 h-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 flex flex-col justify-center items-start text-white">
+        {/* CONTENU LAYER */}
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 flex flex-col justify-center items-start text-white">
           <div 
-            className="max-w-2xl sm:max-w-3xl space-y-4 sm:space-y-6 md:space-y-8 transition-all duration-700"
-            style={{ transform: `translateY(${scrollY * -0.05}px)` }}
+            className="max-w-2xl sm:max-w-3xl space-y-4 sm:space-y-6 transition-all duration-700"
+            style={{ transform: `translateY(${scrollY * -0.02}px)` }}
           >
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-indigo-200 ring-1 ring-white/20 shadow-lg">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-semibold text-indigo-200 ring-1 ring-white/20 shadow-lg">
               <span className="flex h-2 w-2 rounded-full bg-indigo-400 animate-ping" />
-              🚀 Marketplace nouvelle génération
+              Marketplace nouvelle génération
             </span>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
               Vos projets avancent <br className="hidden sm:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-300">
                 plus vite
               </span> avec Romolayte.
             </h1>
 
-            <p className="text-sm sm:text-base md:text-lg text-slate-200 leading-relaxed max-w-xl font-light">
+            <p className="text-xs sm:text-sm md:text-base text-slate-300 leading-relaxed max-w-xl font-light">
               Accédez à un espace unique et sécurisé pour collaborer en direct avec notre équipe d'experts, en toute simplicité.
             </p>
 
-            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 pt-2 sm:pt-4">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 pt-2">
               <Link
                 to="/services"
-                className="group/btn relative overflow-hidden rounded-xl sm:rounded-2xl bg-white px-5 sm:px-8 py-2.5 sm:py-3 md:py-4 text-sm sm:text-base font-bold text-slate-900 shadow-lg md:shadow-xl transition-all hover:scale-105 active:scale-95 text-center"
+                className="group/btn relative overflow-hidden rounded-xl sm:rounded-2xl bg-white px-5 sm:px-7 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-slate-900 shadow-lg transition-all hover:scale-105 active:scale-95 text-center"
               >
                 <span className="relative z-10">Découvrir les services</span>
                 <div className="absolute inset-0 bg-indigo-50 transform scale-x-0 group-hover/btn:scale-x-100 transition-transform origin-left duration-300" />
@@ -105,19 +103,12 @@ export default function Home() {
 
               <Link
                 to="/contact"
-                className="rounded-xl sm:rounded-2xl border border-white/30 bg-white/5 backdrop-blur-md px-5 sm:px-8 py-2.5 sm:py-3 md:py-4 text-sm sm:text-base font-bold text-white shadow-lg transition-all hover:bg-white/10 hover:border-white/50 active:scale-95 text-center"
+                className="rounded-xl sm:rounded-2xl border border-white/30 bg-white/5 backdrop-blur-md px-5 sm:px-7 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-white shadow-lg transition-all hover:bg-white/10 hover:border-white/50 active:scale-95 text-center"
               >
                 Contacter l'équipe
               </Link>
             </div>
           </div>
-        </div>
-
-        {/* SCROLL INDICATOR */}
-        <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 z-20 animate-bounce opacity-50">
-          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
         </div>
       </section>
 
@@ -180,7 +171,7 @@ export default function Home() {
               <Link
                 key={category.category_id}
                 to={`/categories/${category.category_id}/services`}
-                className="group relative overflow-hidden rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 bg-white shadow-sm hover:shadow-xl md:hover:shadow-2xl transition-all duration-500 flex flex-col h-full no-underline text-decoration-none"
+                className="group relative overflow-hidden rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 bg-white shadow-sm hover:shadow-xl md:hover:shadow-2xl transition-all duration-500 flex flex-col h-full"
               >
                 {/* IMAGE */}
                 <div className="h-40 sm:h-48 md:h-56 overflow-hidden bg-slate-100">
