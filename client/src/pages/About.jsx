@@ -67,15 +67,15 @@ export default function About() {
           <div className="relative max-w-3xl space-y-6">
             <span className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 border border-blue-500/30 px-4 py-2 text-xs sm:text-sm font-bold tracking-wide text-blue-300 backdrop-blur-md">
               <span className="flex h-2 w-2 rounded-full bg-blue-400 animate-ping" />
-              {hero?.badge || "À propos de Romolayte"}
+              {hero?.badge || "À propos de JOSADEN Tech Group"}
             </span>
 
             <h1 className="text-3xl sm:text-6xl font-black tracking-tight leading-tight text-white">
-              {hero?.title}
+              {hero?.title || "Le numérique, pour tous."}
             </h1>
 
             <p className="text-slate-300 text-base sm:text-lg font-light leading-relaxed max-w-2xl">
-              {hero?.content}
+              {hero?.content || "JOSADEN Tech Group est un écosystème technologique innovant qui regroupe des expertises de pointe pour propulser la transformation digitale et offrir des solutions d'avenir accessibles à tous."}
             </p>
           </div>
         </motion.section>
@@ -158,7 +158,7 @@ export default function About() {
               Notre équipe
             </h2>
             <p className="mt-3 text-slate-400 text-sm sm:text-base font-light max-w-xl mx-auto">
-              Les talents passionnés qui unissent leurs forces pour concevoir le futur de Romolayte.
+              Les talents passionnés qui unissent leurs forces pour concevoir le futur de JOSADEN Tech Group.
             </p>
           </div>
 
@@ -224,14 +224,20 @@ export default function About() {
             Nos partenaires
           </h2>
 
-          <div className="flex flex-wrap justify-center items-center gap-10 sm:gap-16 opacity-60">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8 items-center justify-center">
             {(data.partners || []).map((p) => (
-              <img
-                key={p.id}
-                src={p.logo}
-                alt="Partner Logo"
-                className="h-9 sm:h-11 grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110"
-              />
+              <div key={p.id} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-900/30 border border-blue-500/10 backdrop-blur-sm hover:border-blue-500/30 transition-all">
+                {p.logo_url && (
+                  <img
+                    src={p.logo_url}
+                    alt={p.name || "Partner Logo"}
+                    className="h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300 mb-2"
+                  />
+                )}
+                <span className="text-sm font-semibold text-slate-300 tracking-wide">
+                  {p.name}
+                </span>
+              </div>
             ))}
           </div>
         </section>
